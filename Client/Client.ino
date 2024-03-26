@@ -4,6 +4,18 @@
 #include <ESP8266WiFi.h>
 #include <WebSocketClient.h>
 #include <ESP8266HTTPClient.h>
+#include <FastLED.h>
+
+#define DATA_PIN    3
+//#define CLK_PIN   4
+#define LED_TYPE    WS2811
+#define COLOR_ORDER GRB
+#define NUM_LEDS    42
+
+CRGBArray<NUM_LEDS> leds;
+
+#define BRIGHTNESS          96
+#define FRAMES_PER_SECOND  120
 
 //Brown-Guest
 const char* ssid     = "Brown-Guest";
@@ -17,6 +29,40 @@ WebSocketClient webSocketClient;
 
 // Use WiFiClient class to create TCP connections
 WiFiClientSecure client;
+
+uint8_t r = 0;
+uint8_t g = 0;
+uint8_t b = 0;
+
+
+void setUPLEDs(){ 
+  delay(1000); // 3 second delay for recovery
+  
+  // tell FastLED about the LED strip configuration
+  FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+
+  // set master brightness control
+  FastLED.setBrightness(BRIGHTNESS);
+
+}
+
+void LEDLoop() {
+  static uint8_t hue;
+
+  for(int i = 0; i < NUM_LEDS/2; i++) {   
+    // fade everything out
+    // leds.fadeToBlackBy(40);
+
+    // let's set an led value
+    leds[i] = CHSV(r, g, b);
+
+    // now, let's first 20 leds to the top 20 leds, 
+    leds(NUM_LEDS/2,NUM_LEDS-1) = leds(NUM_LEDS/2 - 1 ,0);
+    FastLED.delay(33);
+  }
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -81,7 +127,12 @@ void setup() {
   if (webSocketClient.handshake(client)) {
     Serial.println("Handshake successful");
 
-    webSocketClient.sendData("ESP");
+    setUPLEDs();
+
+    String macAddress = WiFi.macAddress();
+    macAddress = "M-" + macAddress;
+    webSocketClient.sendData(macAddress);
+    
   } else {
     Serial.println("Handshake failed.");
     while(1) {
@@ -99,30 +150,41 @@ void loop() {
     
     webSocketClient.getData(data);
     if (data.length() > 0) {
+
+      int dataLen = data.length();
+
       //Serial.print("Received data: ");
       //Serial.println(data);
       //Serial.println("Sending data to Arduino Lights");
 
+      if (data == "ping") {
+        webSocketClient.sendData("pong");
+      }
+
+      if (data.charAt(0) == '#' && dataLen == 7) {
+        char buffer[7];
+        data.toCharArray(buffer, sizeof(buffer));
+
+        uint8_t r = strtol(buffer + 1, NULL, 16); // Skip the '#' character
+        uint8_t g = strtol(buffer + 3, NULL, 16); // Parse two characters for each color component
+        uint8_t b = strtol(buffer + 5, NULL, 16);
+
+        Serial.print("Received RGB values: R=");
+        Serial.print(r);
+        Serial.print(", G=");
+        Serial.print(g);
+        Serial.print(", B=");
+        Serial.println(b);
+      }
+
       Serial.print("<");
       Serial.print(data);
-      Serial.print(">");
+      Serial.println(">");
 
       //Serial1.write("GOT SOMETHING"); // Sending data to Arduino
     }
-
-    if (Serial1.available() > 0) {
-      Serial.println(Serial1.readString());
-      // Serial1.readStringUntil('<');
-      // String message = Serial1.readStringUntil('>');
-      // Serial.println(message);
-      // webSocketClient.sendData(message);
-    }
     
-    // capture the value of analog 1, send it along
-    // pinMode(1, INPUT);
-    // data = String(analogRead(1));
-    // webSocketClient.sendData("POG");
-    
+    LEDLoop();
     
   } else {
     Serial.println("Client disconnected.");

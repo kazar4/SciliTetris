@@ -22,13 +22,14 @@ class Commands:
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "color": '#000000'}
         self.espConnections[self.espConnections[clientText]]["coord"] = (int(x), int(y)) # might have to remove this
     
-    def setColor(self, message):
+    def setColor(self, message, server):
         cmd, x, y, color = message.split()
         if (int(x), int(y)) not in self.coordConnections:
             print(f"ERROR: ({x}, {y}) does not have an ESP set yet!")
             return # TODO eventually send am essage back to user
         
         self.coordConnections[(int(x), int(y))]["coord"] = color
+        server.send_message(self.coordConnections[(int(x), int(y))]["client"], color)
     
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]

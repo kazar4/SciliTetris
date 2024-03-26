@@ -82,12 +82,11 @@ def message_received(client, server, message):
         espConnections[client["id"]] = {"clientVal": client, "MAC": message[1:], "coord": (None, None)}
         return
 
-
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
         "pong": {"func": commands.pong, "args": (message, client, server)},
         "setCoords": {"func": commands.setCoords, "args": (message)},
-        "setColor": {"func": commands.setColor, "args": (message)},
+        "setColor": {"func": commands.setColor, "args": (message, server)},
         "getClientState": {"func": commands.getClientState, "args": (client, server)},
         "getLEDState": {"func": commands.getLEDState, "args": (client, server)}
     }
