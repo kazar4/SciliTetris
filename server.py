@@ -75,10 +75,8 @@ def message_received(client, server, message):
             server.send_message(espClient[0], message)
             return
 
-
 PORT=9001
-server = WebsocketServer(host='0.0.0.0', port=PORT)
-                         #, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)
