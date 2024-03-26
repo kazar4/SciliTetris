@@ -1,11 +1,14 @@
 from websocket_server import WebsocketServer
 import sqlite3
 import json
+import commands
 
-player1 = None
+player1 = {}
 
 espConnections = {}
 coordConnections = {}
+
+commands = commands.Commands(player1, espConnections, coordConnections)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -46,7 +49,10 @@ def new_client(client, server):
 def client_left(client, server):
     print("Client(%d) disconnected" % client['id'])
 
-    # check if client was 
+    if client["id"] == player1[1]:
+        player1 = None
+
+    # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
         coordToDel = espConnections[client["id"]]["coord"]
 
@@ -66,10 +72,9 @@ def message_received(client, server, message):
 
     if message == "player1":
         print("Setting client " + str(client["id"]) + " to player1")
-        player1 = (client, client["id"])
-        server.send_message(player1[0], "player1 Connected")
+        player1 = {"player": (client, client["id"])}
+        server.send_message(player1["player"][0], "player1 Connected")
         return
-
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
     if message[0:1] == "M-":
@@ -77,57 +82,17 @@ def message_received(client, server, message):
         espConnections[client["id"]] = {"clientVal": client, "MAC": message[1:], "coord": (None, None)}
         return
 
-    possibleCommands = ["ping", "pong", "setCoords", "setColor", "getClientState", "getLEDState"]
-    if client["id"] in espConnections:
-        if message not in possibleCommands:
-            server.send_message(client, "invalid command")
-            return
 
-        # Possible commands here are: setCoords(client), setColor((x,y)), getClientState() -> client, x,y, color, getLEDState() -> x,y, color
-
-        # check if a specfic client is currently responding       
-        if "ping" in message:
-            cmd, client = message.split()
-
-            server.send_message(espConnections[client]["clientVal"], "Ping!")
-
-        if "ping" in message:
-            cmd = message.split() 
-            # Send message to server saying this client has responded
-
-        if "setCoords" in message:
-            cmd, clientText, x, y = message.split()
-            coordConnections[(int(x), int(y))] = {"client" : espConnections[clientText]["clientVal"], "color": '#000000'}
-            espConnections[espConnections[clientText]]["coord"] = (int(x), int(y)) # might have to remove this
-        
-        if "setColor" in message:
-            cmd, x, y, color = message.split()
-            if (int(x), int(y)) not in coordConnections:
-                print(f"ERROR: ({x}, {y}) does not have an ESP set yet!")
-                return # TODO eventually send am essage back to user
-            
-            coordConnections[(int(x), int(y))]["coord"] = color
-        
-        if "getClientState" in message:
-
-            # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
-            clientData = []
-            for i in espConnections.keys():
-                xVal = espConnections[i]["coord"][0]
-                yVal = espConnections[i]["coord"][1]
-                clientData.append({"clientName": i, "x": xVal, "y": yVal, "color": coordConnections.get((xVal, yVal), None)})
-
-            clientData = {"data: ": clientData}
-
-            clientText = json.dumps(clientData)
-            server.send_message(client, clientText)
-        
-        if "getLEDState" in message:
-
-            ledState = json.dumps({f"{coord[0]}-{coord[1]}":coordConnections[coord]["color"] for coord in coordConnections.keys()})
-            server.send_message(client, ledState)
-
-
+    possibleCommands =  {
+        "ping": {"func": commands.ping, "args": (message, server)},
+        "pong": {"func": commands.pong, "args": (message, client, server)},
+        "setCoords": {"func": commands.setCoords, "args": (message)},
+        "setColor": {"func": commands.setColor, "args": (message)},
+        "getClientState": {"func": commands.getClientState, "args": (client, server)},
+        "getLEDState": {"func": commands.getLEDState, "args": (client, server)}
+    }
+    
+    commands.executeCommands(possibleCommands, message, client, server)
 
         ## WHOA -> for tetris/snake we will have another websocket that we connect to that is kinda like a
         # ____ (im forgetting the word), so it goes website -> websocket1 > this websocket
