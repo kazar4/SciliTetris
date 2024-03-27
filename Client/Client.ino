@@ -6,7 +6,7 @@
 #include <ESP8266HTTPClient.h>
 #include <FastLED.h>
 
-#define DATA_PIN    3
+#define DATA_PIN    2
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
@@ -30,9 +30,9 @@ WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClientSecure client;
 
-uint8_t r = 0;
-uint8_t g = 0;
-uint8_t b = 0;
+int r = 255;
+int g = 255;
+int b = 255;
 
 
 void setUPLEDs(){ 
@@ -50,17 +50,19 @@ void setUPLEDs(){
 void LEDLoop() {
   static uint8_t hue;
 
-  for(int i = 0; i < NUM_LEDS/2; i++) {   
+  for(int i = 0; i < NUM_LEDS; i++) {   
     // fade everything out
     // leds.fadeToBlackBy(40);
 
     // let's set an led value
-    leds[i] = CHSV(r, g, b);
+    leds[i] = CRGB(r, g, b);
 
     // now, let's first 20 leds to the top 20 leds, 
-    leds(NUM_LEDS/2,NUM_LEDS-1) = leds(NUM_LEDS/2 - 1 ,0);
-    FastLED.delay(33);
+    //leds(NUM_LEDS/2,NUM_LEDS-1) = leds(NUM_LEDS/2 - 1 ,0);
+    //FastLED.delay(33);
   }
+  FastLED.show();
+  FastLED.delay(1000 / 100);
 }
 
 
@@ -162,12 +164,16 @@ void loop() {
       }
 
       if (data.charAt(0) == '#' && dataLen == 7) {
-        char buffer[7];
+        char buffer[8];
         data.toCharArray(buffer, sizeof(buffer));
 
-        uint8_t r = strtol(buffer + 1, NULL, 16); // Skip the '#' character
-        uint8_t g = strtol(buffer + 3, NULL, 16); // Parse two characters for each color component
-        uint8_t b = strtol(buffer + 5, NULL, 16);
+        // Parse the entire hex color code as one value
+        unsigned long rgbValue = strtol(buffer + 1, NULL, 16); // Skip the '#' character
+
+        // Extract individual RGB components
+        r = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+        g = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+        b = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
 
         Serial.print("Received RGB values: R=");
         Serial.print(r);
