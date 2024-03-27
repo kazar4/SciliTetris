@@ -85,7 +85,7 @@ def message_received(client, server, message):
     if message[0:2] == "M-":
         print("Setting client " + str(client["id"]) + " Mac Address of: " + message[2:])
         espConnections[str(client["id"])] = {"clientVal": client, "MAC": message[1:], "coord": (None, None)}
-        print(espConnections)
+        #print(espConnections)
         return
 
     possibleCommands =  {
