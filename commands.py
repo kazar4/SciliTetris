@@ -8,10 +8,11 @@ class Commands:
 
     def __init__(self, player1, espConnections, coordConnections):
         self.player1 = player1
-        self.espConnections = {}
-        self.coordConnections = {}
+        self.espConnections = espConnections
+        self.coordConnections = coordConnections
 
     def ping(self, message, server):
+        print(self.espConnections)
         cmd, client = message.split()
         pingTimes = {client: int(time.time())}
         server.send_message(self.espConnections[client]["clientVal"], "ping")
@@ -72,9 +73,11 @@ class Commands:
             yVal = self.espConnections[i]["coord"][1]
             clientData.append({"clientName": i, "x": xVal, "y": yVal, "color": self.espConnections[i]["color"]})
 
+        print(clientData)
         clientData = {"data: ": clientData}
 
         clientText = json.dumps(clientData)
+        print(clientText)
         server.send_message(client, clientText)
     
     def getLEDState(self, client, server):
@@ -96,4 +99,9 @@ class Commands:
         commandFunc = possibleCommands[commandName]["func"]
         commandArgs = possibleCommands[commandName]["args"]
 
-        commandFunc(*commandArgs)
+        # bug happens if theres only one argument where it splits it into a list
+        print("Command Args: " + str(commandArgs), len(commandArgs))
+        if len(commandArgs) == 1:
+            commandFunc(commandArgs[0])
+        else:
+            commandFunc(*commandArgs)

@@ -3,8 +3,7 @@ import sqlite3
 import json
 import commands
 
-player1 = {}
-
+player1 = {"player": None}
 espConnections = {}
 coordConnections = {}
 
@@ -47,10 +46,12 @@ def new_client(client, server):
 
 # Called for every client disconnecting
 def client_left(client, server):
+    global player1
+
     print("Client(%d) disconnected" % client['id'])
 
-    if client["id"] == player1[1]:
-        player1 = None
+    if client["id"] == player1["player"]:
+        player1["player"] = None
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -65,10 +66,14 @@ def client_left(client, server):
 
 # Called when a client sends a message
 def message_received(client, server, message):
+    global player1, espConnection, coordConnections
+
     if len(message) > 200:
         message = message[:200]+'..'
     #print("Client(%d) said: %s" % (client['id'], message))
     #print(espClient, player1)
+
+    print("message: " + message)
 
     if message == "player1":
         print("Setting client " + str(client["id"]) + " to player1")
@@ -77,15 +82,16 @@ def message_received(client, server, message):
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
-    if message[0:1] == "M-":
-        print("Setting client " + str(client["id"]) + "Mac Address of: " + message[1:])
-        espConnections[client["id"]] = {"clientVal": client, "MAC": message[1:], "coord": (None, None), "color": '#000000'}
+    if message[0:2] == "M-":
+        print("Setting client " + str(client["id"]) + " Mac Address of: " + message[2:])
+        espConnections[str(client["id"])] = {"clientVal": client, "MAC": message[1:], "coord": (None, None)}
+        #print(espConnections)
         return
 
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
         "pong": {"func": commands.pong, "args": (message, client, server)},
-        "setCoords": {"func": commands.setCoords, "args": (message)},
+        "setCoords": {"func": commands.setCoords, "args": [message]},
         "setColor": {"func": commands.setColor, "args": (message, server)},
         "getClientState": {"func": commands.getClientState, "args": (client, server)},
         "getLEDState": {"func": commands.getLEDState, "args": (client, server)}
@@ -99,10 +105,8 @@ def message_received(client, server, message):
         # colors
 
 
-
 PORT=9001
-server = WebsocketServer(host='0.0.0.0', port=PORT)
-                         #, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)
