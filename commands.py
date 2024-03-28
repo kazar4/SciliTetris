@@ -12,9 +12,15 @@ class Commands:
         self.coordConnections = coordConnections
 
     def ping(self, message, server):
-        cmd, client = message.split()
-        self.pingTimes[client] = time.time()
-        server.send_message(self.espConnections[client]["clientVal"], "ping")
+        cmd, clientID = message.split()
+
+        if clientID not in self.espConnections:
+            print(f"ERROR: {clientID} not connected to server yet")
+            server.send_message(client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
+            return
+
+        self.pingTimes[clientID] = time.time()
+        server.send_message(self.espConnections[clientID]["clientVal"], "ping")
     
     def pong(self, message, client, server):
         # Send message to server saying this client has responded
@@ -28,8 +34,10 @@ class Commands:
             clientIDText = str(client["id"])
             print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
 
-            # going to send to client for now but change to player1 at some point self.player1["player"][0]
+            # going to send to client for now but change to player1 at some point self.player1["player"][0] /TODO
             server.send_message(client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
+        else: # TODO
+            server.send_message(client, json.dumps({"ERROR": f"{str(client["id"])} did not send a ping"}))
 
     def setCoords(self, message, server):
         cmd, clientText, x, y = message.split()
@@ -39,6 +47,11 @@ class Commands:
             oldClient = self.coordConnections[(int(x), int(y))]["clientID"]
             self.espConnections[oldClient]["coord"] = (None, None)
             self.setColor(f"setColor {oldClient} #000000", server)
+
+        if clientText not in self.espConnections:
+            print(f"ERROR: {clientText} not connected to server yet")
+            server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
+            return
 
         # set new coord details
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
@@ -55,7 +68,7 @@ class Commands:
         return self.espConnections[self.coordConnections[coord]["clientID"]]["clientVal"]
     ############################
 
-    def setColor(self, message, server):
+    def setColor(self, message, client, server):
         messageSplit = message.split()
 
         # if you are trying to turn on a LED that doesnt have a set coord
@@ -63,7 +76,8 @@ class Commands:
             cmd, clientID, color = messageSplit
             if clientID not in self.espConnections:
                 print(f"ERROR: {clientID} not connected to server yet")
-                return # TODO eventually send am essage back to user, as JSON
+                server.send_message(client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
+                return
 
             self.espConnections[clientID]["color"] = color
             server.send_message(self.espConnections[clientID]["clientVal"], color)
@@ -74,7 +88,8 @@ class Commands:
             # coord -> esp - > color,       esp -> color
             if (int(x), int(y)) not in self.coordConnections:
                 print(f"ERROR: ({x}, {y}) does not have an ESP set yet!")
-                return # TODO eventually send am essage back to user, as JSON
+                server.send_message(client, json.dumps({"ERROR": f"({x}, {y}) does not have an ESP set yet!"}))
+                return
         
             self.setLEDColor((int(x), int(y)), color)
             server.send_message(self.getClientObj((int(x), int(y))), color)
