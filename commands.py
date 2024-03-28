@@ -12,7 +12,6 @@ class Commands:
         self.coordConnections = coordConnections
 
     def ping(self, message, server):
-        print(self.espConnections)
         cmd, client = message.split()
         pingTimes = {client: int(time.time())}
         server.send_message(self.espConnections[client]["clientVal"], "ping")
@@ -25,8 +24,16 @@ class Commands:
             print(f"client {client["id"]} pong timeDif: {timeDif}")
             server.send_message(self.player1["player"][0], json.dumps({"pong": client["id"], "timeDif": timeDif}))
 
-    def setCoords(self, message):
+    def setCoords(self, message, server):
         cmd, clientText, x, y = message.split()
+
+        # coord has already been added once so we have to remove old coord color
+        if (int(x), int(y)) in self.coordConnections:
+            oldClient = self.coordConnections[(int(x), int(y))]["clientID"]
+            self.espConnections[oldClient]["coord"] = (None, None)
+            self.setColor(f"setColor {oldClient} #000000", server)
+
+        # set new coord details
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
         self.espConnections[self.espConnections[clientText]]["coord"] = (int(x), int(y)) # might have to remove this
 

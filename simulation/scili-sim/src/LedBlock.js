@@ -17,6 +17,10 @@ const LedBlock = ({ row, column }) => {
       const data = event.data
 
       console.log(data);
+
+      if (data == "ping") {
+        ws.send("pong")
+      }
       
       if (data != undefined && data != null && data[0] == "#" && data.length == 7) {
         console.log("Setting color to: " + data);
