@@ -91,7 +91,7 @@ def message_received(client, server, message):
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
         "pong": {"func": commands.pong, "args": (message, client, server)},
-        "setCoords": {"func": commands.setCoords, "args": [message]},
+        "setCoords": {"func": commands.setCoords, "args": (message, server)},
         "setColor": {"func": commands.setColor, "args": (message, server)},
         "getClientState": {"func": commands.getClientState, "args": (client, server)},
         "getLEDState": {"func": commands.getLEDState, "args": (client, server)},
