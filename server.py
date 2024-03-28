@@ -84,7 +84,7 @@ def message_received(client, server, message):
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
     if message[0:2] == "M-":
         print("Setting client " + str(client["id"]) + " Mac Address of: " + message[2:])
-        espConnections[str(client["id"])] = {"clientVal": client, "MAC": message[1:], "coord": (None, None)}
+        espConnections[str(client["id"])] = {"clientVal": client, "MAC": message[1:], "coord": (None, None), "color": "#000000"}
         #print(espConnections)
         return
 
@@ -94,7 +94,9 @@ def message_received(client, server, message):
         "setCoords": {"func": commands.setCoords, "args": [message]},
         "setColor": {"func": commands.setColor, "args": (message, server)},
         "getClientState": {"func": commands.getClientState, "args": (client, server)},
-        "getLEDState": {"func": commands.getLEDState, "args": (client, server)}
+        "getLEDState": {"func": commands.getLEDState, "args": (client, server)},
+        "loadTest": {"func": commands.loadTest, "args": [server]},
+        "allOff": {"func": commands.allOff, "args": [server]}
     }
     
     commands.executeCommands(possibleCommands, message, client, server)

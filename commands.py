@@ -12,23 +12,30 @@ class Commands:
         self.coordConnections = coordConnections
 
     def ping(self, message, server):
-        print(self.espConnections)
+        #print(self.espConnections)
         cmd, client = message.split()
-        pingTimes = {client: int(time.time())}
+        self.pingTimes[client] = time.time()
         server.send_message(self.espConnections[client]["clientVal"], "ping")
     
     def pong(self, message, client, server):
         # Send message to server saying this client has responded
-        if self.player1["player"] != None and client["id"] in self.pingTimes:
-            timeDif = int(time.time()) - self.pingTimes(client["id"])
+
+        # self.player1["player"] != None and  (can add this back later once we specifc player1 behavior)
+        # self.player1["player"] != None and 
+        print(client["id"], self.pingTimes)
+        if str(client["id"]) in self.pingTimes:
+            timeDif = time.time() - self.pingTimes[str(client["id"])]
             self.pingTimes.pop(client["id"], None)
-            print(f"client {client["id"]} pong timeDif: {timeDif}")
-            server.send_message(self.player1["player"][0], json.dumps({"pong": client["id"], "timeDif": timeDif}))
+            clientIDText = str(client["id"])
+            print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
+
+            # going to send to client for now but change to player1 at some point self.player1["player"][0]
+            server.send_message(client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
 
     def setCoords(self, message):
         cmd, clientText, x, y = message.split()
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
-        self.espConnections[self.espConnections[clientText]]["coord"] = (int(x), int(y)) # might have to remove this
+        self.espConnections[clientText]["coord"] = (int(x), int(y)) # might have to remove this
 
     #### GETTERS AND SETTERS TO HELP WITH COORD SPACE
     def getLEDColor(self, coord):
@@ -84,6 +91,27 @@ class Commands:
         ledState = {f"({coord[0]},{coord[1]})": self.getLEDColor(coord) for coord in self.coordConnections.keys()}
         ledState = json.dumps(ledState)
         server.send_message(client, ledState)
+    
+    def setAllLedsCoords(self, server, color):
+        for coord in coordConnections.keys():
+            espObj = self.getClientObj(coord)
+            server.send_message(espObj, color)
+
+    def setAllLeds(self, server, color):
+        for esp in self.espConnections.keys():
+            server.send_message(self.espConnections[esp]["clientVal"], color)
+
+    def loadTest(self, server):
+        self.setAllLeds(server, "#FF0000")
+        time.sleep(1.5)
+        self.setAllLeds(server, "#000000")
+        time.sleep(1.5)
+        self.setAllLeds(server, "#00FF00")
+        time.sleep(1.5)
+        self.setAllLeds(server, "#FF00FF")
+
+    def allOff(self, server):
+        self.setAllLeds(server, "#000000")
 
     def executeCommands(self, possibleCommands, message, client, server):
         if message == "":
