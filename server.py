@@ -3,11 +3,11 @@ import sqlite3
 import json
 import commands
 
-player1 = {"player": None}
+admin = {"admin": None}
 espConnections = {}
 coordConnections = {}
 
-commands = commands.Commands(player1, espConnections, coordConnections)
+commands = commands.Commands(admin, espConnections, coordConnections)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -50,8 +50,8 @@ def client_left(client, server):
 
     print("Client(%d) disconnected" % client['id'])
 
-    if client["id"] == player1["player"]:
-        player1["player"] = None
+    if client["id"] == admin["admin"]:
+        admin["admin"] = {"admin": None}
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -75,28 +75,39 @@ def message_received(client, server, message):
 
     print("message: " + message)
 
-    if message == "player1":
-        print("Setting client " + str(client["id"]) + " to player1")
-        player1 = {"player": (client, client["id"])}
-        server.send_message(player1["player"][0], "player1 Connected")
+    if message == "admin":
+        print("Setting client " + str(client["id"]) + " to admin")
+        admin["admin"] = (client, client["id"])
+        #server.send_message(admin["admin"][0], "admin Connected")
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
     if message[0:2] == "M-":
-        print("Setting client " + str(client["id"]) + " Mac Address of: " + message[2:])
-        espConnections[str(client["id"])] = {"clientVal": client, "MAC": message[1:], "coord": (None, None), "color": "#000000"}
-        #print(espConnections)
+        MAC = message[2:]
+        print("Setting client " + str(client["id"]) + " Mac Address of: " + MAC)
+        espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": (None, None), "color": "#000000"}
+        
+        if commands.cacheBool:
+            coord, foundCache = commands.getCache(MAC)
+            if foundCache:
+                commands.setCoords(f"setCoords {client['id']} {coord[0]} {coord[1]}", client, server)
+
         return
 
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
         "pong": {"func": commands.pong, "args": (message, client, server)},
-        "setCoords": {"func": commands.setCoords, "args": (message, server)},
+        "setCoords": {"func": commands.setCoords, "args": (message, client, server)},
         "setColor": {"func": commands.setColor, "args": (message, client, server)},
         "getClientState": {"func": commands.getClientState, "args": (client, server)},
         "getLEDState": {"func": commands.getLEDState, "args": (client, server)},
         "loadTest": {"func": commands.loadTest, "args": [server]},
-        "allOff": {"func": commands.allOff, "args": [server]}
+        "allOff": {"func": commands.allOff, "args": [server]},
+        "checkClientConnections": {"func": commands.checkClientConnections, "args": [server]},
+        "cacheOn": {"func": commands.cacheOn, "args": [client, server]},
+        "cacheOff": {"func": commands.cacheOff, "args": [server]},
+        "removeCoord": {"func": commands.removeCoord, "args": [message]}
+
     }
     
     commands.executeCommands(possibleCommands, message, client, server)
@@ -109,6 +120,9 @@ def message_received(client, server, message):
 
 PORT=9001
 server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+
+commands.start_ping_thread(server)
+
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)
 server.set_fn_client_left(client_left)
