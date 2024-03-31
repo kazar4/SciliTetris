@@ -1,0 +1,15 @@
+#ledBuilding {
+    display: Flex;
+    justify-content: center;
+    align-items: center;
+    width: 20vw;
+    flex-wrap: wrap;
+  }
+  
+  .ledBlock {
+    width: 20px;
+    height: 20px;
+    background: #000000;
+    border: 1px solid white;
+  }
+  

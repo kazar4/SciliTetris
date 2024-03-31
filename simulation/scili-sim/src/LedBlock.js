@@ -9,7 +9,7 @@ const LedBlock = ({ row, column }) => {
     const ws = new WebSocket('wss://kazar4.com:9001');
 
     ws.onopen = (event) => {
-      ws.send("M-asdqsd");
+      ws.send(`M-${row}-${column}`);
     };
 
     ws.onmessage = (event) => {
