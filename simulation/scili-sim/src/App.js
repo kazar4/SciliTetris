@@ -42,7 +42,8 @@ function App() {
 
 
   useEffect(() => {
-    const websocket = new WebSocket('wss://kazar4.com:9001');
+    // const websocket = new WebSocket('wss://kazar4.com:9001');
+    const websocket = new WebSocket('ws://localhost:9001')
 
     websocket.onopen = () => {
       console.log('WebSocket connection established.');
@@ -86,7 +87,7 @@ function App() {
         </DndProvider> */}
       {/* </Flex> */}
 
-
+      <ColorModeSwitcher justifySelf="flex-end" />
       <DndProvider backend={HTML5Backend}>
         <Flex direction="column" height="100vh">
         {/* Top section */}
@@ -171,6 +172,7 @@ function App() {
             <EspClientList ws={ws} wsRes={wsRes} xDimension={xDimension} yDimension={yDimension}></EspClientList>
             </Box>
         </Flex>
+        
 
 
       </Flex>

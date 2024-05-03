@@ -252,7 +252,7 @@ class Commands:
         self.sendServerGracefully(server, client, json.dumps(ledMessage))
     
     def setAllLedsCoords(self, server, color):
-        for coord in coordConnections.keys():
+        for coord in self.coordConnections.keys():
             espObj = self.getClientObj(coord)
             # server.send_message(espObj, color)
             self.sendServerGracefully(server, espObj, color)

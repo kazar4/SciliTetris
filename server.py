@@ -4,6 +4,7 @@ import json
 import commands
 
 admin = {"admin": None}
+player = {"player": None}
 espConnections = {}
 coordConnections = {}
 
@@ -46,12 +47,13 @@ def new_client(client, server):
 
 # Called for every client disconnecting
 def client_left(client, server):
-    global player1
 
     print("Client(%d) disconnected" % client['id'])
 
     if client["id"] == admin["admin"]:
         admin["admin"] = {"admin": None}
+    if client["id"] == player["player"]:
+        player["player"] = {"player": None}
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -66,7 +68,7 @@ def client_left(client, server):
 
 # Called when a client sends a message
 def message_received(client, server, message):
-    global player1, espConnection, coordConnections
+    global espConnection, coordConnections
 
     if len(message) > 200:
         message = message[:200]+'..'
@@ -79,6 +81,11 @@ def message_received(client, server, message):
         print("Setting client " + str(client["id"]) + " to admin")
         admin["admin"] = (client, client["id"])
         #server.send_message(admin["admin"][0], "admin Connected")
+        return
+    
+    if message == "player":
+        print("Setting client " + str(client["id"]) + " as player")
+        player["player"] = (client, client["id"])
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
@@ -93,6 +100,7 @@ def message_received(client, server, message):
                 commands.setCoords(f"setCoords {client['id']} {coord[0]} {coord[1]}", client, server)
 
         return
+    
 
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
@@ -119,7 +127,8 @@ def message_received(client, server, message):
 
 
 PORT=9001
-server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+# server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='localhost', port=PORT)
 
 commands.start_ping_thread(server)
 
