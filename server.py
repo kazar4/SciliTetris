@@ -4,11 +4,11 @@ import json
 import commands
 
 admin = {"admin": None}
-player = {"player": None}
+player = {"client": None, "clientID": None}
 espConnections = {}
 coordConnections = {}
 
-commands = commands.Commands(admin, espConnections, coordConnections)
+commands = commands.Commands(admin, player, espConnections, coordConnections)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -51,9 +51,10 @@ def client_left(client, server):
     print("Client(%d) disconnected" % client['id'])
 
     if client["id"] == admin["admin"]:
-        admin["admin"] = {"admin": None}
-    if client["id"] == player["player"]:
-        player["player"] = {"player": None}
+        admin["admin"] = (None, None)
+    if client["id"] == player["clientID"]:
+        player["client"] = None
+        player["clientID"] = None
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -85,7 +86,9 @@ def message_received(client, server, message):
     
     if message == "player":
         print("Setting client " + str(client["id"]) + " as player")
-        player["player"] = (client, client["id"])
+        # player["player"] = (client, client["id"])
+        player["client"] = client
+        player["clientID"] = client["id"]
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
@@ -114,8 +117,8 @@ def message_received(client, server, message):
         "checkClientConnections": {"func": commands.checkClientConnections, "args": [server]},
         "cacheOn": {"func": commands.cacheOn, "args": [client, server]},
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
-        "removeCoord": {"func": commands.removeCoord, "args": [message]}
-
+        "removeCoord": {"func": commands.removeCoord, "args": [message]},
+        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)}
     }
     
     commands.executeCommands(possibleCommands, message, client, server)

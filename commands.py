@@ -11,8 +11,9 @@ class Commands:
 
     cacheBool = True
 
-    def __init__(self, admin, espConnections, coordConnections):
+    def __init__(self, admin, player, espConnections, coordConnections):
         self.admin = admin
+        self.player = player
         self.espConnections = espConnections
         self.coordConnections = coordConnections
         
@@ -355,7 +356,15 @@ class Commands:
         if self.admin["admin"] != None:
             self.sendServerGracefully(server, self.admin["admin"][0], json.dumps({"type": "update", "data": ""}))
 
+    #### Player Commands ####
+    def receivePlayerInput(self, message, client, server):
+        if not self.player["client"] or client["id"] != self.player["clientID"]:
+            self.sendServerGracefully(server, client, json.dumps({"ERROR": "not player client or player client not yet connected"}))
+        cmd, playerInput = message.split(" ")
+        ## Game stuff here
+        print(playerInput)
 
+    #########################
 
     def executeCommands(self, possibleCommands, message, client, server):
         if message == "":
