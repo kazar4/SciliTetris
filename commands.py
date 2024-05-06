@@ -50,7 +50,8 @@ class Commands:
 
         if clientText not in self.espConnections:
             print(f"ERROR: {clientText} not connected to server yet")
-            server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
+            #TODO this should sendback to client that sent it or prob to admin
+            #server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
             return
 
         # set new coord details
@@ -80,7 +81,7 @@ class Commands:
                 return
 
             self.espConnections[clientID]["color"] = color
-            server.send_message(self.espConnections[clientID]["clientVal"], color)
+            server.send_message(self.espConnections[clientID]["clientVal"], "$3" + color)
 
         # if you are turning on an LED with a set coord
         else:
@@ -92,7 +93,7 @@ class Commands:
                 return
         
             self.setLEDColor((int(x), int(y)), color)
-            server.send_message(self.getClientObj((int(x), int(y))), color)
+            server.send_message(self.getClientObj((int(x), int(y))), "$3" + color)
     
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
@@ -121,7 +122,7 @@ class Commands:
 
     def setAllLeds(self, server, color):
         for esp in self.espConnections.keys():
-            server.send_message(self.espConnections[esp]["clientVal"], color)
+            server.send_message(self.espConnections[esp]["clientVal"], "$3" + color)
 
     def loadTest(self, server):
         self.setAllLeds(server, "#FF0000")
