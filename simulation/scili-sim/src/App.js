@@ -92,6 +92,7 @@ function App() {
         <Flex direction="column" height="100vh">
         {/* Top section */}
         <Flex justify="space-between" align="center" height="10%">
+        <ColorModeSwitcher justifySelf="flex-end" />
           <Box flex="0 0 20%"></Box>
           <Box flex="0 0 60%" textAlign="center">Scili Admin Controls</Box>
           <Box flex="0 0 20%" textAlign="right"></Box>

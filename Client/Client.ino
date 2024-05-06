@@ -1,21 +1,34 @@
 // https://github.com/morrissinger/ESP8266-Websocket/tree/master
 // https://stackoverflow.com/questions/59005181/unable-to-connect-https-protocol-with-esp8266-using-wificlientsecure
 
+//https://github.com/datacute/DoubleResetDetector/
+
 #include <ESP8266WiFi.h>
 #include <WebSocketClient.h>
 #include <ESP8266HTTPClient.h>
 #include <FastLED.h>
+#include <DoubleResetDetector.h> // By Stephen Denne
 
 #define DATA_PIN    2
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define NUM_LEDS    42
+#define NUM_LEDS    60
 
 CRGBArray<NUM_LEDS> leds;
+CRGBArray<NUM_LEDS> leds2;
 
 #define BRIGHTNESS          96
 #define FRAMES_PER_SECOND  120
+
+// Number of seconds after reset during which a 
+// subseqent reset will be considered a double reset.
+#define DRD_TIMEOUT 10
+
+// RTC Memory Address for the DoubleResetDetector to use
+#define DRD_ADDRESS 0
+
+DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 
 //Brown-Guest
 const char* ssid     = "Brown-Guest";
@@ -30,9 +43,13 @@ WebSocketClient webSocketClient;
 // Use WiFiClient class to create TCP connections
 WiFiClientSecure client;
 
-int r = 255;
-int g = 255;
-int b = 255;
+int r1 = 0;
+int g1 = 0;
+int b1 = 0;
+
+int r2 = 0;
+int g2 = 0;
+int b2 = 0;
 
 
 void setUPLEDs(){ 
@@ -40,6 +57,7 @@ void setUPLEDs(){
   
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE,0,COLOR_ORDER>(leds2, NUM_LEDS).setCorrection(TypicalLEDStrip);
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
   // set master brightness control
@@ -55,7 +73,9 @@ void LEDLoop() {
     // leds.fadeToBlackBy(40);
 
     // let's set an led value
-    leds[i] = CRGB(r, g, b);
+    leds[i] = CRGB(r1, g1, b1);
+
+    leds2[i] = CRGB(r2, g2, b2);
 
     // now, let's first 20 leds to the top 20 leds, 
     //leds(NUM_LEDS/2,NUM_LEDS-1) = leds(NUM_LEDS/2 - 1 ,0);
@@ -71,6 +91,35 @@ void setup() {
   while (!Serial);
   Serial1.begin(9600); // Initialize TX/RX communication (do not need to wait)
   delay(10);
+
+  setUPLEDs();
+
+  if (drd.detectDoubleReset()) {
+    Serial.println("Detected Double Reset");
+    r1 = 0;
+    g1 = 255;
+    b1 = 0;
+
+    r2 = 0;
+    g2 = 0;
+    b2 = 255;
+    LEDLoop();
+
+    delay(1000);
+    r1 = 0;
+    g1 = 0;
+    b1 = 0;
+
+    r2 = 0;
+    g2 = 0;
+    b2 = 0;
+    LEDLoop();
+  } else {
+    //Serial.println("No Double Reset Detected");
+    //digitalWrite(LED_BUILTIN, HIGH);
+  }
+
+  // pinMode(0, INPUT_PULLUP); I use the same pin for led2 otherwise I could use this as a button
 
   Serial.println();
   Serial.print("ESP Board MAC Address:  ");
@@ -129,8 +178,6 @@ void setup() {
   if (webSocketClient.handshake(client)) {
     Serial.println("Handshake successful");
 
-    setUPLEDs();
-
     String macAddress = WiFi.macAddress();
     macAddress = "M-" + macAddress;
     webSocketClient.sendData(macAddress);
@@ -148,6 +195,8 @@ void setup() {
 void loop() {
   String data;
 
+  drd.loop();
+
   if (client.connected()) {
     
     webSocketClient.getData(data);
@@ -163,24 +212,47 @@ void loop() {
         webSocketClient.sendData("pong");
       }
 
-      if (data.charAt(0) == '#' && dataLen == 7) {
-        char buffer[8];
+      if (data.charAt(0) == '$' && dataLen == 9) {
+        char ledStrip = data.charAt(1);
+        char buffer[10];
         data.toCharArray(buffer, sizeof(buffer));
 
-        // Parse the entire hex color code as one value
-        unsigned long rgbValue = strtol(buffer + 1, NULL, 16); // Skip the '#' character
+             // Parse the entire hex color code as one value
+        unsigned long rgbValue = strtol(buffer + 3, NULL, 16); // Skip the '#' character
 
+        if (ledStrip == '2') {
+          r2 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          g2 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          b2 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+
+          Serial.print("Received RGB values for Strip 2: R=");
+          Serial.print(r2);
+          Serial.print(", G=");
+          Serial.print(g2);
+          Serial.print(", B=");
+          Serial.println(b2);
+
+        } else if (ledStrip == '1') {
         // Extract individual RGB components
-        r = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
-        g = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
-        b = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+          r1 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          g1 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          b1 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
 
-        Serial.print("Received RGB values: R=");
-        Serial.print(r);
-        Serial.print(", G=");
-        Serial.print(g);
-        Serial.print(", B=");
-        Serial.println(b);
+          Serial.print("Received RGB values for Strip 1: R=");
+          Serial.print(r1);
+          Serial.print(", G=");
+          Serial.print(g1);
+          Serial.print(", B=");
+          Serial.println(b1);
+        } else {
+          r1 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          g1 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          b1 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+          r2 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          g2 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          b2 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+        }
+
       }
 
       Serial.print("<");
