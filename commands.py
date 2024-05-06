@@ -208,7 +208,7 @@ class Commands:
             self.espConnections[clientID]["color"] = color
             print(f"Trying to color of {clientID} to {color} 2")
             #server.send_message(self.espConnections[clientID]["clientVal"], color)
-            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$1" + color)
+            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$3" + color)
             print(f"Set color of {clientID} to {color}")
 
         # if you are turning on an LED with a set coord
