@@ -145,7 +145,7 @@ class Commands:
             self.savedPingTimes[str(client["id"])] = int(timeDif * 1000)
             self.pingTimes.pop(str(client["id"]), None)
             clientIDText = str(client["id"])
-            #print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
+            print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
 
             # going to send to client for now but change to player1 at some point self.player1["player"][0] /TODO
             # server.send_message(client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
@@ -169,7 +169,7 @@ class Commands:
         if clientText not in self.espConnections:
             print(f"ERROR: {clientText} not connected to server yet")
             # server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
-            self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
+            ##self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
             return
 
         if self.cacheBool: # this is also run when server.py enables cache so beware of redudency
@@ -203,13 +203,13 @@ class Commands:
                 self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
                 return
 
-            #print(f"Trying to color of {clientID} to {color}")
+            print(f"Trying to color of {clientID} to {color}")
 
             self.espConnections[clientID]["color"] = color
-            #print(f"Trying to color of {clientID} to {color} 2")
+            print(f"Trying to color of {clientID} to {color} 2")
             #server.send_message(self.espConnections[clientID]["clientVal"], color)
-            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], color)
-            #print(f"Set color of {clientID} to {color}")
+            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$3" + color)
+            print(f"Set color of {clientID} to {color}")
 
         # if you are turning on an LED with a set coord
         else:
@@ -221,7 +221,7 @@ class Commands:
                 return
         
             self.setLEDColor((int(x), int(y)), color)
-            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), color)
+            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), "$3" + color)
     
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
