@@ -168,13 +168,8 @@ class Commands:
         # client is not in connections
         if clientText not in self.espConnections:
             print(f"ERROR: {clientText} not connected to server yet")
-<<<<<<< HEAD
-            #TODO this should sendback to client that sent it or prob to admin
-            #server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
-=======
             # server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
-            self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
->>>>>>> c1ec4daa15d54e5b2b074ca349a4433866d67726
+            ##self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
             return
 
         if self.cacheBool: # this is also run when server.py enables cache so beware of redudency
@@ -211,14 +206,10 @@ class Commands:
             print(f"Trying to color of {clientID} to {color}")
 
             self.espConnections[clientID]["color"] = color
-<<<<<<< HEAD
-            server.send_message(self.espConnections[clientID]["clientVal"], "$3" + color)
-=======
             print(f"Trying to color of {clientID} to {color} 2")
             #server.send_message(self.espConnections[clientID]["clientVal"], color)
-            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], color)
+            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$3" + color)
             print(f"Set color of {clientID} to {color}")
->>>>>>> c1ec4daa15d54e5b2b074ca349a4433866d67726
 
         # if you are turning on an LED with a set coord
         else:
@@ -230,11 +221,7 @@ class Commands:
                 return
         
             self.setLEDColor((int(x), int(y)), color)
-<<<<<<< HEAD
-            server.send_message(self.getClientObj((int(x), int(y))), "$3" + color)
-=======
-            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), color)
->>>>>>> c1ec4daa15d54e5b2b074ca349a4433866d67726
+            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), "$3" + color)
     
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
@@ -271,16 +258,11 @@ class Commands:
             self.sendServerGracefully(server, espObj, color)
 
     def setAllLeds(self, server, color):
-<<<<<<< HEAD
-        for esp in self.espConnections.keys():
-            server.send_message(self.espConnections[esp]["clientVal"], "$3" + color)
-=======
         for esp in list(self.espConnections.keys()):
             # server.send_message(self.espConnections[esp]["clientVal"], color)
             # self.espConnections[esp]["color"] = color
             # self.sendServerGracefully(server, self.espConnections[esp]["clientVal"], color)
             self.setColor(f"setColor {esp} {color}", self.espConnections[esp]["clientVal"], server)
->>>>>>> c1ec4daa15d54e5b2b074ca349a4433866d67726
 
     def loadTest(self, server):
         # the time.sleep() makes it so nobody can see the end color
