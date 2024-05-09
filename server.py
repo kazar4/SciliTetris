@@ -5,10 +5,11 @@ import commands
 
 admin = {"admin": None}
 player = {"client": None, "clientID": None}
+game = {"game": None, "clientID": None}
 espConnections = {}
 coordConnections = {}
 
-commands = commands.Commands(admin, player, espConnections, coordConnections)
+commands = commands.Commands(admin, player, game, espConnections, coordConnections)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -55,6 +56,9 @@ def client_left(client, server):
     if client["id"] == player["clientID"]:
         player["client"] = None
         player["clientID"] = None
+    if client["id"] == game["clientID"]:
+        game["client"] = None
+        game["clientID"] = None
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -89,6 +93,12 @@ def message_received(client, server, message):
         # player["player"] = (client, client["id"])
         player["client"] = client
         player["clientID"] = client["id"]
+        return
+    
+    if message == "game":
+        print("Setting client " + str(client["id"]) + " as game")
+        game["client"] = client
+        game["clientID"] = client["id"]
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
