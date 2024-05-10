@@ -38,8 +38,8 @@ import pygame, sys
 # The configuration
 config = {
 	'cell_size':	20,
-	'cols':		8,
-	'rows':		16,
+	'cols':		4,
+	'rows':		8,
 	'delay':	750,
 	'maxfps':	30
 }
@@ -110,6 +110,11 @@ def new_board():
 			for y in range(config['rows']) ]
 	board += [[ 1 for x in range(config['cols'])]]
 	return board
+
+def rgb_to_hex(rgb):
+    """Converts RGB tuple to hexadecimal color code."""
+    return '#{0:02x}{1:02x}{2:02x}'.format(rgb[0], rgb[1], rgb[2])
+
 
 class TetrisApp(object):
 	def __init__(self):
@@ -220,6 +225,10 @@ class TetrisApp(object):
 		if self.gameover:
 			self.init_game()
 			self.gameover = False
+			
+    ### INJECTED GETTER ###
+	def get_board(self):
+		return [[rgb_to_hex(colors[y]) for y in x] for x in self.board[:-1]]
 	
 	def run(self):
 		key_actions = {
