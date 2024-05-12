@@ -194,6 +194,9 @@ class Commands:
     ############################
 
     def setColor(self, message, client, server):
+        # if client["id"] == self.game["clientID"]:
+        #     print("received setColor from game client")
+        #     return
         messageSplit = message.split()
 
         # if you are trying to turn on a LED that doesnt have a set coord

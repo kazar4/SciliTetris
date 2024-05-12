@@ -38,8 +38,8 @@ import pygame, sys
 # The configuration
 config = {
 	'cell_size':	20,
-	'cols':		4,
-	'rows':		8,
+	'cols':		5,
+	'rows':	    14,
 	'delay':	750,
 	'maxfps':	30
 }
