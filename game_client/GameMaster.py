@@ -12,7 +12,7 @@ possible_games = {
     "Tetris": TetrisApp
 }
 
-_polling_rate = 1
+_polling_rate = 0.1
 _uri = "ws://localhost:9001"
 
 def on_message(ws, message):

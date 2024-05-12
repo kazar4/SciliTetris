@@ -142,6 +142,7 @@ class TetrisApp(object):
 	
 	def init_game(self):
 		self.board = new_board()
+		self.display_board = new_board()
 		self.new_stone()
 	
 	def center_msg(self, msg):
@@ -185,6 +186,12 @@ class TetrisApp(object):
 			                       self.stone,
 			                       (new_x, self.stone_y)):
 				self.stone_x = new_x
+				# update display board with moved piece
+				# self.display_board = join_matrixes(
+				# self.display_board,
+				# self.stone,
+				# (self.stone_x, self.stone_y))
+				
 	def quit(self):
 		self.center_msg("Exiting...")
 		pygame.display.update()
@@ -193,6 +200,12 @@ class TetrisApp(object):
 	def drop(self):
 		if not self.gameover and not self.paused:
 			self.stone_y += 1
+			# update display with newly added stone
+			# self.display_board = join_matrixes(
+			# 	self.display_board,
+			# 	self.stone,
+			# 	(self.stone_x, self.stone_y)
+            # )
 			if check_collision(self.board,
 			                   self.stone,
 			                   (self.stone_x, self.stone_y)):
@@ -206,6 +219,10 @@ class TetrisApp(object):
 						if 0 not in row:
 							self.board = remove_row(
 							  self.board, i)
+							# update display board with removed rows
+							# self.display_board = remove_row(
+							# 	self.display_board, i
+                            # )
 							break
 					else:
 						break
@@ -226,9 +243,18 @@ class TetrisApp(object):
 			self.init_game()
 			self.gameover = False
 			
-    ### INJECTED GETTER ###
+    ### INJECTED CODE ###
 	def get_board(self):
-		return [[rgb_to_hex(colors[y]) for y in x] for x in self.board[:-1]]
+		return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
+	
+	def update_display_board(self):
+		self.display_board = [[y for y in x] for x in self.board]
+		self.display_board = join_matrixes(
+			self.display_board,
+			self.stone,
+			(self.stone_x, self.stone_y)
+		)
+	
 	
 	def run(self):
 		key_actions = {
@@ -259,6 +285,7 @@ Press space to continue""")
 					self.draw_matrix(self.stone,
 					                 (self.stone_x,
 					                  self.stone_y))
+					self.update_display_board()
 			pygame.display.update()
 			
 			for event in pygame.event.get():
