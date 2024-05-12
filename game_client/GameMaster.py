@@ -31,7 +31,6 @@ def on_open(ws):
 class GameMaster():
     def __init__(self) -> None:
         self.game = possible_games["Tetris"]()
-        # self.connection_open = threading.Event()  # Event to signal connection open
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -43,10 +42,6 @@ class GameMaster():
 
         self.game.run() # Main thread runs the game
 
-    # def on_open(self, ws):
-    #     ws.send("game")
-    #     print("Opened connection")
-    #     self.connection_open.set()
 
     def connect_to_server(self):
         websocket.enableTrace(True)
@@ -58,7 +53,6 @@ class GameMaster():
         self.ws.run_forever()
 
     def poll_game(self):
-        print("polling")
         while not self.ws or not self.ws.sock or not self.ws.sock.connected:
             time.sleep(_polling_rate)
         while True:
