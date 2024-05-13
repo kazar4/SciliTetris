@@ -34,7 +34,7 @@ void connectWebSocket() {
   if (client.connect("kazar4.com", 9001)) {
     Serial.println("Connected");
   } else {
-    Serial.println("Connection failed. Resetting ESP");
+    Serial.println("Websocket Connection failed. Resetting ESP");
     while(1) {
       // Hang on failure
       ESP.reset();

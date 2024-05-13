@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <WebSocketClient.h>
 #include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 
 /* HTTP helper function definitions */
 void parseRGB();

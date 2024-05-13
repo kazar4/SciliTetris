@@ -72,6 +72,25 @@ void loop() {
         webSocketClient.sendData("pong");
       }
 
+      // Json Data
+      if (data.startsWith("{")) {
+        JsonDocument doc;
+        DeserializationError error =  deserializeJson(doc, data);
+
+        if (error) {
+          Serial.print(F("deserializeJson() failed: "));
+          Serial.println(error.f_str());
+        } else {
+            long timeVal = doc["time"];
+            long timeDif = doc["timeDif"];
+
+            Serial.print("time: ");
+            Serial.println(timeVal);
+            Serial.print("timeDif: ");
+            Serial.println(timeDif);
+        }
+      }
+
       if (data.charAt(0) == '$' && dataLen == 9) {
         data.toCharArray(buffer, sizeof(buffer));
         parseRGB();
