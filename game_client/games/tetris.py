@@ -34,6 +34,8 @@
 
 from random import randrange as rand
 import pygame, sys
+from games.game import Game
+from typing import List
 
 # The configuration
 config = {
@@ -116,7 +118,7 @@ def rgb_to_hex(rgb):
     return '#{0:02x}{1:02x}{2:02x}'.format(rgb[0], rgb[1], rgb[2])
 
 
-class TetrisApp(object):
+class TetrisApp(Game):
 	def __init__(self):
 		pygame.init()
 		pygame.key.set_repeat(250,25)
@@ -244,7 +246,7 @@ class TetrisApp(object):
 			self.gameover = False
 			
     ### INJECTED CODE ###
-	def get_board(self):
+	def get_board(self) -> List[List[str]]:
 		return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
 	
 	def update_display_board(self):
@@ -254,8 +256,8 @@ class TetrisApp(object):
 			self.stone,
 			(self.stone_x, self.stone_y)
 		)
-	
-	
+	#####################
+
 	def run(self):
 		key_actions = {
 			'ESCAPE':	self.quit,

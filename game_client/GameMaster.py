@@ -8,6 +8,8 @@ sys.path.append('game_client/games')
 
 from games.tetris import TetrisApp
 
+# Want to implement command line arguments to see which game to
+# run, not yet implemented
 possible_games = {
     "Tetris": TetrisApp
 }
