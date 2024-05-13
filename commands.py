@@ -155,7 +155,7 @@ class Commands:
             # I think for now I actually want this to send to client
             # self.sendServerGracefully(server, client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
             # self.sendServerGracefully(server, client, "Mili:" + str(timeDif * 1000))
-            self.sendServerGracefully(server, client, json.dumps({"time": int((time.time() * 1000000))/1000, "timeDif": int((timeDif * 1000000))/1000}))
+            self.sendServerGracefully(server, client, json.dumps({"time": (int((time.time() * 1000000))/1000)/10000, "timeDif": int((timeDif * 1000000))/1000}))
         else: # TODO
             # server.send_message(client, json.dumps({"ERROR": f"{str(client['id'])} did not send a ping"}))
             self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{str(client['id'])} did not send a ping"}))
