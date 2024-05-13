@@ -149,7 +149,10 @@ class Commands:
 
             # going to send to client for now but change to player1 at some point self.player1["player"][0] /TODO
             # server.send_message(client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
-            self.sendServerGracefully(server, client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
+
+            # I think for now I actually want this to send to client
+            # self.sendServerGracefully(server, client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
+            self.sendServerGracefully(server, client, "Mili Delay:" + str(timeDif * 1000))
         else: # TODO
             # server.send_message(client, json.dumps({"ERROR": f"{str(client['id'])} did not send a ping"}))
             self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{str(client['id'])} did not send a ping"}))

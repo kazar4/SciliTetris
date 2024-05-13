@@ -9,6 +9,24 @@
 #include <FastLED.h>
 #include <DoubleResetDetector.h> // By Stephen Denne
 
+// #include "NTPClient.h"
+// #include "WiFiUdp.h"
+
+// WiFiUDP ntpUDP;
+// NTPClient timeClient(ntpUDP, "pool.ntp.org", 0);
+// long timeStart;
+// long timeBefore;
+// long timeAfter;
+// long curTime;
+
+long epochTime;
+long timeBeforeSend;
+long timeAfterSend;
+
+long curInterval;
+long timeSinceLastInterval;
+bool setInterval = false;
+
 #define DATA_PIN    2
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
@@ -85,6 +103,16 @@ void LEDLoop() {
   FastLED.delay(1000 / 100);
 }
 
+long getNextInterval(long epochTime, long intervalDuration) {
+  // Calculate the remainder when dividing epoch time by interval duration
+  long remainder = epochTime % intervalDuration;
+  
+  // Calculate the next interval start by adding the difference between interval duration and remainder
+  long nextIntervalStart = epochTime + (intervalDuration - remainder);
+  
+  return nextIntervalStart;
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -146,6 +174,12 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
+  // timeClient.begin();
+  // timeBefore = millis();
+  // timeClient.update();
+  // curTime = timeClient.getEpochTime();
+  // timeAfter = millis();
+
   delay(5000);
   
   const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29"; //bottom level kazar4
@@ -181,6 +215,9 @@ void setup() {
     String macAddress = WiFi.macAddress();
     macAddress = "M-" + macAddress;
     webSocketClient.sendData(macAddress);
+
+    timeBeforeSend = millis();
+    webSocketClient.sendData("time");
     
   } else {
     Serial.println("Handshake failed.");
@@ -197,6 +234,13 @@ void loop() {
 
   drd.loop();
 
+  // Serial.println(timeAfter);
+  // Serial.println(timeBefore);
+  // Serial.println(curTime);
+  // Serial.print(timeClient.getSeconds());
+
+  //curTime = curTime + (millis - timeStart)/1000.0;
+
   if (client.connected()) {
     
     webSocketClient.getData(data);
@@ -208,17 +252,42 @@ void loop() {
       //Serial.println(data);
       //Serial.println("Sending data to Arduino Lights");
 
+      if (data == "SYNC") {
+        timeBeforeSend = millis();
+        webSocketClient.sendData("time");
+      }
+
+      if (data.charAt(0) == 'T') {
+
+        // Extract the substring starting from index after 'T'
+
+
+        // timeAfterSend = millis();
+        // String timeString = inputString.substring(1);
+        // epochTime = timeString.toLong();
+        // Serial.print("Syncing: ")
+        // Serial.println(epochTime)
+
+        // long timeBefore = millis();
+        // timeClient.update();
+        // long curTime = timeClient.getEpochTime();
+        // long timeAfter = millis();
+      }
+
       if (data == "ping") {
         webSocketClient.sendData("pong");
       }
 
       if (data.charAt(0) == '$' && dataLen == 9) {
+        // $3#FF00FF
         char ledStrip = data.charAt(1);
         char buffer[10];
         data.toCharArray(buffer, sizeof(buffer));
 
              // Parse the entire hex color code as one value
         unsigned long rgbValue = strtol(buffer + 3, NULL, 16); // Skip the '#' character
+
+        Serial.println(ledStrip);
 
         if (ledStrip == '2') {
           r2 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
@@ -245,12 +314,31 @@ void loop() {
           Serial.print(", B=");
           Serial.println(b1);
         } else {
-          r1 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
-          g1 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
-          b1 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
-          r2 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
-          g2 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
-          b2 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+          // r1 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          // g1 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          // b1 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+          // r2 = (rgbValue >> 16) & 0xFF; // Extract red component (bits 16-23)
+          // g2 = (rgbValue >> 8) & 0xFF;  // Extract green component (bits 8-15)
+          // b2 = rgbValue & 0xFF;         // Extract blue component (bits 0-7)
+
+          data.concat("A");
+          Serial.println(data.substring(7, 9));
+
+          r1 = strtol(data.substring(3, 5).c_str(), NULL, 16); // Parse hex to int
+          g1 = strtol(data.substring(5, 7).c_str(), NULL, 16);
+          // For some reason this without an extra space breaks the code or does a memory leak
+          // TODO ask stackoverlfow about it
+          b1 = strtol(data.substring(7, 9).c_str(), NULL, 16); 
+          r2 = r1;
+          g2 = g1;
+          b2 = b1;
+
+          Serial.print("Received RGB values for Strip 1 & 2: R=");
+          Serial.print(r1);
+          Serial.print(", G=");
+          Serial.print(g1);
+          Serial.print(", B=");
+          Serial.println(b1);
         }
 
       }
@@ -262,7 +350,42 @@ void loop() {
       //Serial1.write("GOT SOMETHING"); // Sending data to Arduino
     }
     
+
+    // This is where the color is updated
+    //long sendingTime
+    // If its 50sec and it takes 1 sec to request then itll be 51 sec when it gives back a time
+    // Then if it takes another secound to receive it'll be 52 second but the code will get back 51 secound
+    // My goal is to account for the time it takes to return and send
+    // If 2 users request time, 
+    // one user has a delay of 500ms and another has a delay of 250ms
+    // the actual time is 50
+    // Then we'd find one returned time on their to be 50.5 and another to be 50.25
+    // and when we get it back itll be 51 sec and 50.5
+    //  -------50sec---------50.75---51.0------>
+    //          A1----50.5t1---50.5t2
+    //          A2--50.25t1-----------50.25t2
+    // We can find  t2 - A1 -> .75 for A1 and 1.25 for A2->     50.5 - .75  = 50.25 - 1.25
+    // I need to find t1, I know that 
+    // timeFromServer + ping
+    // long adjustedTime = epochTime + (timeAfterSend - timeBeforeSend);
+    
+    // Intial interval set
+    // if (setInterval == false) {
+    //   curInterval = getNextInterval(adjustedTime, 200);
+    //   timeSinceLastInterval = millis();
+    // }
+
+    // We are past the interval time and can send
+    // I am kinda worried about this whole area in general
+    // long cumulativeTime = millis();
+    // if ((adjustedTime + (cumulativeTime - timeSinceLastInterval)) > curInterval) {
+
     LEDLoop();
+
+    //   timeSinceLastInterval = cumulativeTime;
+    //   curInterval = getNextInterval(adjustedTime + (cumulativeTime - timeSinceLastInterval), 200);
+    // }
+
     
   } else {
     Serial.println("Client disconnected.");
