@@ -81,11 +81,11 @@ void loop() {
           Serial.print(F("deserializeJson() failed: "));
           Serial.println(error.f_str());
         } else {
-            long timeVal = doc["time"];
+            long time = doc["time"];
             long timeDif = doc["timeDif"];
 
             Serial.print("time: ");
-            Serial.println(timeVal);
+            Serial.println(time);
             Serial.print("timeDif: ");
             Serial.println(timeDif);
         }
