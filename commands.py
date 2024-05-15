@@ -80,7 +80,7 @@ class Commands:
         while True:
             try:
                 print("Checking for clients to remove")
-                time.sleep(0.5)
+                time.sleep(20)
                 for client_id in list(self.espConnections):
                     if client_id not in self.pingTimes:
                         self.ping(f"ping {client_id}", server)
