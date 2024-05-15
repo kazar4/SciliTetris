@@ -120,12 +120,13 @@ void loop() {
             Serial.print("timeDif: ");
             Serial.println(timeDif);
         } else if (doc.containsKey("ERROR")) {
-          while (1) {
-            Serial.print("<");
-            Serial.print(data);
-            Serial.println(">");
-          }
-          //ESP.reset();
+
+          Serial.print("<");
+          Serial.print(data);
+          Serial.println(">");
+          // This probably means the ESP lagged too long and the website assumed that it is off/gone
+          // other errors could happen here I should be ready for them TODO
+          ESP.reset();
         }
       }
 
