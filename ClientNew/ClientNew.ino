@@ -79,6 +79,19 @@ void loop() {
         syncOn = false;
       }
 
+      if (data.charAt('L')) {
+
+        // Serial.println(String("L200").substring(1).toInt());
+        // Serial.println(String("L10").substring(1).toInt());
+        // Serial.println(String("L90").substring(1).toInt());
+
+        //L200 L100 L90
+        Serial.print("Updating Delay Interval To: ");
+        Serial.println(data.substring(1).toInt());
+
+        firstInterval = data.substring(1).toInt();
+      }
+
       // Json Data (only want it to do this every 50s sec)
       // I'm assuming parsing JSON is kinda costly
       if ((millis() - lastParse) > 10000 && data.startsWith("{")) {
