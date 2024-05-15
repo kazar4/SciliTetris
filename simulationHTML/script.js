@@ -53,9 +53,9 @@ window.onload = function() {
           ws.send('pong');
         }
 
-        if (data !== undefined && data !== null && data[0] === '#' && data.length === 7) {
+        if (data !== undefined && data !== null && data[0] === '$' && data.length === 9) {
           console.log('Setting color to: ' + data);
-          ledBlock.style.backgroundColor = data;
+          ledBlock.style.backgroundColor = data.substring(2);
           // Logic to set color of corresponding LED block
         }
       };

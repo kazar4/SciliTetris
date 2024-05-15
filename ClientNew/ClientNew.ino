@@ -42,11 +42,10 @@ void LEDLoop() {
 }
 
 void setup() {
-  ESP.wdtEnable(5000);
+  ESP.wdtEnable(WDTO_2S);
   
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);
-  Serial1.begin(9600); // Initialize TX/RX communication (do not need to wait)
   delay(10);
 
   setUPLEDs();
@@ -72,22 +71,48 @@ void loop() {
         webSocketClient.sendData("pong");
       }
 
-      // Json Data
-      if (data.startsWith("{")) {
+      if (data == "syncOn") {
+        syncOn = true;
+      }
+
+      if (data == "syncOff") {
+        syncOn = false;
+      }
+
+      // Json Data (only want it to do this every 50s sec)
+      // I'm assuming parsing JSON is kinda costly
+      if ((millis() - lastParse) > 10000 && data.startsWith("{")) {
+
+        Serial.print("Free Heap:");
+        Serial.println(ESP.getFreeHeap());
+        Serial.print("Heap Frag:");
+        Serial.println(ESP.getHeapFragmentation());
+
+        lastParse = millis();
+
         JsonDocument doc;
         DeserializationError error =  deserializeJson(doc, data);
 
         if (error) {
           Serial.print(F("deserializeJson() failed: "));
           Serial.println(error.f_str());
-        } else {
-            long time = doc["time"];
-            long timeDif = doc["timeDif"];
+        } else if (doc.containsKey("time") && doc.containsKey("timeDif")) {
+            timeVal = doc["time"];
+            timeDif = doc["timeDif"];
+
+            timeOfParse = millis();
 
             Serial.print("time: ");
-            Serial.println(time);
+            Serial.println(timeVal);
             Serial.print("timeDif: ");
             Serial.println(timeDif);
+        } else if (doc.containsKey("ERROR")) {
+          while (1) {
+            Serial.print("<");
+            Serial.print(data);
+            Serial.println(">");
+          }
+          //ESP.reset();
         }
       }
 
@@ -100,9 +125,18 @@ void loop() {
       Serial.print(data);
       Serial.println(">");
     }
-    
-    // Update Color
-    LEDLoop();
+
+    if (syncOn) {
+      long adjustedTime = timeVal + (millis() - timeOfParse) + timeDif;
+      if (adjustedTime > firstInterval) {
+        LEDLoop();
+        firstInterval = getNextInterval(adjustedTime, 200);
+        //Serial.println(firstInterval);
+      }
+    } else {
+        // Update Color
+        LEDLoop(); 
+    }
 
   } else {
     Serial.println("Client disconnected. Restarting ESP");

@@ -10,6 +10,8 @@ void parseRGB();
 void connectWifi();
 void connectWebSocket();
 
+long getNextInterval(long epochTime, long intervalDuration);
+
 // WiFi client
 WebSocketClient webSocketClient;
 WiFiClientSecure client;
@@ -35,3 +37,15 @@ const char* ssid     = "Brown-Guest";
 const char* password = "";
 char path[] = "/";
 char host[] = "kazar4.com";
+
+
+// timeParsingVals
+bool syncOn = true;
+
+long timeVal = 0L;
+double timeDif = 0.0;
+
+long lastParse = millis();
+long timeOfParse = 0;
+
+long firstInterval = 200;

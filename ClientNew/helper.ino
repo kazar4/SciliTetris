@@ -93,3 +93,14 @@ void parseRGB() {
     b2 = tempB;
   }
 }
+
+
+long getNextInterval(long epochTime, long intervalDuration) {
+  // Calculate the remainder when dividing epoch time by interval duration
+  long remainder = epochTime % intervalDuration;
+  
+  // Calculate the next interval start by adding the difference between interval duration and remainder
+  long nextIntervalStart = epochTime + (intervalDuration - remainder);
+  
+  return nextIntervalStart;
+}
