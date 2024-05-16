@@ -43,9 +43,12 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, xDimension, yDimension, setXDimen
     // Process the JSON data received from the server and update the LED list
     let updatedClients = clientData.map(client => ({
       id: client.clientName,
-      x: client.x,
-      y: client.y,
-      color: client.color,
+      x1: client.x1,
+      y1: client.y1,
+      x2: client.x2,
+      y2: client.y2,
+      color1: client.color1,
+      color2: client.color2,
       ping: client.ping
     }));
 
@@ -54,13 +57,14 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, xDimension, yDimension, setXDimen
     for (let val in clientData) {
         let client = updatedClients[val]
         let id = client.clientName
-        let x = client.x
-        let y = client.y
-        let color = client.olor
-        let ping = client.ping
+        let x1 = client.x1
+        let y1 = client.y1
 
-        if (x !== null && y !== null) {
-            espStorage[`${x},${y}`] = client
+        let x2 = client.x2
+        let y2 = client.y2
+
+        if (x1 !== null && y1 !== null) {
+            espStorage[`${x1},${y1}`] = client
         }
     }
 
@@ -116,25 +120,58 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
           let x = index % xDimension
           let y = Math.floor((index) / xDimension)
 
-          console.log(`setCoords ${item.espID} ${x} ${y}`)
+          console.log(`setCoords ${item.espID} ${x * 2} ${y}`)
           console.log(`Dropped item ${item.type} onto LED box ${index} with id ${item.espID}`);
-          ws.send(`setCoords ${item.espID} ${x} ${y}`)
+          ws.send(`setCoords ${item.espID} ${x * 2} ${y}`)
           ws.send('getClientState')
           // Optionally, you can return a drop result here if needed
         };
       };
+
+      function blendColors(colorA, colorB, amount) {
+        console.log("got here")
+        console.log(colorA)
+        console.log(colorB)
+        console.log(colorA.match(/\w\w/g).map((c) => parseInt(c, 16)))
+        let [rA1, gA1, bA1] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+
+        if (colorA === "#000000") {
+          return colorB;
+        }
+    
+        if (colorB === "#000000") {
+          return colorA;
+        }
+    
+        const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+        const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+        const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+        const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+        const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+        return '#' + r + g + b;
+      }
+      
+      // So we have a grid of 5 x 11
+      // we expanded it to 10 x 11
+      // so we are receiving pixels in the 10 x 11 space
+      // but in terms of finding a match
+      // (0,0) and (1,0) should map to (0,0) and so on
+      // (2,0) and (3,0) to (1,0)
+      // But I coded it so only (0,0) -> (0,0) and (2,0)  are actually being saved on our end
+      // then (4,0) then (6,0)
 
       useEffect(() => {
 
         let x = index % xDimension
         let y = Math.floor((index) / xDimension)
 
-        if (`${x},${y}` in espClients) {
+        if (`${x*2},${y}` in espClients) {
             console.log("found a match")
-            let espVal = espClients[`${x},${y}`]
+            let espVal = espClients[`${x*2},${y}`]
             console.log(espVal)
             setTextDiv(espVal["id"])
-            setColorDefault(espVal["color"])
+            let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
+            setColorDefault(newColor)
             if (espVal["ping"] != null) {
                 setSubText(espVal["ping"] + "ms")
             }
@@ -159,7 +196,8 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
             let espVal = espClients[`${x},${y}`]
             console.log(espVal)
             setTextDiv(espVal["id"])
-            setColorDefault(espVal["color"])
+            let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
+            setColorDefault(newColor)
         }
         
         return () => {
@@ -189,7 +227,7 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
     console.log(mode === "color" && hexCode.length == 7)
 
     if (mode === "color" && hexCode.length == 7) {
-        ws.send(`setColor ${x} ${y} ${hexCode}`)
+        ws.send(`setColor ${x * 2} ${y} ${hexCode}`)
         ws.send("getClientState")
     }
 
