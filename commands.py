@@ -184,15 +184,19 @@ class Commands:
 
         # set new coord details
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
-        self.espConnections[clientText]["coord"] = (int(x), int(y)) # might have to remove this
+        self.espConnections[clientText]["coord"][0] = (int(x), int(y)) # might have to remove this
+        self.espConnections[clientText]["coord"][1] = (int(x) + 1, int(y)) # might have to remove this
 
     #### GETTERS AND SETTERS TO HELP WITH COORD SPACE
     def getLEDColor(self, coord):
-        return self.espConnections[self.coordConnections[coord]["clientID"]]["color"]
+        # so if I have (1,0) I need to get 0[1]
+        # if I have (2,0) I need to get 1[0]
+        # so its like mod 2 of the coord to get which value
+        return self.espConnections[self.coordConnections[coord]["clientID"]]["color"][coord[0] % 2]
     
     def setLEDColor(self, coord, color):
         if coord in self.coordConnections:
-            self.espConnections[self.coordConnections[coord]["clientID"]]["color"] = color
+            self.espConnections[self.coordConnections[coord]["clientID"]]["color"][coord[0] % 2] = color
     
     def getClientObj(self, coord):
         return self.espConnections[self.coordConnections[coord]["clientID"]]["clientVal"]
@@ -253,15 +257,15 @@ class Commands:
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
         clientData = []
         for i in self.espConnections.keys():
-            xVal = self.espConnections[i]["coord"][0]
-            yVal = self.espConnections[i]["coord"][1]
-            color = self.espConnections[i]["color"]
+            xVal1, yVal1 = self.espConnections[i]["coord"][0][0], self.espConnections[i]["coord"][0][1]
+            xVal2, yVal2 = self.espConnections[i]["coord"][1][0], self.espConnections[i]["coord"][1][1]
+            color1, color2 = self.espConnections[i]["color"][0], self.espConnections[i]["color"][1]
 
             ping = None
             if i in self.savedPingTimes:
                 ping = self.savedPingTimes[i]
 
-            clientData.append({"clientName": i, "x": xVal, "y": yVal, "color": color, "ping": ping})
+            clientData.append({"clientName": i, "x1": xVal1, "y1": yVal1, "color1": color1, "x2": xVal2, "y2": yVal2, "color2": color2, "ping": ping})
 
         #print(self.espConnections)
         clientData = {"type": "getClientState", "data": clientData}
@@ -327,13 +331,16 @@ class Commands:
         print("Trying to Remove Coord")
 
         if clientText in self.espConnections:
-            oldCoord = self.espConnections[clientText]["coord"]
+            oldCoord1 = self.espConnections[clientText]["coord"][0]
+            oldCoord2 = self.espConnections[clientText]["coord"][0]
             oldMac = self.espConnections[clientText]["MAC"]
 
             self.espConnections[clientText]["coord"] = (None, None)
 
-            if oldCoord in self.coordConnections:
-                self.coordConnections.pop(oldCoord, None)
+            if oldCoord1 in self.coordConnections:
+                self.coordConnections.pop(oldCoord1, None)
+            if oldCoord2 in self.coordConnections:
+                self.coordConnections.pop(oldCoord2, None)
             
             if self.cacheBool:
                 conn = sqlite3.connect('cache.db')
