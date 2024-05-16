@@ -64,9 +64,12 @@ class Commands:
             except BrokenPipeError as e:
                 print(f"client {client} not found, removing it:  {e}")
 
-                if client["id"] in self.espConnections and self.espConnections[str(client["id"])]["coord"] != (None, None):
-                    coordVal = self.espConnections[str(client["id"])]["coord"]
-                    self.coordConnections.pop(coordVal, None)
+                if client["id"] in self.espConnections and self.espConnections[str(client["id"])]["coord"][0] != (None, None):
+                    coordVal1 = self.espConnections[str(client["id"])]["coord"][0]
+                    self.coordConnections.pop(coordVal1, None)
+                if client["id"] in self.espConnections and self.espConnections[str(client["id"])]["coord"][1] != (None, None):
+                    coordVal2 = self.espConnections[str(client["id"])]["coord"][1]
+                    self.coordConnections.pop(coordVal2, None)
                 
                 self.espConnections.pop(str(client["id"]), None)
 
@@ -98,9 +101,12 @@ class Commands:
                         pingedToRemove.append(pinged)
 
                         # REMOVING
-                        if pinged in list(self.espConnections) and self.espConnections[pinged]["coord"] != (None, None):
-                            coordVal = self.espConnections[pinged]["coord"]
-                            self.coordConnections.pop(coordVal, None)
+                        if pinged in list(self.espConnections) and self.espConnections[pinged]["coord"][0] != (None, None):
+                            coordVal1 = self.espConnections[pinged]["coord"][0]
+                            self.coordConnections.pop(coordVal1, None)
+                        if pinged in list(self.espConnections) and self.espConnections[pinged]["coord"][1] != (None, None):
+                            coordVal2 = self.espConnections[pinged]["coord"][1]
+                            self.coordConnections.pop(coordVal2, None)
                         
                         if pinged in list(self.espConnections):
                             self.espConnections[pinged]["clientVal"]["handler"].connection.close()
@@ -167,7 +173,7 @@ class Commands:
             oldClient = self.coordConnections[(int(x), int(y))]["clientID"]
 
             if oldClient in self.espConnections:
-                self.espConnections[oldClient]["coord"] = (None, None)
+                self.espConnections[oldClient]["coord"] = [(None, None), (None, None)]
                 self.setColor(f"setColor {oldClient} #000000", client, server)
 
         # client is not in connections
@@ -182,6 +188,7 @@ class Commands:
 
         # set new coord details
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
+        self.coordConnections[(int(x) + 1, int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
         self.espConnections[clientText]["coord"][0] = (int(x), int(y)) # might have to remove this
         self.espConnections[clientText]["coord"][1] = (int(x) + 1, int(y)) # might have to remove this
 
@@ -209,8 +216,15 @@ class Commands:
             #server.send_message(client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
             self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
             return
+        
+        if strip not in ["1", "2", "3"]:
+            self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{strip} is not a valid strip value"}))
+            return
 
-        self.espConnections[clientID]["color"] = color
+        if strip == "3":
+            self.espConnections[clientID]["color"] = [color, color]
+        else:
+            self.espConnections[clientID]["color"][int(strip) - 1] = color
         #server.send_message(self.espConnections[clientID]["clientVal"], color)
         self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], f"${strip}{color}")
         print(f"Set color strip {strip} of {clientID} to {color}")
@@ -230,7 +244,8 @@ class Commands:
 
             print(f"Trying to color of {clientID} to {color}")
 
-            self.espConnections[clientID]["color"] = color
+            self.espConnections[clientID]["color"][0] = color
+            self.espConnections[clientID]["color"][1] = color
             print(f"Trying to color of {clientID} to {color} 2")
             #server.send_message(self.espConnections[clientID]["clientVal"], color)
             self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$3" + color)
@@ -246,7 +261,7 @@ class Commands:
                 return
         
             self.setLEDColor((int(x), int(y)), color)
-            stripNum = (x % 2) + 1 # TODO if its not big mode we have to color both here
+            stripNum = (int(x) % 2) + 1 # TODO if its not big mode we have to color both here
             self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), f"${stripNum}{color}")
     
     def getClientState(self, client, server):
@@ -265,6 +280,8 @@ class Commands:
 
         #print(self.espConnections)
         clientData = {"type": "getClientState", "data": clientData}
+
+        print(clientData)
 
         clientText = json.dumps(clientData)
         #print(clientText)
