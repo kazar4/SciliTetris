@@ -198,6 +198,22 @@ class Commands:
         return self.espConnections[self.coordConnections[coord]["clientID"]]["clientVal"]
     ############################
 
+    def setStripColor(self, message, client, server):
+        messageSplit = message.split()
+
+        cmd, clientID, color, strip = messageSplit
+        if clientID not in self.espConnections:
+            print(f"ERROR: {clientID} not connected to server yet")
+            #server.send_message(client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
+            self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
+            return
+
+        self.espConnections[clientID]["color"] = color
+        #server.send_message(self.espConnections[clientID]["clientVal"], color)
+        self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], f"${strip}{color}")
+        print(f"Set color strip {strip} of {clientID} to {color}")
+
+
     def setColor(self, message, client, server):
         # if client["id"] == self.game["clientID"]:
         #     print("received setColor from game client")

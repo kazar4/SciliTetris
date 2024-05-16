@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import {
   ChakraProvider,
   Box,
@@ -33,6 +33,8 @@ function App() {
 
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
   const [yDimension, setYDimension] = useState(14); // Initial y dimension
+
+  const textBoxRef = React.createRef();
 
    // Function to handle changes in the input value
    const handleInputChange = (event) => {
@@ -179,7 +181,22 @@ function App() {
       </Flex>
         {/* Bottom section */}
         <Flex height="20%" align="center" pt={5}>
-          <Textarea width="100%" placeholder="Enter text here" />
+          <Textarea width="100%" placeholder="Enter text here" ref={textBoxRef}
+          onKeyDown={(e) => {
+
+            let key = e.key;
+
+            // If the user has pressed enter
+            if (key === 'Enter') {
+              if (ws) {
+                ws.send(textBoxRef.current.value) 
+              }
+            }
+            else {
+                return true;
+            }
+            }}
+          />
         </Flex>
     </DndProvider>
 
