@@ -106,8 +106,8 @@ def message_received(client, server, message):
         "checkClientConnections": {"func": commands.checkClientConnections, "args": [server]},
         "cacheOn": {"func": commands.cacheOn, "args": [client, server]},
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
-        "removeCoord": {"func": commands.removeCoord, "args": [message]}
-
+        "removeCoord": {"func": commands.removeCoord, "args": [message]},
+        "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)}
     }
     
     commands.executeCommands(possibleCommands, message, client, server)
