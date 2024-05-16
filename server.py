@@ -51,7 +51,7 @@ def client_left(client, server):
     print("Client(%d) disconnected" % client['id'])
 
     if client["id"] == admin["admin"]:
-        admin["admin"] = {"admin": None}
+        admin["admin"] = {"admin": None} # TODO THIS IS WRONG
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -85,7 +85,7 @@ def message_received(client, server, message):
     if message[0:2] == "M-":
         MAC = message[2:]
         print("Setting client " + str(client["id"]) + " Mac Address of: " + MAC)
-        espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": (None, None), "color": "#000000"}
+        espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": [(None, None), (None, None)], "color": ["#000000", "#000000"]}
         
         if commands.cacheBool:
             coord, foundCache = commands.getCache(MAC)
