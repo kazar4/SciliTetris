@@ -52,15 +52,16 @@ const EspClientList = ({ ws, wsRes, xDimension, yDimension }) => {
   const updateEspClients = (clientData) => {
     // Process the JSON data received from the server and update the LED list
     let updatedClients = clientData.map(client => ({
+      key: client.clientName,
       id: client.clientName,
-      x: client.x,
-      y: client.y,
+      x: client.x1,
+      y: client.y1,
       color: client.color
     }));
 
     updatedClients = updatedClients.filter(client => {
         console.log(client.y)
-        return (client.x === null && client.y === null) || client.x >= xDimension || client.y >= yDimension
+        return (client.x === null && client.y === null) || client.x >= xDimension * 2 || client.y >= yDimension
     })
 
     setEspClients(updatedClients);
@@ -167,7 +168,7 @@ const DraggableClient = ({ i, client, handleSetColor, ws, xDimension, yDimension
 
       //console.log(getRandomIcon())
 
-      let borderColor = client.x >= xDimension || client.y >= yDimension ? "red" : "white"
+      let borderColor = client.x >= xDimension * 2 || client.y >= yDimension ? "red" : "white"
 
   return (
     <Box ref={drag} cursor="pointer" border={`1px solid ${borderColor}`} borderRadius={"10px 10px 10px 10px"} margin={1}>

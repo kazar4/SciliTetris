@@ -32,7 +32,7 @@ function App() {
   const [hexCode, setHexCode] = useState('');
 
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
-  const [yDimension, setYDimension] = useState(14); // Initial y dimension
+  const [yDimension, setYDimension] = useState(11); // Initial y dimension
 
   const textBoxRef = React.createRef();
 
@@ -188,6 +188,7 @@ function App() {
             if (key === 'Enter') {
               if (ws) {
                 ws.send(textBoxRef.current.value) 
+                ws.send("getClientState")
               }
             }
             else {
