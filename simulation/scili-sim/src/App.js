@@ -30,6 +30,7 @@ function App() {
 
   const [mode, setMode] = useState("");
   const [hexCode, setHexCode] = useState('');
+  const [strip, setStrip] = useState('3');
 
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
   const [yDimension, setYDimension] = useState(11); // Initial y dimension
@@ -41,6 +42,12 @@ function App() {
     // Update the hexCode state with the new value entered by the user
     setHexCode(event.target.value);
   };
+
+  const handleStripChange = (event) => {
+    // Update the hexCode state with the new value entered by the user
+    setStrip(event.target.value);
+  };
+
 
 
   useEffect(() => {
@@ -140,7 +147,8 @@ function App() {
                   colorScheme="blue"
                   boxShadow={mode === "color" ? "outline" : "none"}
                   >Color</Button>
-                  <Input placeholder="Hex Code #FFFFFF" onChange={handleInputChange}></Input>
+                  <Input placeholder="Hex Code #FFFFFF" fontSize={13} onChange={handleInputChange}></Input>
+                  <Input placeholder="S" w={"30%"} onChange={handleStripChange}></Input>
                 </Flex>
 
                 <Button onClick={() => {
@@ -164,6 +172,7 @@ function App() {
               wsRes={wsRes}
               mode={mode} 
               hexCode={hexCode}
+              strip={strip}
               xDimension={xDimension}
               setXDimension={setXDimension}
               yDimension={yDimension}

@@ -3,7 +3,7 @@ import { Box, Grid, Input, Flex, Text } from '@chakra-ui/react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-const LedDisplay = ({ws, wsRes, mode, hexCode, xDimension, yDimension, setXDimension, setYDimension}) => {
+const LedDisplay = ({ws, wsRes, mode, hexCode, strip, xDimension, yDimension, setXDimension, setYDimension}) => {
     
   const [espClients, setEspClients] = useState({}); // List of ESP clients
 
@@ -98,7 +98,9 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, xDimension, yDimension, setXDimen
                 yDimension={yDimension} 
                 ws={ws} 
                 espClients={espClients}
-                mode={mode} hexCode={hexCode}
+                mode={mode} 
+                hexCode={hexCode}
+                strip={strip}
                 />
           ))}
         </Grid>
@@ -106,7 +108,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, xDimension, yDimension, setXDimen
   );
 };
 
-const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hexCode}) => {
+const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hexCode, strip}) => {
 
     const [assignedESP, setAssignedESP] = useState([]); // List of ESP clients
     const [textDiv, setTextDiv] = useState("");
@@ -227,7 +229,13 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
     console.log(mode === "color" && hexCode.length == 7)
 
     if (mode === "color" && hexCode.length == 7) {
-        ws.send(`setColor ${x * 2} ${y} ${hexCode}`)
+        if (["1", "2"].includes(strip)) {
+          ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
+        } else {
+          // 3 Case
+          ws.send(`setColor ${x * 2} ${y} ${hexCode}`)
+          ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
+        }
         ws.send("getClientState")
     }
 
