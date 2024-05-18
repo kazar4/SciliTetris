@@ -10,7 +10,7 @@
 //#define CLK_PIN   4
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define NUM_LEDS    45
+#define NUM_LEDS    80
 
 CRGBArray<NUM_LEDS> leds;
 CRGBArray<NUM_LEDS> leds2;
@@ -79,6 +79,10 @@ void loop() {
         syncOn = false;
       }
 
+      if (data == "reset") {
+        ESP.reset();
+      }
+
       if (data.charAt('L')) {
 
         // Serial.println(String("L200").substring(1).toInt());
@@ -96,10 +100,10 @@ void loop() {
       // I'm assuming parsing JSON is kinda costly
       if ((millis() - lastParse) > 10000 && data.startsWith("{")) {
 
-        Serial.print("Free Heap:");
-        Serial.println(ESP.getFreeHeap());
-        Serial.print("Heap Frag:");
-        Serial.println(ESP.getHeapFragmentation());
+        // Serial.print("Free Heap:");
+        // Serial.println(ESP.getFreeHeap());
+        // Serial.print("Heap Frag:");
+        // Serial.println(ESP.getHeapFragmentation());
 
         lastParse = millis();
 
