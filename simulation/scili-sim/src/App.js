@@ -57,8 +57,8 @@ function App() {
 
 
   useEffect(() => {
-    // const websocket = new WebSocket('wss://kazar4.com:9001');
-    const websocket = new WebSocket('ws://localhost:9001')
+     const websocket = new WebSocket('ws://brown.proteinarium.edu:9001');
+    //const websocket = new WebSocket('ws://localhost:9001')
 
     websocket.onopen = () => {
       console.log('WebSocket connection established.');
