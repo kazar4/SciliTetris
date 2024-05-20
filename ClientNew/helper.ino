@@ -28,8 +28,9 @@ void connectWifi() {
 void connectWebSocket() {
   // SSL fingerprint for bottom level cert kazar4.com
   //const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
+  const char *sslFingerprint = "BF ED 16 67 BD BD AB D9 A0 9B 5D BF 38 E0 2A EA B7 61 D2 ED";
 
-  //client.setFingerprint(sslFingerprint);
+  client.setFingerprint(sslFingerprint);
 
   //client.connect("kazar4.com", 9001)
 

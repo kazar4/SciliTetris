@@ -29,6 +29,8 @@ int tempR;
 int tempG;
 int tempB;
 
+int BRIGHTNESS = 96;
+
 // RGB Color Buffer
 char buffer[10];
 

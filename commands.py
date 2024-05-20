@@ -273,15 +273,16 @@ class Commands:
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
         clientData = []
         for i in self.espConnections.keys():
-            xVal1, yVal1 = self.espConnections[i]["coord"][0][0], self.espConnections[i]["coord"][0][1]
-            xVal2, yVal2 = self.espConnections[i]["coord"][1][0], self.espConnections[i]["coord"][1][1]
-            color1, color2 = self.espConnections[i]["color"][0], self.espConnections[i]["color"][1]
+            if self.espConnections[i]["coord"] != [(None, None), (None, None)]:
+                xVal1, yVal1 = self.espConnections[i]["coord"][0][0], self.espConnections[i]["coord"][0][1]
+                xVal2, yVal2 = self.espConnections[i]["coord"][1][0], self.espConnections[i]["coord"][1][1]
+                color1, color2 = self.espConnections[i]["color"][0], self.espConnections[i]["color"][1]
 
-            ping = None
-            if i in self.savedPingTimes:
-                ping = self.savedPingTimes[i]
+                ping = None
+                if i in self.savedPingTimes:
+                    ping = self.savedPingTimes[i]
 
-            clientData.append({"clientName": i, "x1": xVal1, "y1": yVal1, "color1": color1, "x2": xVal2, "y2": yVal2, "color2": color2, "ping": ping})
+                clientData.append({"clientName": i, "x1": xVal1, "y1": yVal1, "color1": color1, "x2": xVal2, "y2": yVal2, "color2": color2, "ping": ping})
 
         #print(self.espConnections)
         clientData = {"type": "getClientState", "data": clientData}
@@ -350,10 +351,10 @@ class Commands:
 
         if clientText in self.espConnections:
             oldCoord1 = self.espConnections[clientText]["coord"][0]
-            oldCoord2 = self.espConnections[clientText]["coord"][0]
+            oldCoord2 = self.espConnections[clientText]["coord"][1]
             oldMac = self.espConnections[clientText]["MAC"]
 
-            self.espConnections[clientText]["coord"] = (None, None)
+            self.espConnections[clientText]["coord"] = [(None, None), (None, None)]
 
             if oldCoord1 in self.coordConnections:
                 self.coordConnections.pop(oldCoord1, None)
