@@ -8,8 +8,13 @@ void connectWifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  Serial.println(sizeof(password));
 
-  WiFi.begin(ssid);
+  if (sizeof(password) != 0) {
+    WiFi.begin(ssid, password);
+  } else {
+    WiFi.begin(ssid);
+  }
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);

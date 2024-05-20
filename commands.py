@@ -296,7 +296,7 @@ class Commands:
         #print(self.espConnections)
         clientData = {"type": "getClientState", "data": clientData}
 
-        print(clientData)
+        # print(clientData)
 
         clientText = json.dumps(clientData)
         #print(clientText)

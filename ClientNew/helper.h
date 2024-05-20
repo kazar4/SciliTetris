@@ -35,8 +35,8 @@ int BRIGHTNESS = 96;
 char buffer[10];
 
 //Brown-Guest
-const char* ssid     = "Brown-Guest";
-const char* password = "";
+const char* ssid     = "RLAB";
+const char* password = "metropolis";
 char path[] = "/";
 char host[] = "kazar4.com";
 
