@@ -11,8 +11,10 @@ class Commands:
 
     cacheBool = True
 
-    def __init__(self, admin, espConnections, coordConnections):
+    def __init__(self, admin, player, game, espConnections, coordConnections):
         self.admin = admin
+        self.player = player
+        self.game = game
         self.espConnections = espConnections
         self.coordConnections = coordConnections
         
@@ -151,7 +153,7 @@ class Commands:
             self.savedPingTimes[str(client["id"])] = int(timeDif * 1000)
             self.pingTimes.pop(str(client["id"]), None)
             clientIDText = str(client["id"])
-            print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
+            #print(f"client {clientIDText} pong timeDif: {int(timeDif * 1000)}")
 
             # going to send to client for now but change to player1 at some point self.player1["player"][0] /TODO
             # server.send_message(client, json.dumps({"pong": client["id"], "timeDif": int(timeDif * 1000)}))
@@ -231,6 +233,9 @@ class Commands:
 
 
     def setColor(self, message, client, server):
+        # if client["id"] == self.game["clientID"]:
+        #     print("received setColor from game client")
+        #     return
         messageSplit = message.split()
 
         # if you are trying to turn on a LED that doesnt have a set coord
@@ -242,7 +247,7 @@ class Commands:
                 self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
                 return
 
-            print(f"Trying to color of {clientID} to {color}")
+            #print(f"Trying to color of {clientID} to {color}")
 
             self.espConnections[clientID]["color"][0] = color
             self.espConnections[clientID]["color"][1] = color
@@ -401,7 +406,16 @@ class Commands:
         if self.admin["admin"] != None:
             self.sendServerGracefully(server, self.admin["admin"][0], json.dumps({"type": "update", "data": ""}))
 
+    #### Game Functionality ####
+    def receivePlayerInput(self, message, client, server):
+        if not self.player["client"] or client["id"] != self.player["clientID"]:
+            self.sendServerGracefully(server, client, json.dumps({"ERROR": "not player client or player client not yet connected"}))
+        cmd, playerInput = message.split(" ")
+        ## Game stuff here
+        print(playerInput)
 
+
+    #########################
 
     def executeCommands(self, possibleCommands, message, client, server):
         if message == "":

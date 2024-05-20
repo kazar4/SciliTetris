@@ -1,5 +1,25 @@
 window.onload = function() {
   const ledBuilding = document.getElementById('ledBuilding');
+  const textBox = document.getElementById('textBox');
+
+  // Create WebSocket connection for the text box
+  const textBoxWS = new WebSocket('ws://localhost:9001');
+
+  textBoxWS.onopen = function() {
+    console.log(`WebSocket connection for text box established.`);
+  };
+
+  textBoxWS.onmessage = function(event) {
+    const data = event.data;
+    console.log(data);
+
+    // Display received message in the text box
+    textBox.value = data;
+  };
+
+  textBoxWS.onclose = function() {
+    console.log(`WebSocket connection for text box closed.`);
+  };
 
   // Create LED blocks
   for (let row = 0; row < 5; row++) {
@@ -15,7 +35,8 @@ window.onload = function() {
       ledBuilding.appendChild(ledBlock);
 
       // Create WebSocket connection for each LED block
-      const ws = new WebSocket('wss://kazar4.com:9001');
+      // const ws = new WebSocket('wss://kazar4.com:9001');
+      const ws = new WebSocket('ws://localhost:9001')
 
       ws.onopen = function() {
         console.log(`WebSocket connection for LED block (${row}, ${column}) established.`);

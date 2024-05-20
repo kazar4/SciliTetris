@@ -4,10 +4,12 @@ import json
 import commands
 
 admin = {"admin": None}
+player = {"client": None, "clientID": None}
+game = {"game": None, "clientID": None}
 espConnections = {}
 coordConnections = {}
 
-commands = commands.Commands(admin, espConnections, coordConnections)
+commands = commands.Commands(admin, player, game, espConnections, coordConnections)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -46,12 +48,17 @@ def new_client(client, server):
 
 # Called for every client disconnecting
 def client_left(client, server):
-    global player1
 
     print("Client(%d) disconnected" % client['id'])
 
     if client["id"] == admin["admin"]:
-        admin["admin"] = {"admin": None} # TODO THIS IS WRONG
+        admin["admin"] = (None, None)
+    if client["id"] == player["clientID"]:
+        player["client"] = None
+        player["clientID"] = None
+    if client["id"] == game["clientID"]:
+        game["client"] = None
+        game["clientID"] = None
 
     # check if esp disconnected and empty data strucutre
     if client["id"] in espConnections:
@@ -66,7 +73,7 @@ def client_left(client, server):
 
 # Called when a client sends a message
 def message_received(client, server, message):
-    global player1, espConnection, coordConnections
+    global espConnection, coordConnections
 
     if len(message) > 200:
         message = message[:200]+'..'
@@ -79,6 +86,19 @@ def message_received(client, server, message):
         print("Setting client " + str(client["id"]) + " to admin")
         admin["admin"] = (client, client["id"])
         #server.send_message(admin["admin"][0], "admin Connected")
+        return
+    
+    if message == "player":
+        print("Setting client " + str(client["id"]) + " as player")
+        # player["player"] = (client, client["id"])
+        player["client"] = client
+        player["clientID"] = client["id"]
+        return
+    
+    if message == "game":
+        print("Setting client " + str(client["id"]) + " as game")
+        game["client"] = client
+        game["clientID"] = client["id"]
         return
 
     # Set MAC ADDRESS -> only adds connection if MAC address is sent
@@ -93,6 +113,7 @@ def message_received(client, server, message):
                 commands.setCoords(f"setCoords {client['id']} {coord[0]} {coord[1]}", client, server)
 
         return
+    
 
     possibleCommands =  {
         "ping": {"func": commands.ping, "args": (message, server)},
@@ -107,7 +128,8 @@ def message_received(client, server, message):
         "cacheOn": {"func": commands.cacheOn, "args": [client, server]},
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
         "removeCoord": {"func": commands.removeCoord, "args": [message]},
-        "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)}
+        "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)},
+        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)}
     }
     
     commands.executeCommands(possibleCommands, message, client, server)
@@ -119,7 +141,8 @@ def message_received(client, server, message):
 
 
 PORT=9001
-server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+# server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='localhost', port=PORT)
 
 commands.start_ping_thread(server)
 
