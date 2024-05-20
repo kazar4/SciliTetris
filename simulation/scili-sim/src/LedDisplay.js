@@ -3,7 +3,7 @@ import { Box, Grid, Input, Flex, Text } from '@chakra-ui/react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-const LedDisplay = ({ws, wsRes, mode, hexCode, strip, xDimension, yDimension, setXDimension, setYDimension}) => {
+const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDimension, setXDimension, setYDimension}) => {
     
   const [espClients, setEspClients] = useState({}); // List of ESP clients
 
@@ -101,6 +101,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, xDimension, yDimension, se
                 mode={mode} 
                 hexCode={hexCode}
                 strip={strip}
+                syncDelay={syncDelay}
                 />
           ))}
         </Grid>
@@ -108,7 +109,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, xDimension, yDimension, se
   );
 };
 
-const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hexCode, strip}) => {
+const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hexCode, strip, syncDelay}) => {
 
     const [assignedESP, setAssignedESP] = useState([]); // List of ESP clients
     const [textDiv, setTextDiv] = useState("");
@@ -172,6 +173,7 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
             let espVal = espClients[`${x*2},${y}`]
             console.log(espVal)
             setTextDiv(espVal["id"])
+            //setAssignedESP(espVal["id"])
             let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
             setColorDefault(newColor)
             if (espVal["ping"] != null) {
@@ -233,8 +235,14 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
           ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
         } else {
           // 3 Case
-          ws.send(`setColor ${x * 2} ${y} ${hexCode}`)
-          ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
+          if (textDiv !== "") {
+            ws.send(`setColor ${textDiv} ${hexCode}`)
+          } else { 
+            console.log("Need to assign esp to color it")
+          }
+            
+          // ws.send(`setColor ${x * 2} ${y} ${hexCode}`)
+          // ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
         }
         ws.send("getClientState")
     }
@@ -242,6 +250,19 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
     if (mode === "delete") {
         ws.send(`removeCoord ${textDiv}`)
         ws.send("getClientState")
+    }
+
+    if (mode === "reset") {
+      ws.send(`removeCoord ${textDiv}`)
+      setTimeout(function () {
+        ws.send(`reset ${textDiv}`)
+        ws.send("getClientState")  
+      }, 1000); 
+
+    }
+
+    if (mode === "singlesync") {
+      ws.send(`sync ${textDiv} ${syncDelay}`)
     }
 
   };

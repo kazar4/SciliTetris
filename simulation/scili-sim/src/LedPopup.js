@@ -6,7 +6,11 @@ import { Button } from '@chakra-ui/react';
 const LedPopup = () => {
   const openPopup = () => {
     // Open a new browser window with the LedBuilding component
-    const popupWindow = window.open('', '_blank', 'width=200,height=400');
+    const popupWindow = window.open("https://kazar4.com/SciliTetris/simulationHTML/index.html", '_blank', 'width=150,height=400')
+    //window.open('', '_blank', 'width=200,height=400');
+    
+
+    
     const popupContent = `
       <!DOCTYPE html>
       <html>
@@ -35,12 +39,12 @@ const LedPopup = () => {
       </html>
     `;
 
-    // Write the content to the new window
-    popupWindow.document.write(popupContent);
+    // // Write the content to the new window
+    // popupWindow.document.write(popupContent);
 
-    // Render the LedBuilding component in the container
-    const ledPopupContainer = popupWindow.document.getElementById('led-popup-container');
-    ledPopupContainer && ReactDOM.createRoot(ledPopupContainer).render(<LedBuilding />);
+    // // Render the LedBuilding component in the container
+    // const ledPopupContainer = popupWindow.document.getElementById('led-popup-container');
+    // ledPopupContainer && ReactDOM.createRoot(ledPopupContainer).render(<LedBuilding />);
     //ledPopupContainer && ReactDOM.render(<LedBuilding />, ledPopupContainer);
   };
 

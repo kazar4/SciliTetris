@@ -31,6 +31,7 @@ function App() {
   const [mode, setMode] = useState("");
   const [hexCode, setHexCode] = useState('');
   const [strip, setStrip] = useState('3');
+  const [syncDelay, setSyncDelay] = useState("");
 
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
   const [yDimension, setYDimension] = useState(11); // Initial y dimension
@@ -46,6 +47,11 @@ function App() {
   const handleStripChange = (event) => {
     // Update the hexCode state with the new value entered by the user
     setStrip(event.target.value);
+  };
+
+  const handleSyncChange = (event) => {
+    // Update the hexCode state with the new value entered by the user
+    setSyncDelay(event.target.value);
   };
 
 
@@ -151,6 +157,9 @@ function App() {
                   <Input placeholder="S" w={"30%"} onChange={handleStripChange}></Input>
                 </Flex>
 
+
+                <Flex direction={"row"} gap={2}>
+
                 <Button onClick={() => {
                   if (mode != "delete") {
                     setMode("delete") 
@@ -160,9 +169,125 @@ function App() {
                 }}
                 variant={mode === "delete" ? "solid" : "outline"}
                 colorScheme="blue"
-                boxShadow={mode === "delete" ? "outline" : "none"}>
+                boxShadow={mode === "delete" ? "outline" : "none"}
+                w={"50%"}
+                >
                 Delete
                 </Button>
+
+                <Button onClick={() => {
+                  if (mode != "reset") {
+                    setMode("reset") 
+                  } else {
+                    setMode("") 
+                  }
+                }}
+                variant={mode === "reset" ? "solid" : "outline"}
+                colorScheme="orange"
+                boxShadow={mode === "reset" ? "0 0 0 3px rgba(246, 173, 85, 0.6)" : "none"}
+                w={"50%"}
+                >
+                Reset
+                </Button>
+
+                </Flex>
+                
+                
+              <Flex direction={"row"} gap={2}>
+
+                <Button onClick={() => {
+                    if (mode != "all") {
+                      setMode("all") 
+                    } else {
+                      setMode("") 
+                    }
+                  }}
+                  variant={mode === "all" ? "solid" : "outline"}
+                  colorScheme="blue"
+                  boxShadow={mode === "all" ? "outline" : "none"}
+                  w={"50%"}
+                  >
+                  All
+                  </Button>
+
+                <Button onClick={() => {
+                  if (mode != "syncOn") {
+                    if (mode == "all") {
+                      ws.send("syncOn all")
+                      setMode("") 
+                    } else {
+                      setMode("syncOn") 
+                    }
+                  } else {
+                    setMode("") 
+                  }
+                }}
+                variant={mode === "syncOn" ? "solid" : "outline"}
+                colorScheme="green"
+                boxShadow={mode === "syncOn" ? "outline" : "none"}
+                w={"50%"}
+                >
+                syncOn
+                </Button>
+
+                <Button onClick={() => {
+                  if (mode != "syncOff") {
+                    if (mode == "all") {
+                      ws.send("syncOff all")
+                      setMode("") 
+                    } else {
+                      setMode("syncOff") 
+                    }
+                  } else {
+                    setMode("") 
+                  }
+                }}
+                variant={mode === "syncOff" ? "solid" : "outline"}
+                colorScheme="red"
+                boxShadow={mode === "syncOff" ? "0 0 0 3px rgba(246, 173, 85, 0.6)" : "none"}
+                w={"50%"}
+                >
+                syncOff
+                </Button>
+
+                </Flex>
+
+
+                <Flex direction={"row"} gap={2}>
+
+                <Input placeholder="Sync Time Delay (ms)" fontSize={11} onChange={handleSyncChange}></Input>
+
+
+                <Button onClick={() => {
+                  if (syncDelay !== "") {
+                    ws.send(`sync all ${syncDelay}`)
+                  }
+                }}
+                variant={mode === "syncall" ? "solid" : "outline"}
+                colorScheme="blue"
+                boxShadow={mode === "syncall" ? "outline" : "none"}
+                w={"50%"}
+                >
+                Send All
+                </Button>
+
+                <Button onClick={() => {
+                    if (mode != "singlesync") {
+                      setMode("singlesync") 
+                    } else {
+                      setMode("") 
+                    }
+                }}
+                variant={mode === "singlesync" ? "solid" : "outline"}
+                colorScheme="blue"
+                boxShadow={mode === "singlesync" ? "outline" : "none"}
+                w={"50%"}
+                >
+                Set Single
+                </Button>
+
+                </Flex>
+
 
             </Flex>
           </Box>
@@ -173,6 +298,7 @@ function App() {
               mode={mode} 
               hexCode={hexCode}
               strip={strip}
+              syncDelay={syncDelay}
               xDimension={xDimension}
               setXDimension={setXDimension}
               yDimension={yDimension}
