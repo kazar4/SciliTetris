@@ -2,20 +2,24 @@ import sys
 import threading
 import time
 import websocket
+import ssl
 import asyncio
 
 sys.path.append('game_client/games')
 
 from games.tetris import TetrisApp
+from games.snake import Snake
 
 # Want to implement command line arguments to see which game to
 # run, not yet implemented
 possible_games = {
-    "Tetris": TetrisApp
+    "Tetris": TetrisApp,
+    "Snake": Snake
 }
 
 _polling_rate = 0.1
 _uri = "ws://localhost:9001"
+# _uri = "wss://kazar4.com:9001"
 
 def on_message(ws, message):
     print(message)
@@ -32,7 +36,7 @@ def on_open(ws):
 
 class GameMaster():
     def __init__(self) -> None:
-        self.game = possible_games["Tetris"]()
+        self.game = possible_games["Snake"]()
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -52,7 +56,7 @@ class GameMaster():
                               on_message=on_message,
                               on_error=on_error,
                               on_close=on_close)
-        self.ws.run_forever()
+        self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})  
 
     def poll_game(self):
         while not self.ws or not self.ws.sock or not self.ws.sock.connected:
