@@ -140,7 +140,8 @@ def message_received(client, server, message):
         # colors
 
 
-PORT=9001
+#PORT=9001
+PORT = 4567
 # server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
 server = WebsocketServer(host='0.0.0.0', port=PORT)
 # server = WebsocketServer(host='localhost', port=PORT)
