@@ -182,7 +182,7 @@ class Commands:
         if clientText not in self.espConnections:
             print(f"ERROR: {clientText} not connected to server yet")
             # server.send_message(client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
-            self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
+            ##self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
             return
 
         if self.cacheBool: # this is also run when server.py enables cache so beware of redudency
@@ -249,11 +249,12 @@ class Commands:
 
             #print(f"Trying to color of {clientID} to {color}")
 
-            self.espConnections[clientID]["color"] = color
-            #print(f"Trying to color of {clientID} to {color} 2")
+            self.espConnections[clientID]["color"][0] = color
+            self.espConnections[clientID]["color"][1] = color
+            print(f"Trying to color of {clientID} to {color} 2")
             #server.send_message(self.espConnections[clientID]["clientVal"], color)
-            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], color)
-            #print(f"Set color of {clientID} to {color}")
+            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "$3" + color)
+            print(f"Set color of {clientID} to {color}")
 
         # if you are turning on an LED with a set coord
         else:
@@ -265,7 +266,8 @@ class Commands:
                 return
         
             self.setLEDColor((int(x), int(y)), color)
-            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), color)
+            stripNum = (int(x) % 2) + 1 # TODO if its not big mode we have to color both here
+            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), f"${stripNum}{color}")
     
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]

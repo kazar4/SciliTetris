@@ -128,6 +128,7 @@ def message_received(client, server, message):
         "cacheOn": {"func": commands.cacheOn, "args": [client, server]},
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
         "removeCoord": {"func": commands.removeCoord, "args": [message]},
+        "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)},
         "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)}
     }
     
