@@ -57,7 +57,7 @@ function App() {
 
 
   useEffect(() => {
-     const websocket = new WebSocket('ws://brown.proteinarium.edu:9001');
+     const websocket = new WebSocket('ws://brown.proteinarium.edu:4567');
     //const websocket = new WebSocket('ws://localhost:9001')
 
     websocket.onopen = () => {

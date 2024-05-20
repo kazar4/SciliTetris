@@ -27,11 +27,13 @@ void connectWifi() {
 
 void connectWebSocket() {
   // SSL fingerprint for bottom level cert kazar4.com
-  const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
+  //const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
 
-  client.setFingerprint(sslFingerprint);
+  //client.setFingerprint(sslFingerprint);
 
-  if (client.connect("kazar4.com", 9001)) {
+  //client.connect("kazar4.com", 9001)
+
+  if (client.connect("proteinarium.brown.edu", 4567)) {
     Serial.println("Connected");
   } else {
     Serial.println("Websocket Connection failed. Resetting ESP");
