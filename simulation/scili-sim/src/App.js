@@ -28,6 +28,8 @@ function App() {
   const [ws, setWs] = useState(null); // WebSocket connection
   const [wsRes, setWsRes] = useState(null);
 
+  const [reconnect, setReconnect] = useState(1);
+
   const [mode, setMode] = useState("");
   const [hexCode, setHexCode] = useState('');
   const [strip, setStrip] = useState('3');
@@ -57,8 +59,8 @@ function App() {
 
 
   useEffect(() => {
-      const websocket = new WebSocket('wss://proteinarium.brown.edu:4567');
-     // const websocket = new WebSocket('wss://kazar4.com:9001')
+   // const websocket = new WebSocket('wss://proteinarium.brown.edu:4567');
+    const websocket = new WebSocket('wss://kazar4.com:9001')
      //const websocket = new WebSocket('ws://localhost:9001')
 
     websocket.onopen = () => {
@@ -69,6 +71,7 @@ function App() {
     };
     websocket.onclose = () => {
       console.log('WebSocket connection closed.');
+      setReconnect(reconnect + 1);
     };
     websocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
@@ -82,7 +85,7 @@ function App() {
         ws.close();
       }
     };
-  }, []); // Empty dependency array ensures this effect runs only once on component mount
+  }, [reconnect]); // Empty dependency array ensures this effect runs only once on component mount
 
 
   return (

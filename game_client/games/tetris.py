@@ -40,8 +40,8 @@ from typing import List
 # The configuration
 config = {
 	'cell_size':	20,
-	'cols':		5,
-	'rows':	    14,
+	'cols':		10,
+	'rows':	    11,
 	'delay':	750,
 	'maxfps':	30
 }

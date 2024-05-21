@@ -35,10 +35,16 @@ int BRIGHTNESS = 96;
 char buffer[10];
 
 //Brown-Guest
-const char* ssid     = "RLAB";
-const char* password = "metropolis";
+const char* ssid     = "Brown-Guest";
+const char* password = "";
+
+const char* ssid2     = "RLAB";
+const char* password2 = "metropolis";
+
 char path[] = "/";
 char host[] = "kazar4.com";
+
+
 
 
 // timeParsingVals
