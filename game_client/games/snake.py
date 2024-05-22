@@ -60,7 +60,8 @@ def get_color(color):
         return (0,0,255)
 
 class Snake(Game):
-    def __init__(self):
+    def __init__(self, screen):
+        self.screen = screen
         self.init_pygame()
 
     def init_pygame(self):
@@ -82,7 +83,7 @@ class Snake(Game):
     def get_board(self) -> List[List[str]]:
         rows = frame_size_y//pixel_size
         cols = frame_size_x//pixel_size
-        board = [[rgb_to_hex(get_color(black)) for _ in range(cols)] for _ in range(rows)]
+        board = [[rgb_to_hex(get_cor(black)) for _ in range(cols)] for _ in range(rows)]
         for segment in snake_body:
             board[segment[1]//pixel_size][segment[0]//pixel_size] = rgb_to_hex(get_color(green))
         board[food_pos[1]//pixel_size][food_pos[0]//pixel_size] = rgb_to_hex(get_color(white))

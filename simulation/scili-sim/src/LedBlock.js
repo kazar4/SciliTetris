@@ -6,8 +6,8 @@ const LedBlock = ({ row, column }) => {
   const [color, setColor] = useState("#000000")
 
   useEffect(() => {
-    const ws = new WebSocket('wss://kazar4.com:9001');
-    //const ws = new WebSocket('ws://localhost:9001')
+    // const ws = new WebSocket('wss://kazar4.com:9001');
+    const ws = new WebSocket('ws://localhost:9001')
 
     ws.onopen = (event) => {
       ws.send(`M-${row}-${column}`);

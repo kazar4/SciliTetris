@@ -119,7 +119,8 @@ def rgb_to_hex(rgb):
 
 
 class TetrisApp(Game):
-	def __init__(self):
+	def __init__(self, screen):
+		self.screen = screen
 		pygame.init()
 		pygame.key.set_repeat(250,25)
 		self.width = config['cell_size']*config['cols']

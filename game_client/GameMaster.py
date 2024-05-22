@@ -5,10 +5,9 @@ import websocket
 import ssl
 import asyncio
 
-sys.path.append('game_client/games')
-
 from games.tetris import TetrisApp
 from games.snake import Snake
+from GameGUI import Menu
 
 # Want to implement command line arguments to see which game to
 # run, not yet implemented
@@ -17,9 +16,9 @@ possible_games = {
     "Snake": Snake
 }
 
-_polling_rate = 0.1
-# _uri = "ws://localhost:9001"
-_uri = "wss://kazar4.com:9001"
+_polling_rate = 5
+_uri = "ws://localhost:9001"
+# _uri = "wss://kazar4.com:9001"
 
 def on_message(ws, message):
     print(message)
@@ -36,7 +35,8 @@ def on_open(ws):
 
 class GameMaster():
     def __init__(self) -> None:
-        self.game = possible_games["Snake"]()
+        # self.game = possible_games["Snake"]()
+        self.menu = Menu()
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -46,7 +46,7 @@ class GameMaster():
         self.polling_thread.daemon = True
         self.polling_thread.start() # Thread to poll the game
 
-        self.game.run() # Main thread runs the game
+        self.menu.run() # Main thread runs the menu
 
 
     def connect_to_server(self):
@@ -59,15 +59,17 @@ class GameMaster():
         self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})  
 
     def poll_game(self):
-        while not self.ws or not self.ws.sock or not self.ws.sock.connected:
-            time.sleep(_polling_rate)
+        # while not self.ws or not self.ws.sock or not self.ws.sock.connected:
+        #     time.sleep(_polling_rate)
         while True:
-            board = self.game.get_board()
-            for y in range(len(board)):
-                for x in range(len(board[0])):
-                    message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
-                    self.ws.send(message)
-            time.sleep(_polling_rate)
+            if self.menu.game_instance:
+                board = self.menu.game_instance.get_board()
+                for y in range(len(board)):
+                    for x in range(len(board[0])):
+                        # message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
+                        # self.ws.send(message)
+                        print(board[y][x])
+                time.sleep(_polling_rate)
 
 
 if __name__ == "__main__":
