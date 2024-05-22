@@ -18,8 +18,8 @@ possible_games = {
 }
 
 _polling_rate = 0.1
-_uri = "ws://localhost:9001"
-# _uri = "wss://kazar4.com:9001"
+# _uri = "ws://localhost:9001"
+_uri = "wss://kazar4.com:9001"
 
 def on_message(ws, message):
     print(message)
@@ -36,7 +36,10 @@ def on_open(ws):
 
 class GameMaster():
     def __init__(self) -> None:
-        self.game = possible_games["Snake"]()
+        self.game = possible_games["Tetris"]()
+
+        gb = self.game.get_board()
+        self.prev_frame = [["" for _ in range(len(gb[0]))] for _ in range(len(gb))]
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -65,8 +68,10 @@ class GameMaster():
             board = self.game.get_board()
             for y in range(len(board)):
                 for x in range(len(board[0])):
-                    message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
-                    self.ws.send(message)
+                    if board[y][x] != self.prev_frame[y][x]:
+                        message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
+                        self.ws.send(message)
+            self.prev_frame = board
             time.sleep(_polling_rate)
 
 
