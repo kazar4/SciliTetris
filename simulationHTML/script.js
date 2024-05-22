@@ -3,7 +3,7 @@ window.onload = function() {
   const textBox = document.getElementById('textBox');
 
   // Create WebSocket connection for the text box
-  const textBoxWS = new WebSocket('ws://localhost:9001');
+  const textBoxWS = new WebSocket('wss://proteinarium.brown.edu:4567');
 
   textBoxWS.onopen = function() {
     console.log(`WebSocket connection for text box established.`);
@@ -35,8 +35,8 @@ window.onload = function() {
       ledBuilding.appendChild(ledBlock);
 
       // Create WebSocket connection for each LED block
-      // const ws = new WebSocket('wss://kazar4.com:9001');
-      const ws = new WebSocket('ws://localhost:9001')
+      const ws = new WebSocket('wss://kazar4.com:9001');
+      // const ws = new WebSocket('wss://proteinarium.brown.edu:4567')
 
       ws.onopen = function() {
         console.log(`WebSocket connection for LED block (${row}, ${column}) established.`);

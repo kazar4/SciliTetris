@@ -8,12 +8,19 @@ void connectWifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  Serial.println(sizeof(password));
 
   WiFi.begin(ssid);
 
+  long connectTime = millis();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+
+    if (millis() - connectTime > 30000) {
+      Serial.print("-");
+      WiFi.begin(ssid2, password2);
+    }
   }
 
   Serial.println("");
@@ -28,10 +35,17 @@ void connectWifi() {
 void connectWebSocket() {
   // SSL fingerprint for bottom level cert kazar4.com
   const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
+  //const char *sslFingerprint = "BF ED 16 67 BD BD AB D9 A0 9B 5D BF 38 E0 2A EA B7 61 D2 ED";
 
   client.setFingerprint(sslFingerprint);
 
-  if (client.connect("kazar4.com", 9001)) {
+  //client.connect("kazar4.com", 9001)
+  //client.connect("proteinarium.brown.edu", 4567)
+
+  bool connectplz = client.connect("kazar4.com", 9001);
+  //bool connectplz = client.connect("proteinarium.brown.edu", 4567);
+
+  if (connectplz) {
     Serial.println("Connected");
   } else {
     Serial.println("Websocket Connection failed. Resetting ESP");

@@ -141,8 +141,10 @@ def message_received(client, server, message):
 
 
 PORT=9001
-# server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
-server = WebsocketServer(host='localhost', port=PORT)
+# PORT = 4567
+server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+#server = WebsocketServer(host='0.0.0.0', port=PORT, key="/etc/letsencrypt/archive/proteinarium/privkey2.pem", cert="/etc/letsencrypt/archive/proteinarium/cert2.pem")
+# server = WebsocketServer(host='localhost', port=PORT)
 
 commands.start_ping_thread(server)
 

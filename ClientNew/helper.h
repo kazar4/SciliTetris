@@ -29,14 +29,22 @@ int tempR;
 int tempG;
 int tempB;
 
+int BRIGHTNESS = 96;
+
 // RGB Color Buffer
 char buffer[10];
 
 //Brown-Guest
 const char* ssid     = "Brown-Guest";
 const char* password = "";
+
+const char* ssid2     = "RLAB";
+const char* password2 = "metropolis";
+
 char path[] = "/";
 char host[] = "kazar4.com";
+
+
 
 
 // timeParsingVals

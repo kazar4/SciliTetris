@@ -15,7 +15,6 @@
 CRGBArray<NUM_LEDS> leds;
 CRGBArray<NUM_LEDS> leds2;
 
-#define BRIGHTNESS          96
 #define FRAMES_PER_SECOND  120
 
 void setUPLEDs(){ 
@@ -94,6 +93,14 @@ void loop() {
         Serial.println(data.substring(1).toInt());
 
         firstInterval = data.substring(1).toInt();
+      }
+
+      if (data.charAt('B')) {
+
+        Serial.print("Updating Brightness To: ");
+        Serial.println(data.substring(1).toInt());
+        BRIGHTNESS = data.substring(1).toInt();
+        setUPLEDs();
       }
 
       // Json Data (only want it to do this every 50s sec)
