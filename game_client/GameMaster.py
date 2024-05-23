@@ -16,7 +16,7 @@ possible_games = {
     "Snake": Snake
 }
 
-_polling_rate = 5
+_polling_rate = 0.1
 _uri = "ws://localhost:9001"
 # _uri = "wss://kazar4.com:9001"
 
@@ -37,6 +37,7 @@ class GameMaster():
     def __init__(self) -> None:
         # self.game = possible_games["Snake"]()
         self.menu = Menu()
+        self.prev_frame = None
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -59,16 +60,21 @@ class GameMaster():
         self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})  
 
     def poll_game(self):
-        # while not self.ws or not self.ws.sock or not self.ws.sock.connected:
-        #     time.sleep(_polling_rate)
+        while not self.ws or not self.ws.sock or not self.ws.sock.connected:
+            time.sleep(_polling_rate)
         while True:
             if self.menu.game_instance:
                 board = self.menu.game_instance.get_board()
+                # new_pixels = 0
                 for y in range(len(board)):
                     for x in range(len(board[0])):
-                        # message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
-                        # self.ws.send(message)
-                        print(board[y][x])
+                        if not self.prev_frame or self.prev_frame[y][x] != board[y][x]:
+                            message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
+                            self.ws.send(message)
+                            # new_pixels += 1
+                        # print(board[y][x])
+                # print(new_pixels)
+                self.prev_frame = board
                 time.sleep(_polling_rate)
 
 

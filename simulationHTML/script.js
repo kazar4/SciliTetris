@@ -3,7 +3,7 @@ window.onload = function() {
   const textBox = document.getElementById('textBox');
 
   // Create WebSocket connection for the text box
-  const textBoxWS = new WebSocket('wss://proteinarium.brown.edu:4567');
+  const textBoxWS = new WebSocket('ws://localhost:9001');
 
   textBoxWS.onopen = function() {
     console.log(`WebSocket connection for text box established.`);
@@ -23,7 +23,7 @@ window.onload = function() {
 
   // Create LED blocks
   for (let row = 0; row < 5; row++) {
-    for (let column = 0; column < 14; column++) {
+    for (let column = 0; column < 11; column++) {
       const ledBlock = document.createElement('div');
       ledBlock.classList.add('ledBlock');
 
@@ -34,8 +34,11 @@ window.onload = function() {
       ledBlock.dataset.column = column;
       ledBuilding.appendChild(ledBlock);
 
+      ledBlock.dataset.color1 = "#000000";
+      ledBlock.dataset.color2 = "#FF0000";
+
       // Create WebSocket connection for each LED block
-      const ws = new WebSocket('wss://kazar4.com:9001');
+      const ws = new WebSocket('ws://localhost:9001');
       // const ws = new WebSocket('wss://proteinarium.brown.edu:4567')
 
       ws.onopen = function() {
@@ -55,7 +58,24 @@ window.onload = function() {
 
         if (data !== undefined && data !== null && data[0] === '$' && data.length === 9) {
           console.log('Setting color to: ' + data);
-          ledBlock.style.backgroundColor = data.substring(2);
+          
+          if (data[1] == 1) {
+            ledBlock.dataset.color1 = data.substring(2);
+          } else if (data[1] == 2) {
+            ledBlock.dataset.color2 = data.substring(2);
+          } else {
+            ledBlock.dataset.color1 = data.substring(2);
+            ledBlock.dataset.color2 = data.substring(2);
+          }
+
+          console.log("TRYING TO SET THESE")
+          console.log(ledBlock.dataset.color1)
+          console.log(ledBlock.dataset.color2)
+          console.log(`linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`)
+          ledBlock.style.background = `linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`
+          ledBlock.setAttribute("style", `background:linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`);
+          //data.substring(2);
+          //background: linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%);
           // Logic to set color of corresponding LED block
         }
       };

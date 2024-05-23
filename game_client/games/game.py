@@ -4,7 +4,7 @@ import pygame
 
 class Game(ABC):
     @abstractmethod
-    def __init__(self, screen: pygame.Surface) -> None:
+    def __init__(self, screen: pygame.Surface, source: pygame.Surface, offset) -> None:
         self.screen = screen
 
     @abstractmethod

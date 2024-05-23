@@ -15,7 +15,8 @@ class Menu:
         self.screen_height = screen_height
 
         # Create the screen object
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.main_screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.screen = pygame.Surface((self.screen_width, self.screen_height))
         pygame.display.set_caption('Simple Menu')
 
         # Colors
@@ -29,7 +30,7 @@ class Menu:
 
         # Buttons
         self.buttons = [
-            self.Button("Start Game", (300, 150), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_game),
+            self.Button("Tetris", (300, 150), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_tetris),
             self.Button("Canvas Game", (300, 300), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_canvas_game),
             self.Button("Quit", (300, 450), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.quit_game)
         ]
@@ -63,9 +64,11 @@ class Menu:
                 if self.rect.collidepoint(event.pos):
                     self.callback()
 
-    def start_game(self):
+    def start_tetris(self):
         # self.running = False
-        self.game_instance = Game(self.screen)
+        embedded_surface = pygame.Surface((200,220))
+        # self.screen.blit(embedded_surface, (200, 150))
+        self.game_instance = TetrisApp(embedded_surface, self.main_screen, (200, 150))
 
     def start_canvas_game(self):
         # self.running = False
@@ -92,15 +95,18 @@ class Menu:
                     if button.is_clicked(event):
                         button.callback()
 
-            self.screen.fill(self.WHITE)
             if not self.game_instance:
+                self.screen.fill(self.WHITE)
                 for button in self.buttons:
                     button.draw(self.screen)
 
+            self.main_screen.blit(self.screen, (0,0))
+            pygame.display.update()
             pygame.display.flip()
             clock.tick(60) 
 
             if self.game_instance:
+                self.screen.fill(self.WHITE)
                 self.game_instance.run()
                 # After game finishes running, return to main menu
                 self.game_instance = None

@@ -2,13 +2,13 @@
     display: Flex;
     justify-content: center;
     align-items: center;
-    width: 20vw;
     flex-wrap: wrap;
+    width: 125px;
   }
   
   .ledBlock {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background: #000000;
     border: 1px solid white;
   }

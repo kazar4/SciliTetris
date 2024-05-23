@@ -119,15 +119,18 @@ def rgb_to_hex(rgb):
 
 
 class TetrisApp(Game):
-	def __init__(self, screen):
-		self.screen = screen
-		pygame.init()
+	def __init__(self, screen, source, offset):
+		# self.screen = screen
+		self.source = source
+		self.offset = offset
+		self.running = True
+		# pygame.init()
 		pygame.key.set_repeat(250,25)
 		self.width = config['cell_size']*config['cols']
 		self.height = config['cell_size']*config['rows']
 		
-		self.screen = pygame.display.set_mode((self.width, self.height))
-		pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
+		self.screen = pygame.Surface((self.width, self.height))
+		# pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
 		                                             # mouse movement
 		                                             # events, so we
 		                                             # block them.
@@ -198,7 +201,8 @@ class TetrisApp(Game):
 	def quit(self):
 		self.center_msg("Exiting...")
 		pygame.display.update()
-		sys.exit()
+		# sys.exit()
+		self.running = False
 	
 	def drop(self):
 		if not self.gameover and not self.paused:
@@ -275,7 +279,8 @@ class TetrisApp(Game):
 		
 		pygame.time.set_timer(pygame.USEREVENT+1, config['delay'])
 		dont_burn_my_cpu = pygame.time.Clock()
-		while 1:
+
+		while self.running:
 			self.screen.fill((0,0,0))
 			if self.gameover:
 				self.center_msg("""Game Over!
@@ -289,6 +294,8 @@ Press space to continue""")
 					                 (self.stone_x,
 					                  self.stone_y))
 					self.update_display_board()
+			# pygame.display.update()
+			self.source.blit(self.screen, self.offset)
 			pygame.display.update()
 			
 			for event in pygame.event.get():
