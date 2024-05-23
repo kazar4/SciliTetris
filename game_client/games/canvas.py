@@ -21,8 +21,11 @@ def get_random_color():
     return pygame.Color(r, g, b)
 
 class CanvasGame(Game):
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, source, offset):
+        self.screen_offset = offset
+        self.source = source
+        self.screen = pygame.Surface((800,700))
+        self.screen.fill((255,255,255))
         self.grid_width = 10
         self.grid_height = 11
         self.cell_height = 50
@@ -30,8 +33,9 @@ class CanvasGame(Game):
         self.x_offset = 275
         self.color_wheel = ColorPicker(100, 550, 600, 100)
         self.grid = [[pygame.Color('black') for _ in range(self.grid_width)] for _ in range(self.grid_height)]
-        self.light_show_button = Button("Canvas Game", (550, 300), (200, 100), (200, 200, 200), (100, 100, 100), pygame.font.Font(None, 50), self.light_show)
+        self.light_show_button = Button("Light Show", (550, 300), (200, 100), (200, 200, 200), (100, 100, 100), pygame.font.Font(None, 30), self.light_show_toggle)
         self.preset_display = False
+        self.prev_time = None
         self.running = True
 
     def handle_event(self, event):
@@ -41,7 +45,7 @@ class CanvasGame(Game):
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN and not self.preset_display:
             mouse_x, mouse_y = event.pos
             mouse_x -= self.x_offset
             grid_x = mouse_x // self.cell_width
@@ -59,19 +63,21 @@ class CanvasGame(Game):
     def get_board(self) -> List[List[str]]:
         return [[color_to_hex(x) for x in y] for y in self.grid]
     
-    def light_show(self):
+    def light_show_toggle(self):
         if self.preset_display:
+            self.grid = [[pygame.Color('black') for _ in range(self.grid_width)] for _ in range(self.grid_height)]
             self.preset_display = False
-            return
-        self.preset_display = True
-        while True:
-            for y in range(self.grid_height):
-                for x in range(self.grid_width):
-                    color = get_random_color()
-                    # color.hsla = (int(self.p * 360), 100, 50, 100)
-                    if random.randint(0, 1) == 1: 
-                        self.grid[y][x] = color
-            time.sleep(1)
+        else:
+            self.prev_time = int(time.time() * 1000)
+            self.light_show()
+            self.preset_display = True
+        # self.preset_display = not self.preset_display
+    
+    def light_show(self):
+        for y in range(self.grid_height):
+            for x in range(self.grid_width):
+                color = get_random_color()
+                self.grid[y][x] = color
 
     def run(self):
         clock = pygame.time.Clock()
@@ -85,8 +91,16 @@ class CanvasGame(Game):
             self.color_wheel.draw(self.screen)
             self.light_show_button.draw(self.screen)
 
+            # Timer system for light show
+            curr_time = int(time.time() * 1000)
+            if self.preset_display and curr_time - self.prev_time >= 1000:
+                self.prev_time = curr_time
+                self.light_show()
+
             self.draw_grid()
+            self.source.blit(self.screen, self.screen_offset)
             pygame.display.flip()
+            pygame.display.update()
             clock.tick(60)
 
 

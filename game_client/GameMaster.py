@@ -73,7 +73,6 @@ class GameMaster():
                             self.ws.send(message)
                             # new_pixels += 1
                         # print(board[y][x])
-                # print(new_pixels)
                 self.prev_frame = board
                 time.sleep(_polling_rate)
 

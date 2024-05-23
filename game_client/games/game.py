@@ -4,8 +4,8 @@ import pygame
 
 class Game(ABC):
     @abstractmethod
-    def __init__(self, screen: pygame.Surface, source: pygame.Surface, offset) -> None:
-        self.screen = screen
+    def __init__(self, source: pygame.Surface, offset) -> None:
+        pass
 
     @abstractmethod
     def run(self):

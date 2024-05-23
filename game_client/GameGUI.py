@@ -17,7 +17,7 @@ class Menu:
         # Create the screen object
         self.main_screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.screen = pygame.Surface((self.screen_width, self.screen_height))
-        pygame.display.set_caption('Simple Menu')
+        pygame.display.set_caption('SciLi Games')
 
         # Colors
         self.WHITE = (255, 255, 255)
@@ -30,9 +30,10 @@ class Menu:
 
         # Buttons
         self.buttons = [
-            self.Button("Tetris", (300, 150), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_tetris),
-            self.Button("Canvas Game", (300, 300), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_canvas_game),
-            self.Button("Quit", (300, 450), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.quit_game)
+            self.Button("Tetris", (300, 50), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_tetris),
+            self.Button("Canvas", (300, 200), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_canvas_game),
+            self.Button("Snake", (300, 350), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_snake),
+            self.Button("Quit", (300, 500), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.quit_game)
         ]
 
         self.game_instance = None
@@ -66,13 +67,14 @@ class Menu:
 
     def start_tetris(self):
         # self.running = False
-        embedded_surface = pygame.Surface((200,220))
-        # self.screen.blit(embedded_surface, (200, 150))
-        self.game_instance = TetrisApp(embedded_surface, self.main_screen, (200, 150))
+        self.game_instance = TetrisApp(self.main_screen, (300, 150))
 
     def start_canvas_game(self):
         # self.running = False
-        self.game_instance = CanvasGame(self.screen)
+        self.game_instance = CanvasGame(self.main_screen, (0,0))
+
+    def start_snake(self):
+        self.game_instance = Snake(self.main_screen, (300, 150))
 
     def quit_game(self):
         pygame.quit()
@@ -94,19 +96,21 @@ class Menu:
                 for button in self.buttons:
                     if button.is_clicked(event):
                         button.callback()
-
+            # Drawing main menu
             if not self.game_instance:
                 self.screen.fill(self.WHITE)
                 for button in self.buttons:
                     button.draw(self.screen)
-
+            # Pushing main menu onto display
             self.main_screen.blit(self.screen, (0,0))
             pygame.display.update()
             pygame.display.flip()
             clock.tick(60) 
 
             if self.game_instance:
+                # Wipe away main menu
                 self.screen.fill(self.WHITE)
+                self.main_screen.blit(self.screen, (0,0))
                 self.game_instance.run()
                 # After game finishes running, return to main menu
                 self.game_instance = None

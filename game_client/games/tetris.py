@@ -119,16 +119,14 @@ def rgb_to_hex(rgb):
 
 
 class TetrisApp(Game):
-	def __init__(self, screen, source, offset):
-		# self.screen = screen
+	def __init__(self, source, offset):
 		self.source = source
 		self.offset = offset
 		self.running = True
-		# pygame.init()
 		pygame.key.set_repeat(250,25)
 		self.width = config['cell_size']*config['cols']
 		self.height = config['cell_size']*config['rows']
-		
+
 		self.screen = pygame.Surface((self.width, self.height))
 		# pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
 		                                             # mouse movement
