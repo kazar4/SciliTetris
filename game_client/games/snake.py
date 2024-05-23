@@ -110,7 +110,7 @@ class Snake(Game):
     
     # Game Over
     def game_over(self):
-        global snake_pos, snake_body
+        global snake_pos, snake_body, direction
         my_font = pygame.font.SysFont('times new roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
@@ -121,6 +121,7 @@ class Snake(Game):
         pygame.display.flip()
         snake_pos = [2*pixel_size, 5*pixel_size]
         snake_body = [[2*pixel_size, 5*pixel_size], [2*pixel_size-pixel_size, 5*pixel_size], [2*pixel_size-(2*pixel_size), 5*pixel_size]]
+        direction = 'RIGHT'
         # time.sleep(3)
         self.running = False
         # pygame.quit()

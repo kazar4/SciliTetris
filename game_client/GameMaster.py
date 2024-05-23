@@ -17,8 +17,8 @@ possible_games = {
 }
 
 _polling_rate = 0.1
-_uri = "ws://localhost:9001"
-# _uri = "wss://kazar4.com:9001"
+# _uri = "ws://localhost:9001"
+_uri = "wss://kazar4.com:9001"
 
 def on_message(ws, message):
     print(message)
