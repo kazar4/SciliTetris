@@ -95,6 +95,8 @@ class CanvasGame(Game):
                 self.handle_event(event)
                 if self.light_show_button.is_clicked(event):
                     self.light_show_button.callback()
+                if self.color_wheel.erase_button.is_clicked(event):
+                    self.color_wheel.erase_button.callback()
 
             self.color_wheel.update()
             self.color_wheel.draw(self.screen)
@@ -124,13 +126,36 @@ class ColorPicker:
             color = pygame.Color(0)
             color.hsla = (int(360*i/self.pwidth), 100, 50, 100)
             pygame.draw.rect(self.image, color, (i+self.rad, h//3, 1, h-2*h//3))
+        self.erase_mode = False
         self.p = 0
         self.color = self.get_color()
+        # Create the erase button
+        button_size = (80, 30)
+        button_pos = (x + w + 10, y + (h - button_size[1]) // 2)
+        self.erase_button = Button(
+            "Erase",
+            button_pos,
+            button_size,
+            (100, 100, 100),
+            (150, 150, 150),
+            pygame.font.Font(None, 30),
+            self.toggle_erase_mode
+        )
 
     def get_color(self):
         color = pygame.Color(0)
-        color.hsla = (int(self.p * 360), 100, 50, 100)
+        if self.erase_mode:
+            color.hsla = (0, 0, 0, 100)
+        else:
+            color.hsla = (int(self.p * 360), 100, 50, 100)
         return color
+    
+    def toggle_erase_mode(self):
+        if self.erase_mode:
+            self.erase_mode = False
+        else:
+            self.erase_mode = True
+        self.color = self.get_color()
 
     def update(self):
         moude_buttons = pygame.mouse.get_pressed()
@@ -144,6 +169,8 @@ class ColorPicker:
         surf.blit(self.image, self.rect)
         center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
         pygame.draw.circle(surf, self.get_color(), center, self.rect.height // 2)
+        self.erase_button.draw(surf)
+        
 
 class Button:
     def __init__(self, text, pos, size, color, hover_color, font, callback):
