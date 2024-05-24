@@ -4,7 +4,7 @@ import pygame
 
 class Game(ABC):
     @abstractmethod
-    def __init__(self, source: pygame.Surface, offset) -> None:
+    def __init__(self, source: pygame.Surface, offset: tuple) -> None:
         pass
 
     @abstractmethod

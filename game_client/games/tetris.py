@@ -33,7 +33,7 @@
 # THE SOFTWARE.
 
 from random import randrange as rand
-import pygame, sys
+import pygame, sys, threading
 from games.game import Game
 from typing import List
 
@@ -128,6 +128,7 @@ class TetrisApp(Game):
 		self.height = config['cell_size']*config['rows']
 
 		self.screen = pygame.Surface((self.width, self.height))
+		self.lock = threading.Lock()
 		# pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
 		                                             # mouse movement
 		                                             # events, so we
@@ -250,15 +251,17 @@ class TetrisApp(Game):
 			
     ### INJECTED CODE ###
 	def get_board(self) -> List[List[str]]:
-		return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
+		with self.lock:
+			return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
 	
 	def update_display_board(self):
-		self.display_board = [[y for y in x] for x in self.board]
-		self.display_board = join_matrixes(
-			self.display_board,
-			self.stone,
-			(self.stone_x, self.stone_y)
-		)
+		with self.lock:
+			self.display_board = [[y for y in x] for x in self.board]
+			self.display_board = join_matrixes(
+				self.display_board,
+				self.stone,
+				(self.stone_x, self.stone_y)
+			)
 	#####################
 
 	def run(self):

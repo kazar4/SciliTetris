@@ -4,6 +4,7 @@ import sys
 from games.tetris import TetrisApp
 from games.snake import Snake
 from games.canvas import CanvasGame
+from games.pong import Pong
 
 class Menu:
     def __init__(self, screen_width=800, screen_height=700):
@@ -30,10 +31,11 @@ class Menu:
 
         # Buttons
         self.buttons = [
-            self.Button("Tetris", (300, 50), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_tetris),
-            self.Button("Canvas", (300, 200), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_canvas_game),
-            self.Button("Snake", (300, 350), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_snake),
-            self.Button("Quit", (300, 500), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.quit_game)
+            self.Button("Tetris", (300, 33), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_tetris),
+            self.Button("Canvas", (300, 166), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_canvas_game),
+            self.Button("Snake", (300, 300), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_snake),
+            self.Button("Pong", (300, 433), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.start_pong),
+            self.Button("Quit", (300, 566), (200, 100), self.GRAY, self.DARK_GRAY, self.font, self.quit_game)
         ]
 
         self.game_instance = None
@@ -75,6 +77,9 @@ class Menu:
 
     def start_snake(self):
         self.game_instance = Snake(self.main_screen, (300, 150))
+
+    def start_pong(self):
+        self.game_instance = Pong(self.main_screen, (300, 150))
 
     def quit_game(self):
         pygame.quit()

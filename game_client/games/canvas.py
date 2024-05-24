@@ -74,8 +74,17 @@ class CanvasGame(Game):
         # self.preset_display = not self.preset_display
     
     def light_show(self):
+        ignore_2 = [(0,1), (1,0), (2,0), (3,1), (2,2), (1,3), (0,4), (1,4), (2,4), (3,4)] 
+        ignore_2_again = [(x[0]*2+1, x[1]) for x in ignore_2]
+        ignore_4 = [(1,6), (1,7), (1,8), (3,6), (3,7), (3,8), (2,8), (4,8), (3,9), (3,10)]
+        ignore_4_again = [(x[0]*2+1, x[1]) for x in ignore_4]
         for y in range(self.grid_height):
             for x in range(self.grid_width):
+                # if (x, y) in ignore_2+ignore_2_again:
+                #     color = pygame.Color(0,255,255)
+                # elif (x, y) in ignore_4+ignore_4_again:
+                #     color = pygame.Color(255,0,0)
+                # else:
                 color = get_random_color()
                 self.grid[y][x] = color
 

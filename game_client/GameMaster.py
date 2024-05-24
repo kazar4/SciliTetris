@@ -5,20 +5,12 @@ import websocket
 import ssl
 import asyncio
 
-from games.tetris import TetrisApp
-from games.snake import Snake
 from GameGUI import Menu
 
-# Want to implement command line arguments to see which game to
-# run, not yet implemented
-possible_games = {
-    "Tetris": TetrisApp,
-    "Snake": Snake
-}
 
 _polling_rate = 0.1
-# _uri = "ws://localhost:9001"
-_uri = "wss://kazar4.com:9001"
+_uri = "ws://localhost:9001"
+# _uri = "wss://kazar4.com:9001"
 
 def on_message(ws, message):
     print(message)
