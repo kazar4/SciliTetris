@@ -252,7 +252,7 @@ class TetrisApp(Game):
     ### INJECTED CODE ###
 	def get_board(self) -> List[List[str]]:
 		with self.lock:
-			return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
+			return [[rgb_to_hex(colors[min(max(y, 0), 7)]) for y in x] for x in self.display_board[:-1]]
 	
 	def update_display_board(self):
 		with self.lock:
