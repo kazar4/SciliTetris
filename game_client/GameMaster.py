@@ -5,17 +5,8 @@ import websocket
 import ssl
 import asyncio
 
-sys.path.append('game_client/games')
+from GameGUI import Menu
 
-from games.tetris import TetrisApp
-from games.snake import Snake
-
-# Want to implement command line arguments to see which game to
-# run, not yet implemented
-possible_games = {
-    "Tetris": TetrisApp,
-    "Snake": Snake
-}
 
 _polling_rate = 0.1
 # _uri = "ws://localhost:9001"
@@ -36,10 +27,9 @@ def on_open(ws):
 
 class GameMaster():
     def __init__(self) -> None:
-        self.game = possible_games["Tetris"]()
-
-        gb = self.game.get_board()
-        self.prev_frame = [["" for _ in range(len(gb[0]))] for _ in range(len(gb))]
+        # self.game = possible_games["Snake"]()
+        self.menu = Menu()
+        self.prev_frame = None
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -49,7 +39,7 @@ class GameMaster():
         self.polling_thread.daemon = True
         self.polling_thread.start() # Thread to poll the game
 
-        self.game.run() # Main thread runs the game
+        self.menu.run() # Main thread runs the menu
 
 
     def connect_to_server(self):
@@ -65,14 +55,18 @@ class GameMaster():
         while not self.ws or not self.ws.sock or not self.ws.sock.connected:
             time.sleep(_polling_rate)
         while True:
-            board = self.game.get_board()
-            for y in range(len(board)):
-                for x in range(len(board[0])):
-                    if board[y][x] != self.prev_frame[y][x]:
-                        message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
-                        self.ws.send(message)
-            self.prev_frame = board
-            time.sleep(_polling_rate)
+            if self.menu.game_instance:
+                board = self.menu.game_instance.get_board()
+                # new_pixels = 0
+                for y in range(len(board)):
+                    for x in range(len(board[0])):
+                        if not self.prev_frame or self.prev_frame[y][x] != board[y][x]:
+                            message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
+                            self.ws.send(message)
+                            # new_pixels += 1
+                        # print(board[y][x])
+                self.prev_frame = board
+                time.sleep(_polling_rate)
 
 
 if __name__ == "__main__":

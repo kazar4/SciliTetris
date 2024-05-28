@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import List
+import pygame
 
 class Game(ABC):
+    @abstractmethod
+    def __init__(self, source: pygame.Surface, offset: tuple) -> None:
+        pass
+
     @abstractmethod
     def run(self):
         # The main starting point of the game. This is so that GameMaster

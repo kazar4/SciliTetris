@@ -16,11 +16,13 @@ from games.game import Game
 # Impossible->  120
 difficulty = 3
 
-pixel_size = 10
+pixel_size = 20
 
 # Window size
-frame_size_x = 100
-frame_size_y = 110
+rows = 11
+cols = 10
+frame_size_x = cols * pixel_size
+frame_size_y = rows * pixel_size
 
 
 # Colors (R, G, B)
@@ -32,10 +34,10 @@ blue = pygame.Color(0, 0, 255)
 
 
 # Game variables
-snake_pos = [20, 50]
-snake_body = [[20, 50], [20-10, 50], [20-(2*10), 50]]
+snake_pos = [2*pixel_size, 5*pixel_size]
+snake_body = [[2*pixel_size, 5*pixel_size], [2*pixel_size-pixel_size, 5*pixel_size], [2*pixel_size-(2*pixel_size), 5*pixel_size]]
 
-food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
+food_pos = [random.randrange(1, (frame_size_x//pixel_size)) * pixel_size, random.randrange(1, (frame_size_y//pixel_size)) * pixel_size]
 food_spawn = True
 
 direction = 'RIGHT'
@@ -60,22 +62,26 @@ def get_color(color):
         return (0,0,255)
 
 class Snake(Game):
-    def __init__(self):
+    def __init__(self, source, offset):
+        self.source = source
+        self.offset = offset
+        self.running = True
         self.init_pygame()
 
     def init_pygame(self):
         # Checks for errors encountered
-        check_errors = pygame.init()
+        # check_errors = pygame.init()
         # pygame.init() example output -> (6, 0)
         # second number in tuple gives number of errors
-        if check_errors[1] > 0:
-            print(f'[!] Had {check_errors[1]} errors when initialising game, exiting...')
-            sys.exit(-1)
-        else:
-            print('[+] Game successfully initialised')
+        # if check_errors[1] > 0:
+        #     print(f'[!] Had {check_errors[1]} errors when initialising game, exiting...')
+        #     sys.exit(-1)
+        # else:
+        #     print('[+] Game successfully initialised')
         # Initialise game window
         pygame.display.set_caption('Snake Eater')
-        self.game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
+        # self.game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
+        self.game_window = pygame.Surface((frame_size_x, frame_size_y))
         # FPS (frames per second) controller
         self.fps_controller = pygame.time.Clock()
 
@@ -84,8 +90,10 @@ class Snake(Game):
         cols = frame_size_x//pixel_size
         board = [[rgb_to_hex(get_color(black)) for _ in range(cols)] for _ in range(rows)]
         for segment in snake_body:
-            board[segment[1]//pixel_size][segment[0]//pixel_size] = rgb_to_hex(get_color(green))
-        board[food_pos[1]//pixel_size][food_pos[0]//pixel_size] = rgb_to_hex(get_color(white))
+            y = min(max(segment[1]//pixel_size, 0), 10)
+            x = min(max(segment[0]//pixel_size, 0), 9)
+            board[y][x] = rgb_to_hex(get_color(green))
+        board[food_pos[1]//pixel_size][food_pos[0]//pixel_size] = rgb_to_hex(get_color(red))
         return board
 
     # Score
@@ -94,7 +102,7 @@ class Snake(Game):
         score_surface = score_font.render('Score : ' + str(score), True, color)
         score_rect = score_surface.get_rect()
         if choice == 1:
-            score_rect.midtop = (frame_size_x/10, 15)
+            score_rect.midtop = (frame_size_x/pixel_size, 15)
         else:
             score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
         self.game_window.blit(score_surface, score_rect)
@@ -102,6 +110,7 @@ class Snake(Game):
     
     # Game Over
     def game_over(self):
+        global snake_pos, snake_body, direction
         my_font = pygame.font.SysFont('times new roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
@@ -110,9 +119,13 @@ class Snake(Game):
         self.game_window.blit(game_over_surface, game_over_rect)
         self.show_score(0, red, 'times', 20)
         pygame.display.flip()
-        time.sleep(3)
-        pygame.quit()
-        sys.exit()
+        snake_pos = [2*pixel_size, 5*pixel_size]
+        snake_body = [[2*pixel_size, 5*pixel_size], [2*pixel_size-pixel_size, 5*pixel_size], [2*pixel_size-(2*pixel_size), 5*pixel_size]]
+        direction = 'RIGHT'
+        # time.sleep(3)
+        self.running = False
+        # pygame.quit()
+        # sys.exit()
 
     def get_width(self):
         return frame_size_x // pixel_size
@@ -123,7 +136,7 @@ class Snake(Game):
     def run(self):
         global change_to, direction, snake_pos, food_pos, snake_body, food_spawn, score
         # Main logic
-        while True:
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -141,7 +154,8 @@ class Snake(Game):
                         change_to = 'RIGHT'
                     # Esc -> Create event to quit the game
                     if event.key == pygame.K_ESCAPE:
-                        pygame.event.post(pygame.event.Event(pygame.QUIT))
+                        # pygame.event.post(pygame.event.Event(pygame.QUIT))
+                        self.running = False
 
             # Making sure the snake cannot move in the opposite direction instantaneously
             if change_to == 'UP' and direction != 'DOWN':
@@ -155,13 +169,13 @@ class Snake(Game):
 
             # Moving the snake
             if direction == 'UP':
-                snake_pos[1] -= 10
+                snake_pos[1] -= pixel_size
             if direction == 'DOWN':
-                snake_pos[1] += 10
+                snake_pos[1] += pixel_size
             if direction == 'LEFT':
-                snake_pos[0] -= 10
+                snake_pos[0] -= pixel_size
             if direction == 'RIGHT':
-                snake_pos[0] += 10
+                snake_pos[0] += pixel_size
 
             # Snake body growing mechanism
             snake_body.insert(0, list(snake_pos))
@@ -173,7 +187,7 @@ class Snake(Game):
 
             # Spawning food on the screen
             if not food_spawn:
-                food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
+                food_pos = [random.randrange(1, (frame_size_x//pixel_size)) * pixel_size, random.randrange(1, (frame_size_y//pixel_size)) * pixel_size]
             food_spawn = True
 
             # GFX
@@ -182,16 +196,19 @@ class Snake(Game):
                 # Snake body
                 # .draw.rect(play_surface, color, xy-coordinate)
                 # xy-coordinate -> .Rect(x, y, size_x, size_y)
-                pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0], pos[1], 10, 10))
+                pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0], pos[1], pixel_size, pixel_size))
 
             # Snake food
-            pygame.draw.rect(self.game_window, white, pygame.Rect(food_pos[0], food_pos[1], 10, 10))
+            pygame.draw.rect(self.game_window, red, pygame.Rect(food_pos[0], food_pos[1], pixel_size, pixel_size))
+
+            # Draw to source display
+            self.source.blit(self.game_window, self.offset)
 
             # Game Over conditions
             # Getting out of bounds
-            if snake_pos[0] < 0 or snake_pos[0] > frame_size_x-10:
+            if snake_pos[0] < 0 or snake_pos[0] > frame_size_x-pixel_size:
                 self.game_over()
-            if snake_pos[1] < 0 or snake_pos[1] > frame_size_y-10:
+            if snake_pos[1] < 0 or snake_pos[1] > frame_size_y-pixel_size:
                 self.game_over()
             # Touching the snake body
             for block in snake_body[1:]:

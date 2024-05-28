@@ -33,7 +33,7 @@
 # THE SOFTWARE.
 
 from random import randrange as rand
-import pygame, sys
+import pygame, sys, threading
 from games.game import Game
 from typing import List
 
@@ -119,14 +119,17 @@ def rgb_to_hex(rgb):
 
 
 class TetrisApp(Game):
-	def __init__(self):
-		pygame.init()
+	def __init__(self, source, offset):
+		self.source = source
+		self.offset = offset
+		self.running = True
 		pygame.key.set_repeat(250,25)
 		self.width = config['cell_size']*config['cols']
 		self.height = config['cell_size']*config['rows']
-		
-		self.screen = pygame.display.set_mode((self.width, self.height))
-		pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
+
+		self.screen = pygame.Surface((self.width, self.height))
+		self.lock = threading.Lock()
+		# pygame.event.set_blocked(pygame.MOUSEMOTION) # We do not need
 		                                             # mouse movement
 		                                             # events, so we
 		                                             # block them.
@@ -197,7 +200,8 @@ class TetrisApp(Game):
 	def quit(self):
 		self.center_msg("Exiting...")
 		pygame.display.update()
-		sys.exit()
+		# sys.exit()
+		self.running = False
 	
 	def drop(self):
 		if not self.gameover and not self.paused:
@@ -247,15 +251,17 @@ class TetrisApp(Game):
 			
     ### INJECTED CODE ###
 	def get_board(self) -> List[List[str]]:
-		return [[rgb_to_hex(colors[y]) for y in x] for x in self.display_board[:-1]]
+		with self.lock:
+			return [[rgb_to_hex(colors[min(max(y, 0), 7)]) for y in x] for x in self.display_board[:-1]]
 	
 	def update_display_board(self):
-		self.display_board = [[y for y in x] for x in self.board]
-		self.display_board = join_matrixes(
-			self.display_board,
-			self.stone,
-			(self.stone_x, self.stone_y)
-		)
+		with self.lock:
+			self.display_board = [[y for y in x] for x in self.board]
+			self.display_board = join_matrixes(
+				self.display_board,
+				self.stone,
+				(self.stone_x, self.stone_y)
+			)
 	
 	def get_width(self):
 		return len(self.board[0])
@@ -280,7 +286,8 @@ class TetrisApp(Game):
 		
 		pygame.time.set_timer(pygame.USEREVENT+1, config['delay'])
 		dont_burn_my_cpu = pygame.time.Clock()
-		while 1:
+
+		while self.running:
 			self.screen.fill((0,0,0))
 			if self.gameover:
 				self.center_msg("""Game Over!
@@ -294,6 +301,8 @@ Press space to continue""")
 					                 (self.stone_x,
 					                  self.stone_y))
 					self.update_display_board()
+			# pygame.display.update()
+			self.source.blit(self.screen, self.offset)
 			pygame.display.update()
 			
 			for event in pygame.event.get():
