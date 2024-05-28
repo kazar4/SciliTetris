@@ -14,7 +14,7 @@ from games.game import Game
 # Hard      ->  40
 # Harder    ->  60
 # Impossible->  120
-difficulty = 3
+difficulty = 10
 
 pixel_size = 20
 
@@ -126,6 +126,12 @@ class Snake(Game):
         self.running = False
         # pygame.quit()
         # sys.exit()
+
+    def get_width(self):
+        return frame_size_x // pixel_size
+    
+    def get_height(self):
+        return frame_size_y // pixel_size
 
     def run(self):
         global change_to, direction, snake_pos, food_pos, snake_body, food_spawn, score

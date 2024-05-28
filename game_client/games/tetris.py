@@ -262,6 +262,12 @@ class TetrisApp(Game):
 				self.stone,
 				(self.stone_x, self.stone_y)
 			)
+	
+	def get_width(self):
+		return len(self.board[0])
+	
+	def get_height(self):
+		return len(self.board)
 	#####################
 
 	def run(self):
