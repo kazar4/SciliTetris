@@ -57,3 +57,5 @@ long lastParse = millis();
 long timeOfParse = 0;
 
 long firstInterval = 200;
+
+long lastPing = millis();

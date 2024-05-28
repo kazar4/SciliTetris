@@ -14,7 +14,7 @@ from games.game import Game
 # Hard      ->  40
 # Harder    ->  60
 # Impossible->  120
-difficulty = 10
+difficulty = 3
 
 pixel_size = 10
 

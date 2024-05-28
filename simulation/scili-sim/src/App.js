@@ -106,7 +106,6 @@ function App() {
         </DndProvider> */}
       {/* </Flex> */}
 
-      <ColorModeSwitcher justifySelf="flex-end" />
       <DndProvider backend={HTML5Backend}>
         <Flex direction="column" height="100vh">
         {/* Top section */}

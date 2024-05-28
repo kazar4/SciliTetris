@@ -21,6 +21,11 @@ void connectWifi() {
       Serial.print("-");
       WiFi.begin(ssid2, password2);
     }
+
+    if (millis() - connectTime > 100000) {
+      Serial.println("Took to long to connect to wifi resetting");
+      ESP.reset();
+    }
   }
 
   Serial.println("");

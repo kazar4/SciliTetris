@@ -52,10 +52,17 @@ void setup() {
   connectWifi();
   
   connectWebSocket();
+
+  lastPing = millis();
 }
 
 
 void loop() {
+
+  if (millis() - lastPing > 200000) {
+    Serial.println("Has not pinged 200+ secounds, restarting");
+    ESP.reset();
+  }
 
   if (client.connected()) {
 
@@ -67,6 +74,7 @@ void loop() {
     if (dataLen > 0) {
 
       if (data == "ping") {
+        lastPing = millis();
         webSocketClient.sendData("pong");
       }
 

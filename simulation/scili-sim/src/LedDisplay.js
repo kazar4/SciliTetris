@@ -89,6 +89,13 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
             </label>
           </Box>
         </Flex>
+
+        <Flex flexDir={'row'} gap={3}>
+        <Grid templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 60}>
+          {Array.from({ length: yDimension }, (_, index) => (
+            <p>{yDimension - index + 2}</p>
+          ))}
+        </Grid>
         <Grid templateColumns={`repeat(${xDimension}, 45px)`} templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 60}>
           {Array.from({ length: yDimension * xDimension }, (_, index) => (
             <DroppableBox 
@@ -105,6 +112,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
                 />
           ))}
         </Grid>
+        </Flex>
       </Flex>
   );
 };

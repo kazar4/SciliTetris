@@ -18,6 +18,8 @@ const EspClientList = ({ ws, wsRes, xDimension, yDimension }) => {
             // Update the LED list based on the received JSON data
             console.log("got client state in LedDisplay")
             updateEspClients(wsRes.data);
+
+            
           }
 
           if (wsRes.type === 'update') {
@@ -60,9 +62,17 @@ const EspClientList = ({ ws, wsRes, xDimension, yDimension }) => {
     }));
 
     updatedClients = updatedClients.filter(client => {
-        console.log(client.y)
+        //console.log(client.y)
         return (client.x === null && client.y === null) || client.x >= xDimension * 2 || client.y >= yDimension
     })
+
+    // [(), (), (), (), ()]
+    for (let val in updatedClients) {
+      console.log(val)
+      if (clientData[val].color !== "F000000") {
+        console.log(`(${val["x1"]} ${val["y1"]}), (${val["x2"]}, ${val["y2"]})`)
+      }
+    }
 
     setEspClients(updatedClients);
   };
