@@ -1,7 +1,7 @@
 from websocket_server import WebsocketServer
 import sqlite3
 import json
-import commands
+import Server.commands as commands
 
 admin = {"admin": None}
 player = {"client": None, "clientID": None}
