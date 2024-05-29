@@ -127,12 +127,6 @@ class Snake(Game):
         # pygame.quit()
         # sys.exit()
 
-    def get_width(self):
-        return frame_size_x // pixel_size
-    
-    def get_height(self):
-        return frame_size_y // pixel_size
-
     def run(self):
         global change_to, direction, snake_pos, food_pos, snake_body, food_spawn, score
         # Main logic
