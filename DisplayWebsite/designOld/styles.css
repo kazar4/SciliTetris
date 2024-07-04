@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark background color */
+    color: #FFFFFF; /* Light text color */
+}
+
+/* .notebook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(40px, 1fr));
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    position: absolute;
+} */
+
+.tetris-grid {
+    display: grid;
+    grid-template-columns: repeat(10, auto);
+    grid-template-rows: repeat(15, auto);
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    position: absolute;
+}
+
+/* .notebook-grid::before, .notebook-grid::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.notebook-grid::before {
+    background-image: linear-gradient(90deg, transparent 39px, rgba(255, 255, 255, 0.1) 40px);
+    background-size: 40px 40px;
+}
+
+.notebook-grid::after {
+    background-image: linear-gradient(transparent 39px, rgba(255, 255, 255, 0.1) 40px);
+    background-size: 40px 40px;
+} */
+
+.handwriting-logo {
+    width: 100%;
+    height: 100px;
+    position: absolute;
+    /* top: 50%;
+    left: 50%; */
+    /* transform: translate(-50%, -50%); */
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+}
+
+.handwriting-logo text {
+    font-family: 'Pacifico', cursive;
+    font-size: 3rem;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawText 3.8s linear forwards;
+}
+
+@keyframes drawText {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.bottom-center-image {
+    opacity: 0;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 1000px;
+    height: auto;
+    -webkit-filter: drop-shadow(12px 12px 12px rgba(17, 148, 255, 0.5));
+         filter: drop-shadow(0px 2px 20px rgba(17, 148, 255, 0.5));
+    animation: sciliAppear 3.8s linear forwards;
+}
+
+@keyframes sciliAppear {
+    to {
+        opacity: 1;
+    }
+}
+
+.notebook-grid .grid-item {
+    /* width: 40px;
+    height: 40px; */
+    /* border: 1px solid rgba(255, 255, 255, 0.1); */
+    border: 1px solid rgba(18, 18, 18, 0.9);
+}
+
+.notebook-grid .grid-item.filled {
+    background-color: rgba(255, 255, 255, 0.2);
+}
