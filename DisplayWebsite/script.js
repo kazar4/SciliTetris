@@ -4,9 +4,12 @@ const originalButtonDetails = buttonContainer.innerHTML;
 const mainButton = document.getElementById('main-button');
 const positions = ['arc-1', 'arc-2', 'arc-3'];
 const positionsText = ['tech details!', 'the project!', 'photos'];
+const links = ["./tech.html", "", ""];
 
-function hi() {
+function changeLocation(i) {
     console.log("hi")
+    console.log("going to " + links[i])
+    window.location = links[i];
 }
 
 function toggleButton() {
@@ -15,9 +18,11 @@ function toggleButton() {
 
         for (let i = 0; i < 3; i++) {
             const newButton = document.createElement('button');
+
             newButton.classList.add('arc', 'glow-on-hover', 'show');
-            newButton.setAttribute("onclick", "hi()");
+            newButton.setAttribute("onclick", `changeLocation("${i}");`);
             newButton.innerHTML = '<span> ' + positionsText[i] + '</span>';
+
             buttonContainer.insertBefore(newButton, mainButton.nextSibling);
 
             setTimeout(() => {

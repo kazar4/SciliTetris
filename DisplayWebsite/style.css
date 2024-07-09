@@ -33,6 +33,17 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.blog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -93,6 +104,10 @@ body {
 }
 
 .button-container button {
+    font-family: 'PixelFont', sans-serif;
+}
+
+.button-container a button {
     font-family: 'PixelFont', sans-serif;
 }
 
@@ -203,6 +218,10 @@ bottom: 8%; */
     opacity: 0;
 }
 
+.button-container a button.show {
+    opacity: 0;
+}
+
 .arc {
     position: absolute;
     left: 50%; /* Centers the button horizontally */
@@ -231,4 +250,8 @@ bottom: 8%; */
 
 .arc-3 {
     transform: translate(calc(-50% + 90px), calc(-50% - 70px)) rotate(15deg);
+}
+
+.blogText {
+    font-family: sans-serif;
 }
