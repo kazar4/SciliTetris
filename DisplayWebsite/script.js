@@ -4,7 +4,7 @@ const originalButtonDetails = buttonContainer.innerHTML;
 const mainButton = document.getElementById('main-button');
 const positions = ['arc-1', 'arc-2', 'arc-3'];
 const positionsText = ['tech details!', 'the project!', 'photos'];
-const links = ["./tech.html", "", ""];
+const links = ["./tech.html", "./about.html", ""];
 
 function changeLocation(i) {
     console.log("hi")

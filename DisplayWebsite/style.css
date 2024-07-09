@@ -3,6 +3,11 @@
     src: url('pixel.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Inter';
+    src: url('inter.ttf') format('truetype');
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -35,16 +40,6 @@ body {
     object-fit: cover;
     background-color: rgba(0, 0, 0, 0.1);
     z-index: 2;
-}
-
-.blog {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .video-background video {
@@ -252,6 +247,45 @@ bottom: 8%; */
     transform: translate(calc(-50% + 90px), calc(-50% - 70px)) rotate(15deg);
 }
 
+#container {
+    overflow-y: auto;
+}
+
+.blog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
 .blogText {
-    font-family: sans-serif;
+    font-family: Inter,system-ui,sans-serif;
+    text-align: left;
+    padding: 10%;
+}
+
+.blogText a {
+    color: #9894F9;
+}
+
+.blogText h1 {
+    padding-bottom: 20px;
+    border-bottom: solid 1px #e1e1e1aa;
+}
+
+.blogText h2 {
+    padding: 5px;
+    background-color: #9794f968;
+    width: fit-content;
+    border-radius: 10px;
+}
+
+.blogText img {
+    width: 300px;
+    border: 0px solid black;
+    display: block;
+    margin: 0 auto;
 }

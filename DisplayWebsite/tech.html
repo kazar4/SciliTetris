@@ -7,7 +7,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-<script src="tech.js"></script>
+<script>
+    window.addEventListener('load', function() {
+    let converter = new showdown.Converter(),
+
+
+    // You could make another file here with all the markdown text and this would convert it
+    text      = '# hello, markdown!',
+    html      = converter.makeHtml(text);
+
+    document.querySelector('#container').innerHTML = html
+})
+
+</script>
 <body>
     <div class="video-background">
         <div class="black-screen blog"></div>

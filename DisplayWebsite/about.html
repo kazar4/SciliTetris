@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+<script>
+    window.addEventListener('load', function() {
+    let converter = new showdown.Converter(),
+
+
+    // You could make another file here with all the markdown text and this would convert it
+    text      =  `
+# We did a thing...
+
+![IMG_0196](https://hackmd-prod-images.s3-ap-northeast-1.amazonaws.com/uploads/upload_2545197be338ff8ce8c92ed43dd80a97.jpg?AWSAccessKeyId=AKIA3XSAAW6AWSKNINWO&Expires=1720514045&Signature=OOvuhgmdxZvnd50qig7Gc71%2BOVk%3D)
+
+My hope with this page is to show a bit more about how this came to be.
+
+Its easy to see the project and view it as it is, a building with a bunch of LEDs, but to us this project had so much more.
+
+This project wasn't suppose to happen, it was a whim, and there were plenty of times were we feel like giving up (or actually did). Days before we were set to showcase, critical parts of the system were entirely broken. But somehow we managed, even as we had to balance all our senior week events and goodbyes.
+
+Hundreds of hours were spent in order to make this silly little dream come true
+
+
+## Testimonies
+This project started out with just two, but as the deadline approached generous friends joined, spending hours helping with many tasks. Like most college projects we severaly underestimated the time and manpower needed for such a project (whoops), without the help from our friends and the Brown Community (IT, BDW monitors, and more) this project would not have happened.
+
+* [David](https://) ---> whatever you wanna talk about
+* [Josh](https://) recounts his experience learning how to solder EX:
+* .
+* ..
+* .
+
+
+
+## The project
+Here is an [overview](https://) from Kazen, our project manager, but if you want a more comphrension story on how this came to be then you can read them in order below:
+
+1. [The origin of the project](https://)
+2. [Our intial attempt and giving up](https://)
+3. [Regaining motivation](https://) 
+4. [Gaining skills](https://)
+5. [Getting University Approval](https://)
+6. [Oh no we are cooked](https://)
+7. [The Gulag](https://)
+8. [We did a thing](https://)
+
+
+## Inspiration
+
+This project serverd as both a celebration to the Class of 2024's graduation and as the 24th aniversary to the orignal iteration of the project by [tech house](http://bastilleweb.techhouse.org/index.html). Without them this idea would have never came to be, and its inspirational how they were able to do it given the tech avaliable at the time. 
+
+
+
+
+
+    `
+
+
+
+    html      = converter.makeHtml(text);
+
+    document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source src="scili.mov" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>
