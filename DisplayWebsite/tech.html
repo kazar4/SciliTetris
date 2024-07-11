@@ -13,7 +13,36 @@
 
 
     // You could make another file here with all the markdown text and this would convert it
-    text      = '# hello, markdown!',
+    text      = 
+`
+# The Tech
+
+This project covered a wide range of skills across STEM. For such a project you'd want full stack expereince, embedded programming, and engineering. Each distincitve part was actually quite mangeable, it was connecting them that made it so hard.
+
+This isn't to say you shouldn't attempt this kind of project if you don't have those skills, as these kind of projects are the best way to learn. For us this was a learning expereince, we gained a lot of skills from actually trying things and failing.
+
+## General Archietecture 
+
+Our goal was to create a system where each microcontroller or \`module\` could be installed in the SciLi window and control LEDs, then we would assign a coordinate afterwords which the game would use color each frame.
+
+This diagram showcases the overall design:
+![Screenshot 2024-07-10 at 3.33.24 PM](./photos/diagram.png)
+
+## Component Deep Dive
+
+The tech can be split up into 5 Main components:
+
+* [Custom PCB & Microcontroller](https://) \`KiCad\` \`ESP32\` \`Lots of Soldering...\`
+* [Microcontroller Firmware](https://) \`Arduino IDE\` \`C++\` \`Websockets\`
+* [Backend Websocket Server](https://) \`Python\` \`Websockets\` \`Sqlite3\` \`SSL\` \`Linux\`
+* [Admin Dashboard](https://) \`React\` \`Websockets\` \`SSL\` \`Lots of CSS...\`
+* [Games (Tetris, Snake, Pong, Canvas)](https://) \`PyGame\` \`Python\` \`Websockets\`
+
+
+## Github
+
+All the code can be found [here](https://github.com/kazar4/SciliTetris)!
+`
     html      = converter.makeHtml(text);
 
     document.querySelector('#container').innerHTML = html

@@ -289,3 +289,15 @@ bottom: 8%; */
     display: block;
     margin: 0 auto;
 }
+
+code {
+    background-color: #3f3f46;
+    /* padding: .2em 0; */
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 1px;
+    font-size: 85%;
+    border-radius: 3px;
+    font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+    color: rgb(212, 212, 216);
+}
