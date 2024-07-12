@@ -284,7 +284,7 @@ bottom: 8%; */
 }
 
 .blogText img {
-    width: 300px;
+    /* width: 300px; */
     border: 0px solid black;
     display: block;
     margin: 0 auto;
