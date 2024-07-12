@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'PixelFont';
-    src: url('pixel.ttf') format('truetype');
+    src: url('./fonts/pixel.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Inter';
-    src: url('inter.ttf') format('truetype');
+    src: url('./fonts/inter.ttf') format('truetype');
 }
 
 body {
