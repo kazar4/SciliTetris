@@ -301,3 +301,11 @@ code {
     font-family: Menlo,Monaco,Consolas,Courier New,monospace;
     color: rgb(212, 212, 216);
 }
+
+
+blockquote {
+    border-left-color: #71717a;
+    color: #a1a1aa;
+    border-left: 3px solid;
+    padding: 0 1em;
+}

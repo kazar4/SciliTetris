@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+#Bored at the Orlando Airport ~ David
+
+Kazen and I took a trip to Florida a couple of years ago to watch a rocket launch along with the rest of the satellite development club we were a part of. It was early June, and the initial hints of summer heat and humidity were just about ready to explode into a full on heat wave. We were waiting in the Orlando airport for everyone's flights back home during that warm afternoon. The airport mobs were still riled up after the staff announced another delay for my departure flight, so we slumped down near the closest charging station to take a break from the crowd. I was almost dozing off to sleep when Kazen gave me a nudge and handed me his phone. 
+
+### Bored at the Orlando Airport ~ David
+
+Kazen and I took a trip to Florida a couple of years ago to watch a rocket launch along with the rest of the satellite development club ([SBUDNIC](https://sites.google.com/view/sbudnic)) we were a part of. It was early June, and the initial hints of summer heat and humidity were just about ready to explode into a full on heat wave. We were waiting in the Orlando airport for everyone's flights back home during that warm afternoon. 
+
+
+![airport](../media/airport.jpeg =300x*)
+
+
+The airport mobs were still riled up after the staff announced another delay for my departure flight, so we slumped down near the closest charging station to take a break from the crowd. I was almost dozing off to sleep when Kazen gave me a nudge and handed me his phone. 
+
+He showed me a [website](http://bastilleweb.techhouse.org/index.html) for some sort of giant Tetris display that was active around 20 years ago. Some students from Brown managed to stick christmas lights onto our library building and control it using radio signals to play games.
+
+"We should recreate this before we graduate." He said to me.
+
+*"Yeah, right."* I wasn't sure if he was joking. 
+
+"Seriously! This would look so much better with the tech we have now. We could use LEDs instead of christmas lights, new microcontroller chips, Wi-Fi signals instead of radio..."
+
+I was so tired from travelling that I was ready to shake off the idea completely then and there, but judging by the way Kazen was talking about it, I didn't think he would let it go this easily. I took another look at the website and reconsidered his proposal with the biggest serving of skepticism I could muster. 
+
+It's true, the original project used technology considered ancient by today's standards. They strung up string lights along the windows using bulky frames and heavy-duty wires. Then they had to use radio signals to encode and decode messages from the wireless controller. Even a basic microcontroller these days had built in Wi-Fi capability, and we would also be using much less power with LEDs.
+
+The website also had plenty of pictures documenting the previous students' engineering process, complete with funny and personal captions describing who did what. And among the people photographed, all of them were smiling at the camera - every yellowed and grainy photo on that page was filled to the brim with nostalgia. I started flipping through the construction photos and landed on one showing the final product. The SciLi was lit up by reddish christmas lights against a dark gray sky. There seemed to be a little snow in the air, and the blurriness of the photo combined with the red-tinted lighting made it seem like it was taken in another universe. I started to wonder what something like this would look like in real life.
+
+"Hmm... alright... let's take some time to think about it. Even if we do want to this, we would need permission from the university first anyway. Do you really think we can do this?" I replied.
+
+"It'll be fine! We have the whole summer to draft some emails and designs. I'm sure we can figure something out."
+
+I handed Kazen's phone back to him. As hesitant as I was, my friend seemed so sure of himself that I wondered whether he really thought this whole thing through. The supplies, the hardware, the code, the university bureaucracy - how much could us two possibly pull off? But I think all Kazen was thinking about in that moment was how cool it would be to light up the SciLi again even though neither of us truly knew what we were getting ourselves into. What a dangerous idea to have in our heads. 
+
+They made the boarding call for my flight over the speakers, and I began to gather my carry-ons and make my way to the gates after saying my goodbyes for the summer. As I boarded the plane, I couldn't help but keep thinking about the Tetris display. Would it really be possible to make something like that happen again?
+
+[*Maybe...*](./2.html)
+
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>

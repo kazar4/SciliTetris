@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Oh no we are cooked
+
+Mid-April 2024:
+
+It was the small period of time after we got approval and before we had to recruit friends to join us days just before the installation day.
+
+We had gotten preliminary approval and had breadboard prototypes, but we still didn't know if this was going to work.
+
+We hadn't tested network latency or LED configurations. We were also entering finals very soon.
+
+**Our goal?**: To get to a stage where the tech was ready so that we could mass produce them comfortably before installation day. 
+
+But right now we were still optimistic, we knew there was going to be **a lot** of work to do, but we had not been able to quantify just how much yet. That lack of information was comforting at the time.
+
+
+## Small Scale Tests
+
+During our second approval meeting, I had just finished our prototype LED \`modules\` which we had to show to fire safety. These encapsulated our breadboard wires and networking code. Eventually, these would be put below every south-facing window of the entire building. 
+
+![prototype module](../media/prototype.png =500x*)
+
+Following those meetings we were only permitted to setup and test on the 7th floor. We'd spend a lot of time there over the next coming weeks.
+
+## The ups and downs of testing
+
+By now David was working diligently adapting Tetris code to connect to our codebase and running simulations (if you are curious we have a lot of cool info on our tech page), and I was frantically updating our LED \`modules\` firmware.
+
+// Adding Video Here Soon
+
+At least once a day I'd come into the Scili before the 7th floor closing time, update the firmware, and then wait till midnight to test our color updating system while standing in front of Macmillan. 
+
+These changes would usually include new firmware changes or new LED configurations. 
+
+It was pretty sad at first, our \`modules\` would often freeze and disappear from the network, and the light configuration we had at first did not light up the windows well at all (vertical LED strips).
+
+![bad led](../media/badled.png =300x*)
+
+Eventually, things started to turn around. We found a light configuration that worked well (having the LED strip horizontal on the bottom of the window with the curtains down), and we even fixed the crucial disconnect bug with the help of BDW monitor Joshua Phelps.
+
+Getting help from Joshua was actually pure chance. We had both been each other's TAs at different times at Brown, and I had run into his brother in the BDW. We were keeping the project mostly secret but since his brother was also a BDW monitor and saw all of our tech there wasn't any use hiding it. He mentioned that his Brother knew a lot about ESP32s which were the brains of our LED \`modules\` and gave us his number. Several times in the project Joshua went out of his way to help us whether it was a technical issue or even just being locked out of our workspace. His excitement over our project helped us realize how many people wanted this to happen again. It was a fellow hobbyist just being excited about us also making a project. It was wholesome and reminded us of the maker community Brown has.
+
+> If you're curious about what the wifi bug was, it turns out our modules *never actually froze*, my rushed code that I made during spring break was just bad LOL.
+> 
+> Every 5 seconds the code would check if a  \`module\` was still connected to our server and remove them from our connected list otherwise. However if a \`module\` lagged for example 6 seconds it would stay connected but our code would mistakenly tell us that it was not accessible anymore and had frozen.
+
+## Basic Testing Complete
+
+So we now had LED \`modules\` that did most of what they intended. There were still some issues with latency and the Scili's WIFI being weak, but it was time to scale up.
+
+During this testing, we had to make a few modules. And what we had learned during this time is that **we were cooked**. Making just 5 modules for testing took us multiple hours, and we had about 60 more to make.
+
+By now it was nearing the end of the finals period. Our free time was opening up but senior week would start soon. Not only did we not have essential code and games done, but there were also days and days of manual labor needed to make enough LED strips and \`modules\` for the SciLi.
+
+We have a lot of names for what followed. Hundreds of hours of grueling but rewarding work. However, even now I wouldn't have had it any other way.
+
+Next stop, the [Gulag](./7.html) (definitely not the most tasteful name, but it also served as our codename as we were still keeping the project secret, and friends had started to wonder why we were disappearing for hours each day)
+
+
+
+
+
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>
