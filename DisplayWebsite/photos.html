@@ -5,6 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SciLi Tetris & Games</title>
     <link rel="stylesheet" href="style.css">
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .gallery-item {
+            margin: 15px;
+            text-align: center;
+        }
+        .gallery-item img {
+            max-width: 20vw;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item p {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #popup img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #popup p {
+            margin-top: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+        #popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 500;
+        }
+    </style>
+
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 <script>
@@ -13,7 +89,7 @@
 
 
     // You could make another file here with all the markdown text and this would convert it
-    text      = '# In Construction!',
+    text      = '# Photos and Videos',
     html      = converter.makeHtml(text);
 
     document.querySelector('#container').innerHTML = html
@@ -29,13 +105,62 @@
         </video>
     </div>
 
-    <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.open('./index.html')" style="display: block;">
+    <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = './index.html'" style="display: block;">
 
-    <div class="content">
+    <div class="photos">
 
-        <div id="container" class="blogText">
+        <div id="container" class="blogText"></div>
 
+        <div class="gallery">
+            <div class="gallery-item" onclick="showPopup(this)">
+                <img src="./media/70percent.jpeg" alt="Image 1">
+                <p>Image 1 description</p>
+            </div>
+            <div class="gallery-item" onclick="showPopup(this)">
+                <img src="image2.jpg" alt="Image 2">
+                <p>Image 2 description</p>
+            </div>
+            <div class="gallery-item" onclick="showPopup(this)">
+                <img src="image3.jpg" alt="Image 3">
+                <p>Image 3 description</p>
+            </div>
         </div>
+    
+        <div id="overlay" onclick="hidePopup()"></div>
+        <div id="popup">
+            <button id="popup-close" onclick="hidePopup()">X</button>
+            <img id="popup-img" src="" alt="Popup Image">
+            <p id="popup-text"></p>
+        </div>
+        
+            <div id="overlay" onclick="hidePopup()"></div>
+            <div id="popup">
+                <button id="popup-close" onclick="hidePopup()">X</button>
+                <img id="popup-img" src="" alt="Popup Image">
+            </div>
+        
+            <script>
+                function showPopup(element) {
+                    var popup = document.getElementById("popup");
+                    var popupImg = document.getElementById("popup-img");
+                    var popupText = document.getElementById("popup-text");
+                    var overlay = document.getElementById("overlay");
+                    
+                    popupImg.src = element.querySelector("img").src;
+                    popupText.textContent = element.querySelector("p").textContent;
+                    popup.style.display = "block";
+                    overlay.style.display = "block";
+                }
+        
+                function hidePopup() {
+                    var popup = document.getElementById("popup");
+                    var overlay = document.getElementById("overlay");
+                    
+                    popup.style.display = "none";
+                    overlay.style.display = "none";
+                }
+            </script>
+
 
     </div>
 </body>

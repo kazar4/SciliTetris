@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<script src="../../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Lots and lots of Soldering
+
+I guess my part in sci-li tetris began, unoficially, when I took CS1600 with Kazen in Fall 2023. For that final project, I worked with Kazen and some friends to build a miniature model of the sci-li which supported simple games like snake. It was my first time taking a class with any hardware component (even though it was basically just 5 LED strips), and I enjoyed the challenges and little hiccups that came with integrating game logic and those LEDs.
+
+That's why when Kazen told me that he wanted to do it again, but bigger, I was more than happy to extend a helping hand. The first day I came to check things out, I thought I would be writing some game logic, digging around the codebase a bit, maybe fixing some small bugs... instead I was in the BDW, protective glasses on, getting my first soldering tutorial from the man himself.
+
+After that the rest is [history](../7.html).
+
+(Yes, I soldered a bunch of things together. :P)
+
+![josh soldering our LED modules](../../media/joshsolder.png =500x*)
+
+## Thank you's:
+
+Big shoutout to Kazen and David for making this all possible and also for suffering alongside me in the BDW. Seeing all the time and effort they put in the project motivated me to my best, even if the job was relatively small and unglamorous. Nothing like early mornings, late nights, and a healthy dose of solder fumes for some senior spring semester bonding.
+
+I'd also like to thank Avi and April for stepping in when it was crunch time and deadlines were looking tight. They worked really diligently and picked up things quickly. Special shoutout to April especially for picking up one of my late-night soldering shifts (Jess thanks you too).
+
+And thanks to all the people who came out and showed support for the project, it was super exciting to see how my small contributions could bring joy and excitement to friends and the larger community at Brown.
+
+Thankful for my 4 years here and hope to be a part of exciting projects in the future!
+
+-- Josh
+
+
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+
+    <!-- <div id="backContainer"> -->
+        <input type="image" src="../../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../../about.html'" style="display: block;">
+
+    <!-- </div> -->
+
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>
