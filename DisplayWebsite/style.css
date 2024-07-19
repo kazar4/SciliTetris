@@ -308,6 +308,7 @@ blockquote {
     color: #a1a1aa;
     border-left: 3px solid;
     padding: 0 1em;
+<<<<<<< HEAD
 }
 
 #goback {
@@ -318,4 +319,6 @@ left: 0;
 padding: 10px;
 cursor: pointer;
 z-index: 9000;
+=======
+>>>>>>> b627b5022f42886d3538fd722de1da9b023e9439
 }
