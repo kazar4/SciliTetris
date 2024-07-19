@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Gaining Skills ~ Kazen
+
+Ironically this part actually differs a lot from our tech documentation. A lot of the skills we needed for the project we either knew beforehand or learned during the project itself (with a few exceptions).
+
+What this period really entailed was gaining confidence, and taking steps to convince ourselves that this project was realistic. 
+
+In the few times I had tried to work on parts of this project beforehand things usually went wrong. Namely spending 3 hours trying to connect an Arduino to wifi and it not working. (Which is a task that the entire project would rely on). not to mention all the other tasks we could not even envision. What we didn't know was daunting and there was so much of it. Like how to effectively light up a room with LEDs and deal with light spreading. 
+
+David also had switched from premed to CS sophomore year, and had a lot of worries about his ability. When we first imagined the project he had just finished the intro sequence. Its been a pleasure watching him grow and gain confidence as he took more interemedite and advanced classes, growing into quite an amazing coder. I've been coding since middle school and there have been plenty of times I've been surprised by his skill and ability, which in several domains goes past me. 
+
+## Mininature Scili
+
+The summer before senior year I started preparing, buying parts and watching small tutorials. However during Fall 2023 is when the project became even more real. 
+
+I ended up taking an embedded system class ([CSCI 1600](https://brown-cs1600.github.io/projects/)) which had a final project. While the class content itself did not actually teach me that many project relevent skills I did not already know, its final project gave me a space to self learn and try new things. For this class we made a 3d printed miniature version of the Scili that could remotely play the game Snake. 
+
+![Scili](https://brown-cs1600.github.io/assets/images/projects/Sci-Li.jpg =300x*)
+
+After finishing it this was the proof of concept I needed. The urgency of the final project helped me figure out some essential blockers that stopped me the summer before. Namely the WIFI Arduino connection I mentioned earlier. Turns out it being 3am, 2 days before the project due date forces you to get some stuff working.
+
+It’d be safe to say after this project that we now had all the skills necessary to complete the project. And most importantly the confidence. However using those skills to actually do it would be a whole other ordeal
+
+But im getting ahead of myself, we still didn't have [university approval](./5.html) (whoops). Something that should of been done 2 years ago.
+
+
+
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>

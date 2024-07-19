@@ -15,23 +15,13 @@ let video = null;
 
     window.addEventListener('load', function() {
 
-
-//  video = document.getElementById("scilimp4");
-
-// const videoRequest = fetch("./scili2.mp4").then(response => response.blob());
-//     videoRequest.then(blob => {
-//       console.log('first fetch : Safari is downloading video','video size : ',blob.size);
-//       video.src = window.URL.createObjectURL(blob);
-//     });
-
     let converter = new showdown.Converter(),
-
 
     // You could make another file here with all the markdown text and this would convert it
     text      =  `
 # We did a thing...
 
-![scili](photos/scili.png =*x300)
+![scili](./media/scili.png =*x300)
 
 My hope with this page is to show a bit more about how this came to be.
 
@@ -45,25 +35,21 @@ Hundreds of hours were spent in order to make this silly little dream come true
 ## Testimonies
 This project started out with just two, but as the deadline approached generous friends joined, spending hours helping with many tasks. Like most college projects we severaly underestimated the time and manpower needed for such a project (whoops), without the help from our friends and the Brown Community (IT, BDW monitors, and more) this project would not have happened.
 
-* [David](https://) ---> whatever you wanna talk about
-* [Josh](https://) recounts his experience learning how to solder EX:
-* .
-* ..
-* .
+* [April's](./about/testimonies/april.html) experience joinging the project 
 
 
 
 ## The project
-Here is an [overview](https://) from Kazen, our project manager, but if you want a more comphrension story on how this came to be then you can read them in order below:
+Here is an [overview](./about/summary.html) of the project, but if you want a more comphrension story on how this came to be then you can read them in order below:
 
-1. [The origin of the project](https://)
-2. [Our intial attempt and giving up](https://)
-3. [Regaining motivation](https://) 
-4. [Gaining skills](https://)
-5. [Getting University Approval](https://)
-6. [Oh no we are cooked](https://)
-7. [The Gulag](https://)
-8. [We did a thing](https://)
+1. [The origin of the project](./about/1.html)
+2. [Our intial attempt and giving up](./about/2.html)
+3. [Regaining motivation](./about/3.html) 
+4. [Gaining skills](./about/4.html)
+5. [Getting University Approval](./about/5.html)
+6. [Oh no we are cooked](./about/6.html)
+7. [The Gulag](./about/7.html)
+8. [We did a thing](./about/8.html)
 
 
 ## Inspiration
@@ -92,6 +78,9 @@ This project serverd as both a celebration to the Class of 2024's graduation and
             Your browser does not support the video tag.
         </video>
     </div>
+
+    <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = './index.html'" style="display: block;">
+
     <div class="content">
 
         <div id="container" class="blogText">

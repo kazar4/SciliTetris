@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Our intial attempt and giving up ~ Kazen
+
+If you read that last page, then this would be the summer directly after the Sattelite Launch, so 2022, or the summer after our sophmore year. 
+
+We spent a little bit of the time making a basic project plan. We envisioned that the hardest part would be getting approval from the university and so we figured sending a comphrensive document early would be helpful. 
+
+> You can view it [here](../media/proposal1.pdf), but it really was a rushed document. We didn't know enough about the project to fully flesh it out. In comparrsion to our final project proposal that we gave senior year the difference is night and day
+
+We ended up sending it to Dean Zia who gave us recommendations on who we should forward the email to. We also began to see a lot of the complications with getting approval. The last team had to get approval from several different offices and it seemed like a large ordeal to get approval. We both had internships that summer and when school started we continued to be busy. 
+
+At this point we didn’t have any concrete progress done and we still had not sent the formal approval email to anyone other than Dean Zia. 
+
+The scary thing about putting tasks off is you don't even realize till later that you gave up. But it soon hit us. We didn't have the confidence to pull off the project or the same passion when we originally came up with the idea.
+
+Thankfully this wasn't the end. However first, we had to [regain motivation](./3.html)
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>

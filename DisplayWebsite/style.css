@@ -16,7 +16,7 @@ body {
     overflow: hidden;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     background-color: #000; /* Added to ensure contrast */
 }
 
@@ -300,4 +300,22 @@ code {
     border-radius: 3px;
     font-family: Menlo,Monaco,Consolas,Courier New,monospace;
     color: rgb(212, 212, 216);
+}
+
+
+blockquote {
+    border-left-color: #71717a;
+    color: #a1a1aa;
+    border-left: 3px solid;
+    padding: 0 1em;
+}
+
+#goback {
+position: absolute;
+width: 40px;
+top: 0;
+left: 0;
+padding: 10px;
+cursor: pointer;
+z-index: 9000;
 }

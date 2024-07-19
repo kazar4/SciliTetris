@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Getting University Approval ~ Kazen
+
+
+It's Spring 2024. We've done everything we can skills-wise to prepare for the project, but there's an issue.
+
+**We graduate this semester...**
+
+In only **1** **semester**, we would have to get approval for the project, create 70 \`modules\` and hundreds of LED strips, code multiple games, and make a server to sync and connect them all. Many of these tasks in our original proposal we had given months of time, but now we only had 1 semester.
+
+I'd like to say I'm usually pretty good under pressure, but even this was a bit much. It didn't help that we had a very busy schedules.
+
+At the time we viewed **project approval** to be one of the **hardest** tasks of the project. Right now it was do or die.
+
+## The Approval Mindset
+My goal here was how could I:
+\`(1) maximize our chances of approval\` while doing \`(2) as minimal preliminary work as possible\`
+
+This was because it would suck to do 50% of the project beforehand just for them to reject it, but at the same time, we **really** wanted this to happen. So how much work were we willing to do before asking for approval (the idea here is the more complete work we have the higher chance Brown admin would see this project as realistic and give us the go-ahead).
+
+We probably ended up doing around 20% of the project beforehand. And due to my busy class schedule, I didn't have a ton of free time until spring break. I decided to stay on campus that break and focus completely on the project, putting in 7-10 hour work days almost every day during that week. 
+
+At the end of the week, I had a fully functioning prototype of the backend server, and a working circuit to power and remotely light the LEDs. It was also around here that David started to join the development effort fully seeing that I still wanted to complete it. Like me last year he had accepted that the project would probably not happen. 
+
+The first working circuit that could be controlled over WIFI with our backend server
+![basic prototype breadboard](../media/breadboard.png =500x*)
+
+## Proposal V2
+
+With some engineering work done, we realized the importance of creative skills. Sure we could code and solder components but we needed to be able to **sell** the idea to people. Our old proposal [here](../media/proposal1.pdf) would not cut it
+
+So we made a more complete [proposal email](./extra/email.html) and [document](../media/SciliGames.pdf).
+
+> Quick aside, but my original email was terrible. A class I heavily recommend is TAPS 0220 (Persuasive Communication). Through this class I was able to improve at public speaking and also learn how to make more effective emails, one of the instructors, Cliff Dutton even helped me edit my original email, you can see the comparison [here](extra/comparison.html), its night and day.
+
+
+It was not just a passion project for us anymore. Cliff also helped us define our mission more clearly. It became a celebration of the 24th anniversary of the original project and the class of 24th graduation. I wanted more than anything for this class to see this project, our class has done so many amazing things and persevered through so much from COVID, it was our turn to do something cool.
+
+We sent the email to the original contacts Dean Zia gave us, who then forwarded our email to the Director of Library Facilities (Joseph Campbell) and the Scili's Building Manager (Paul Bassett) who became very involved in the approval and logistics of the project. We then had an in-person meeting with them and got tentative approval. At later points, we would have to show the project to fire safety. Like we envisioned the new technology made the project a lot more fire compliant. 
+
+> At the time we viewed project approval to be one of the the **hardest** tasks of the project. Right now it was do or die.
+
+I'm quoting myself here because as you can see ironically the approval process ended up being quite simple if not one of the easiest parts of the project. Now that we had approval, things were really going to pick up, more than we could ever imagine.
+
+## Starting Line
+You could say this is now the starting point of the project. We could work knowing we had full support from admin. The only reason the project would fail now is if we **failed**
+
+By the time approval was over we had just a month and a half left before graduation, with a planned showcase during Senior Week and Convocation. We orignally wanted to show the whole school (the other classes), but we just didn't have that luxury anymore.
+
+With the bulk of the project still to come, we still hadn't figured out if this was even realistic with a month and a half. So it was time to [start on that](./6.html).
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>

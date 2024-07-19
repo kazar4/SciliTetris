@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<script src="../../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Proposal Email
+
+> Hello,
+> 
+> As a senior studying Computer Science and Cognitive Neuroscience I care a lot about the way technology can be used with art and gaming to influence a large population. The Sciences Library has been historically used to communicate these messages not only inside itself, but also with its own walls and windows.
+> 
+> We propose to resurrect the [Sciences Library Tetris Project](http://bastilleweb.techhouse.org) that was first implemented 24 years ago by Tech House. In its new form the project will have more **color options**, more **games**, and be packed in a **modern** and **easily reproducible** system.
+> 
+> This project would celebrate not only the original’s **24th anniversary** but also the class of **24’s graduation**. We want to celebrate the hard work and perseverance of this class. With both of these celebrations in mind, it is the perfect time to bring back such a project. Between games the text '24 would be displayed combined with colorful graphics.
+> 
+> Two years ago, Dean Zia recommended we contact you as the next step in our proposal. We’ve waited until now so that our project is more fully formed. We have now proven the feasibility of the project at small scale physically and at large scale with simulations. We would love to share that with you.
+> 
+> While there is much to do before we graduate, given approval we will be able to proceed and complete it by May 15th.
+> 
+> This project was one of the main things that made me go to Brown. The excitement and passion as technology, art, and gaming merges is something we want to share to the world and greater Brown community. As the class of 24 leaves the gates we hope to help empower us all to continue to do great things, and I believe this project can be a facilitator of that.
+> 
+> Linked [here](https://drive.google.com/file/d/1MzE6N-JT5UCzsw5Hnx3ACSEer4fL3DmJ/view) is a project specification document which gives more information on our goals and progress.
+> 
+> Please let me know if this meets with approval, or if you would like to meet to discuss it in more detail.
+> 
+> *Kazen Gallman*
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>

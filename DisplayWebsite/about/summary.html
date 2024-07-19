@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Project Overview!
+
+On May 23rd, 2024, The Scili was lit up again, 24 years later. 
+
+Two years prior, Kazen Gallman '24 and David Chen '24 had an idea. They were both coming back from Florida and were part of a Sattelite Development Club called [SBUDNIC](https://www.sbudnic.space) which had just launched their satellite. 
+
+While in the airport waiting for their flight they had an idea to modernize an old Tech House project: [Scili Tetris](http://bastilleweb.techhouse.org). 
+
+![tech house scili tetris photo](../media/techhouse.png =300x*)
+
+The project was incredibly impressive but was limited by the technology and budget at the time. The setup used Christmas lights with only one color option and was not very reproducible. Furthermore, according to their website, Tech House did not have plans to do the project again.
+
+This felt like the perfect time for the project to come back. And so we pitched *Scili Tetris & Games* to the university. Advances in technology would allow for more **colors**, more **games**, and a **reproducible system** that could be set up easily.
+
+This project would celebrate not only the 24th anniversary of the project but also the class of '24's graduation.
+
+## Timeline
+
+We came up with the project during the summer after our sophomore year and finished it just days before we graduated.
+
+It took a while to gain the confidence needed to pull this kind of project off. We even gave up for a while after drafting our first proposal. We were scared of everything, how we'd get approval, how well the LEDs would work, how many hours it'd take, and so many more. 
+
+But over the years our desire to do this project festured until it became something we knew we **had** to do. 
+
+During the Spring of 2024, our last semester the project really started. We had small bits of preliminary work, but tons of work to go.
+
+In just **1 semester**, we would have to get approval for the project, create 70 control \`modules\`, solder and prep hundreds of LED strips, code multiple games, and make a server to sync and connect them all. Many of these tasks in our original proposal we had given months of time, but now we only had 1 semester.
+
+During April and May the project started to come together. We recruited 3 friends who were essential in us finishing assembly in time (Josh Liu '24, April Xu '24, and Avi Trost '24). We worked tirelessly to make this project happen. Senior week especially (6/17 - 6/24) was a rush, during the days we'd try to enjoy all the events and have our last hurrahs with friends, but during any breaks or nights, we would be grinding in order to finish on time.
+
+We generally kept the project a secret, partly so it could be a surprise, but also because we did not know if it would work. We were fixing bugs and issues just hours before our launch time. 
+
+## Launch
+
+Despite all of our issues, we made it. By this point, we had sent a flyer on our Class's Instagram but the word had not gotten out that much. It took a lot of students off-guard. Students, families, and alumni walked by in awe first by the Scili glowing, but then by the fact that they could actually **play on it**.
+
+Over the next couple of days, we showcased the project 2 more times. The last day was the night before our graduation and a large turnout. 
+
+![Scili Tetris](../media/sciligame.jpeg =300x*)
+
+This project was really a testament to the beautiful insanity of the class of '24. In our short 4 years here, even with our freshmen year fragmented by Covid, we had done amazing things. Countless of our peers made new clubs, new projects, new events, and even new campus cultures.
+
+To us, this was our cool project to add to the mix.
+
+## Thank You
+
+We would like to thank all the people who made this project possible. Not only our team but the staff and others who supported us through our issues. 
+
+> Paul Bassett and Joseph Campbell for giving us approval, IT staff Elvis Seth and Marc Doughty for helping us with WIFI, Joshua Phelps '24 for bug testing and room access, countless Scili staff and security guards, and the class of '24 for giving us the motivation and environment to do such a project
+
+
+
+        
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+})
+
+</script>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+
+    <div class="content">
+
+        <div id="container" class="blogText">
+
+        </div>
+
+    </div>
+</body>
+</html>
