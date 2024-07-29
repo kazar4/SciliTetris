@@ -73,6 +73,10 @@ Junior year quickly came to a close. But, out of my reasons for not doing the pr
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }   
 })
 
 </script>
@@ -85,7 +89,7 @@ Junior year quickly came to a close. But, out of my reasons for not doing the pr
         </video>
     </div>
 
-    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html#theproject'" style="display: block;">
 
     <div class="content">
 

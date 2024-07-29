@@ -47,6 +47,10 @@ All the code can be found [here](https://github.com/kazar4/SciliTetris)!
     html      = converter.makeHtml(text);
 
     document.querySelector('#container').innerHTML = html
+
+    if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+    }   
 })
 
 </script>
@@ -59,7 +63,7 @@ All the code can be found [here](https://github.com/kazar4/SciliTetris)!
         </video>
     </div>
 
-    <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.open('./index.html')" style="display: block;">
+    <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = './index.html'" style="display: block;">
 
     <div class="content">
 

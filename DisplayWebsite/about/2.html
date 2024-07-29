@@ -38,6 +38,10 @@ Thankfully this wasn't the end. However first, we had to [regain motivation](./3
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }   
 })
 
 </script>
@@ -50,7 +54,7 @@ Thankfully this wasn't the end. However first, we had to [regain motivation](./3
         </video>
     </div>
 
-    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html#theproject'" style="display: block;">
 
     <div class="content">
 

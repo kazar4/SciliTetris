@@ -17,11 +17,7 @@
         // You could make another file here with all the markdown text and this would convert it
         text      =  `
 
-#Bored at the Orlando Airport ~ David
-
-Kazen and I took a trip to Florida a couple of years ago to watch a rocket launch along with the rest of the satellite development club we were a part of. It was early June, and the initial hints of summer heat and humidity were just about ready to explode into a full on heat wave. We were waiting in the Orlando airport for everyone's flights back home during that warm afternoon. The airport mobs were still riled up after the staff announced another delay for my departure flight, so we slumped down near the closest charging station to take a break from the crowd. I was almost dozing off to sleep when Kazen gave me a nudge and handed me his phone. 
-
-### Bored at the Orlando Airport ~ David
+# Bored at the Orlando Airport ~ David
 
 Kazen and I took a trip to Florida a couple of years ago to watch a rocket launch along with the rest of the satellite development club ([SBUDNIC](https://sites.google.com/view/sbudnic)) we were a part of. It was early June, and the initial hints of summer heat and humidity were just about ready to explode into a full on heat wave. We were waiting in the Orlando airport for everyone's flights back home during that warm afternoon. 
 
@@ -62,13 +58,17 @@ They made the boarding call for my flight over the speakers, and I began to gath
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }
 })
 
 </script>
 <body>
 
     <!-- <div id="backContainer"> -->
-        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html#theproject'" style="display: block;">
 
     <!-- </div> -->
 

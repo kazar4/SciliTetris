@@ -73,6 +73,10 @@ With the bulk of the project still to come, we still hadn't figured out if this 
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }   
 })
 
 </script>
@@ -84,12 +88,9 @@ With the bulk of the project still to come, we still hadn't figured out if this 
             Your browser does not support the video tag.
         </video>
     </div>
-<<<<<<< HEAD
 
-    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html'" style="display: block;">
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html#theproject'" style="display: block;">
 
-=======
->>>>>>> b627b5022f42886d3538fd722de1da9b023e9439
     <div class="content">
 
         <div id="container" class="blogText">

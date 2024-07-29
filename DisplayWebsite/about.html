@@ -68,6 +68,10 @@ This project serverd as both a celebration to the Class of 2024's graduation and
     html      = converter.makeHtml(text);
 
     document.querySelector('#container').innerHTML = html
+
+    if (window.location.href.includes("#")) {
+        document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+    }
 })
 
 </script>

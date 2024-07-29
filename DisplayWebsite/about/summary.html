@@ -75,6 +75,10 @@ We would like to thank all the people who made this project possible. Not only o
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }   
 })
 
 </script>
