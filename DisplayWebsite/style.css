@@ -70,6 +70,7 @@ body {
     text-align: center;
     color: white;
     font-family: Arial, sans-serif;
+    overflow-y: auto;
 
 }
 

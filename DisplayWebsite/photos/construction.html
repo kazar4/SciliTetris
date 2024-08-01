@@ -5,106 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SciLi Tetris & Games</title>
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="./photo.css">
 
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-        .gallery-item {
-            margin: 15px;
-            text-align: center;
-        }
-        .gallery-item img {
-            max-width: 20vw;
-            height: auto;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .gallery-item img:hover {
-            transform: scale(1.05);
-        }
-        .gallery-item p {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        #popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            max-width: 90vw;
-            max-height: 90vh;
-            overflow: auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        #popup img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        #popup p {
-            margin-top: 10px;
-            font-size: 18px;
-            text-align: center;
-        }
-        #popup-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #fff;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px 10px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 500;
-        }
-    </style>
+    <script src="../showdown.min.js"></script>
+    <script src="./photo.js"></script>
 
 </head>
-<script src="../showdown.min.js"></script>
-<script>
-    window.addEventListener('load', function() {
-    let converter = new showdown.Converter(),
-
-
-    // You could make another file here with all the markdown text and this would convert it
-    text      = '# Photos and Videos',
-    html      = converter.makeHtml(text);
-
-    document.querySelector('#container').innerHTML = html
-
-    if (window.location.href.includes("#")) {
-        document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
-     }   
-})
-
-</script>
 <body>
     <div class="video-background">
         <div class="black-screen blog"></div>
         <video autoplay muted loop>
-            <source src="../scili.mp4" type="video/mp4">
+            <source src="../sciliBit.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
@@ -112,60 +23,119 @@
     <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../photos.html'" style="display: block;">
 
     <div class="photos">
-
         <div id="container" class="blogText"></div>
 
         <div class="gallery">
-            <div class="gallery-item" onclick="showPopup(this)">
-                <img src="../media/70percent.jpeg" alt="Image 1">
-                <p>Image 1 description</p>
+
+            <!-- https://youtu.be/Za33EXwuKro -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/Za33EXwuKro">
+                <img src="https://img.youtube.com/vi/Za33EXwuKro/maxresdefault.jpg" alt="YouTube Video">
+                <p>Short video of our first soldering session</p>
             </div>
-            <div class="gallery-item" onclick="showPopup(this)">
-                <img src="image2.jpg" alt="Image 2">
-                <p>Image 2 description</p>
+
+            <!-- https://youtu.be/zCwcYDT5Xe8 -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/zCwcYDT5Xe8">
+                <img src="https://img.youtube.com/vi/zCwcYDT5Xe8/maxresdefault.jpg" alt="YouTube Video">
+                <p>Josh makes progress on the ESP Modules!</p>
             </div>
-            <div class="gallery-item" onclick="showPopup(this)">
-                <img src="image3.jpg" alt="Image 3">
-                <p>Image 3 description</p>
+
+            <!-- https://youtu.be/pgCGJUIRwbw -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/pgCGJUIRwbw">
+                <img src="https://img.youtube.com/vi/pgCGJUIRwbw/maxresdefault.jpg" alt="YouTube Video">
+                <p>The first part of our LED creating process. We soldering the LED strip to a new wire so it can be crimped
+                    This used to take us 5+ min each time but by the end we had gotten very efficient at it.
+                </p>
             </div>
+
+            <!-- https://youtu.be/6y4L2Jru24M -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/6y4L2Jru24M">
+                <img src="https://img.youtube.com/vi/6y4L2Jru24M/maxresdefault.jpg" alt="YouTube Video">
+                <p>The second part of our LED creating process, we take the new LED strip with a wire and crimp on a connector
+                    This is so we can plug it into our ESP Module. This process also used to take 5+ min and we'd often mess up the crimp.
+                    After this step we wrap the solder area on the strip with electrical tape and pack them up for future assembly on the Scili
+                </p>
+            </div>
+
+            <!-- https://youtube.com/shorts/J9NhssHb97M -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/J9NhssHb97M">
+                <img src="https://img.youtube.com/vi/J9NhssHb97M/maxresdefault.jpg" alt="YouTube Video">
+                <p>An early test after creating our Admin website and a simulation website on the left side.
+                    The admin website lets us assign websockets to coordinates on the Scili. In this case the simulation
+                    has a websocket for each pixel which matches what it would be like when we have 55 ESP modules on the Scili
+                </p>
+            </div>
+
+            <!-- https://youtube.com/shorts/0D4sTRlq8YA -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/0D4sTRlq8YA">
+                <img src="https://img.youtube.com/vi/0D4sTRlq8YA/maxresdefault.jpg" alt="YouTube Video">
+                <p>After receiving our PCB for our ESP module this was our first test using the firmware to control two LED strips through it</p>
+            </div>
+
+            <!-- https://youtu.be/Dj3uwSwbKbg -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/Dj3uwSwbKbg">
+                <img src="https://img.youtube.com/vi/Dj3uwSwbKbg/maxresdefault.jpg" alt="YouTube Video">
+                <p>Our first test on a window using ESPs on breadboards (we had not made the PCB yet), tested in Page Rob</p>
+            </div>
+
+            <!-- https://youtu.be/k-PPon4Rd9o -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/k-PPon4Rd9o">
+                <img src="https://img.youtube.com/vi/k-PPon4Rd9o/maxresdefault.jpg" alt="YouTube Video">
+                <p>First test of our admin software on a breadboard in my room</p>
+            </div>
+        
+            <!-- https://youtube.com/shorts/yq3ucWa4DqM -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/yq3ucWa4DqM">
+                <img src="https://img.youtube.com/vi/yq3ucWa4DqM/maxresdefault.jpg" alt="YouTube Video">
+                <p>May 15th, After testing several LED arrangements on the 7th floor, Kazen and David find an arrangement that looks good.
+                    This was our first confirmation that the LEDs could look nice on the Scili, and was a big relief since our showcase date was in about 10 days and
+                    our past tests had not looked that good
+                </p>
+            </div>
+
+              <!-- https://youtube.com/shorts/TA7pG-gS100 -->
+              <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/TA7pG-gS100">
+                <img src="https://img.youtube.com/vi/TA7pG-gS100/maxresdefault.jpg" alt="YouTube Video">
+                <p>Talking with the team after our first big 10 hour work day</p>
+            </div>
+
         </div>
     
         <div id="overlay" onclick="hidePopup()"></div>
         <div id="popup">
             <button id="popup-close" onclick="hidePopup()">X</button>
             <img id="popup-img" src="" alt="Popup Image">
+            <iframe id="popup-iframe" src="" frameborder="0" allowfullscreen></iframe>
             <p id="popup-text"></p>
         </div>
-        
-            <div id="overlay" onclick="hidePopup()"></div>
-            <div id="popup">
-                <button id="popup-close" onclick="hidePopup()">X</button>
-                <img id="popup-img" src="" alt="Popup Image">
-            </div>
-        
-            <script>
-                function showPopup(element) {
-                    var popup = document.getElementById("popup");
-                    var popupImg = document.getElementById("popup-img");
-                    var popupText = document.getElementById("popup-text");
-                    var overlay = document.getElementById("overlay");
-                    
-                    popupImg.src = element.querySelector("img").src;
-                    popupText.textContent = element.querySelector("p").textContent;
-                    popup.style.display = "block";
-                    overlay.style.display = "block";
-                }
-        
-                function hidePopup() {
-                    var popup = document.getElementById("popup");
-                    var overlay = document.getElementById("overlay");
-                    
-                    popup.style.display = "none";
-                    overlay.style.display = "none";
-                }
-            </script>
-
-
     </div>
+
+    <script>
+        window.addEventListener('load', function() {
+
+            let converter = new showdown.Converter(),
+            text = `
+# Testing & Construction
+            `,
+            html = converter.makeHtml(text);
+
+            document.querySelector('#container').innerHTML = html;
+
+            let image_descriptions = [
+                "After getting a good LED configuration we expanded our modules to the 3rd and 11th floor. The light spreading between pixels was a lot better than expected so this was excitng to see at scale",
+                "Some more testing with different colors",
+                "We tried using a protoboard before making a PCB design. These took too long to wire which is why we made a PCB. You can see here our 3 components, our ESP32 to control the LEDs & use WIFI, the logic level converter to give the LEDs the correct data signal, and the JST connectors for the LEDs",
+                "Some of our first ESP modules after receving a PCB. We were wondering if we should use standoffs or not (left vs right). Eventually we also switched to a white PCB",
+                "Maybe 10% of the LEDs we needed for the project",
+                "Finished LED strips with a connector were wrapped here so transport more easily. There were probably 30 LED strips here, out of 110",
+                "Some of the white PCBs that Josh had just soldered. He had never soldered before and improved a lot while making these",
+                "A whiteboard full of logistics, including code designs and how many parts we had to order",
+                "The old PCB vs the final white one. The text on the PCB was flipped so it would be visible when mounted to the wall"
+            ]
+
+            loadGallery(9, "construction", image_descriptions);
+
+            truncateText();
+        });
+    </script>
 </body>
 </html>

@@ -6,7 +6,6 @@
     <title>SciLi Tetris & Games</title>
     <link rel="stylesheet" href="style.css">
 
-
     <style>
       @font-face {
     font-family: 'PixelFont';
@@ -50,7 +49,7 @@
 
   a {
     margin-top: 20px;
-    margin-left: 20px;
+    /* margin-left: 20px; */
   }
 
   .projects {
@@ -140,7 +139,6 @@
         
 
     </style>
-
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 <script>
@@ -149,7 +147,11 @@
 
 
     // You could make another file here with all the markdown text and this would convert it
-    text      = '# Photos and Videos',
+    text      = `
+# Photos and Videos
+
+Contact [kazar444@icloud.com](mailto::kazar444@icloud.com) for high-res versions of these photos
+    `,
     html      = converter.makeHtml(text);
 
     document.querySelector('#container').innerHTML = html
@@ -164,7 +166,7 @@
     <div class="video-background">
         <div class="black-screen blog"></div>
         <video autoplay muted loop>
-            <source src="scili.mp4" type="video/mp4">
+            <source src="sciliBit.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
@@ -172,7 +174,6 @@
     <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = './index.html'" style="display: block;">
 
     <div class="photos">
-
         <div id="container" class="blogText"></div>
 
             <div class="cardSizer">
@@ -190,7 +191,7 @@
                     </span>
                 </a>
 
-                <a href="./photos/assembly.html" class="card">
+                <a href="./photos/setup.html" class="card">
                     <img src="media/window.png" alt="balloon with an emoji face" class="card__img">
                     <span class="card__footer">
                     <span>Assembly & Setup</span>
@@ -225,5 +226,75 @@
 
 
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script>
+        window.addEventListener('load', function() {
+            truncateText();
+
+            let converter = new showdown.Converter(),
+            text = `
+# Photos and Videos
+
+Contact [kazar444@icloud.com](mailto::kazar444@icloud.com) for high-res versions of these photos
+
+            `,
+            html = converter.makeHtml(text);
+
+            document.querySelector('#container').innerHTML = html;
+        });
+
+        function truncateText() {
+            const maxLength = 25; // Maximum number of characters for the truncated text
+            const galleryItems = document.querySelectorAll('.gallery-item p');
+
+            galleryItems.forEach(p => {
+                let textContent = p.textContent;
+
+                if (textContent.length > maxLength) {
+                    p.textContent = textContent.slice(0, maxLength) + '...';
+                }
+            });
+        }
+
+        function showPopup(element) {
+            var popup = document.getElementById("popup");
+            var popupImg = document.getElementById("popup-img");
+            var popupIframe = document.getElementById("popup-iframe");
+            var popupText = document.getElementById("popup-text");
+            var overlay = document.getElementById("overlay");
+
+            var img = element.querySelector("img");
+            var iframeSrc = element.getAttribute("data-src");
+
+            if (iframeSrc) {
+                // If there's a data-src attribute, it's a video
+                popupIframe.src = iframeSrc;
+                popupIframe.style.display = "block";
+                popupImg.style.display = "none";
+            } else if (img) {
+                popupImg.src = img.src;
+                popupImg.style.display = "block";
+                popupIframe.style.display = "none";
+                // Remove src from iframe to stop video playback
+                popupIframe.src = "";
+            }
+
+            popupText.textContent = element.querySelector("p").textContent;
+            popup.style.display = "block";
+            overlay.style.display = "block";
+        }
+
+        function hidePopup() {
+            var popup = document.getElementById("popup");
+            var overlay = document.getElementById("overlay");
+            
+            popup.style.display = "none";
+            overlay.style.display = "none";
+
+            // Clear the iframe src to stop video playback
+            document.getElementById("popup-iframe").src = "";
+        }
+    </script>
 </body>
 </html>

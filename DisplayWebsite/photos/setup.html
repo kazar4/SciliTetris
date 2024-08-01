@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="./photo.css">
+
+    <script src="../showdown.min.js"></script>
+    <script src="./photo.js"></script>
+
+</head>
+<body>
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../photos.html'" style="display: block;">
+
+    <div class="photos">
+        <div id="container" class="blogText"></div>
+
+        <div class="gallery">
+
+            <!-- https://youtu.be/h5GkudjHwzU -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/h5GkudjHwzU">
+                <img src="https://img.youtube.com/vi/h5GkudjHwzU/maxresdefault.jpg" alt="YouTube Video">
+                <p>Looking out from the 11th floor</p>
+            </div>
+
+            <!-- https://youtu.be/kb5nI8gOzVM -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/kb5nI8gOzVM">
+                <img src="https://img.youtube.com/vi/kb5nI8gOzVM/maxresdefault.jpg" alt="YouTube Video">
+                <p>Looking back at the first strip we setup and how we tapped it against the window to face upwards</p>
+            </div>
+
+            <!-- https://youtu.be/fEaXiNu23k4 -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/fEaXiNu23k4">
+                <img src="https://img.youtube.com/vi/fEaXiNu23k4/maxresdefault.jpg" alt="YouTube Video">
+                <p>Timelpase of 10th floor setup</p>
+            </div>
+
+            <!-- https://youtu.be/AJVcGIEP6jg -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/AJVcGIEP6jg">
+                <img src="https://img.youtube.com/vi/AJVcGIEP6jg/maxresdefault.jpg" alt="YouTube Video">
+                <p>After setting up every floor, and having to reupload the code multiple times things finally started to work
+                    Our admin software here is showing that all the modules our connecting meaning we can control every LED. 
+                    Before we had a lot of blackspots were ESPs weren't connecting due to WIFI issues.</p>
+            </div>
+
+            <!-- https://youtu.be/rZRCDejDaMo -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/rZRCDejDaMo">
+                <img src="https://img.youtube.com/vi/rZRCDejDaMo/maxresdefault.jpg" alt="YouTube Video">
+                <p>David and friends packing up our LEDs a few days after showcasing. We had all just graduated</p>
+            </div>
+
+            <!-- https://youtube.com/shorts/lt_cEutupPw -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/lt_cEutupPw">
+                <img src="https://img.youtube.com/vi/lt_cEutupPw/maxresdefault.jpg" alt="YouTube Video">
+                <p>Nearing the end of diassembly we look at all the parts we now had that used to be across the entire building</p>
+            </div>
+
+            <!-- https://youtu.be/7SNv1hXkfxE -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/7SNv1hXkfxE">
+                <img src="https://img.youtube.com/vi/7SNv1hXkfxE/maxresdefault.jpg" alt="YouTube Video">
+                <p>After another 8+ hour day working we finally finished all the modules and LEDs. We'd have to wake up at 7am the next morning to set them up</p>
+            </div>
+
+            <!-- https://youtube.com/shorts/IPxntxOYMjk -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/IPxntxOYMjk">
+                <img src="https://img.youtube.com/vi/IPxntxOYMjk/maxresdefault.jpg" alt="YouTube Video">
+                <p>about 40 of the powerbricks being used to power our LED modules. We got them from amazon but becareful 
+                    with that because a lot of them ended up not working (probably about 7)
+                </p>
+            </div>
+
+            <!-- https://youtube.com/shorts/YgNWxu0UyWI -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/YgNWxu0UyWI">
+                <img src="https://img.youtube.com/vi/YgNWxu0UyWI/maxresdefault.jpg" alt="YouTube Video">
+                <p>The 12th and 13th floors did not have curtains which we essentialy to making the light spreading look good.
+                    So we tapped a bunch of trash bags togeher and hung them up LOL. If we were to do this again we'd buy a bunch
+                    of white bed sheets
+                </p>
+            </div>
+
+            <!-- https://youtube.com/shorts/R1I0m3z2Hrw -->
+            <div class="gallery-item" onclick="showPopup(this)" data-src="https://www.youtube.com/embed/R1I0m3z2Hrw">
+                <img src="https://img.youtube.com/vi/R1I0m3z2Hrw/maxresdefault.jpg" alt="YouTube Video">
+                <p>After our intial setup across the Scili we were quite sad and tired because a lot of the modules weren't connecting
+                    due to WIFI issues we had no idea how to fix. We worked with IT a lot after this.
+                </p>
+            </div>
+
+            <div class="gallery-item" onclick="window.location.href = 'https://youtu.be/f_WuRfuMXQw'" data-src="https://www.youtube.com/embed/f_WuRfuMXQw">
+                <img src="https://img.youtube.com/vi/f_WuRfuMXQw/maxresdefault.jpg" alt="YouTube Video">
+                <p>Cool video I forgot to remove</p>
+            </div>
+        </div>
+    
+        <div id="overlay" onclick="hidePopup()"></div>
+        <div id="popup">
+            <button id="popup-close" onclick="hidePopup()">X</button>
+            <img id="popup-img" src="" alt="Popup Image">
+            <iframe id="popup-iframe" src="" frameborder="0" allowfullscreen></iframe>
+            <p id="popup-text"></p>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+
+            let converter = new showdown.Converter(),
+            text = `
+# Assembly & Setup
+            `,
+            html = converter.makeHtml(text);
+
+            document.querySelector('#container').innerHTML = html;
+
+            let image_descriptions = [
+                "9th floor setup, leds across window with curtain down",
+                "Photo of the makeshift curtains we made out of garbage bags. Kazen and David's roommates later asked if they knew what happened to the suites extra trashbags ",
+                "Random image from 7th (?) floor of setup",
+                "What our admin software looks like when all the modules are connected (with low ping time too!). This was when we knew the project was actually going to happen and look good"
+            ]
+
+            loadGallery(4, "setup", image_descriptions);
+
+            truncateText();
+        });
+    </script>
+</body>
+</html>
