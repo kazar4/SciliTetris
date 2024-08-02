@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <script src="../showdown.min.js"></script>
+
+<link rel="stylesheet" href="../atom-one-dark-reasonable.min.css">
+<script src="../highlight.min.js"></script>
+
 <script>
 
 
@@ -17,6 +21,90 @@
         // You could make another file here with all the markdown text and this would convert it
         text      =  `
 
+# Custom PCB and Microcontroller
+
+// FULL IMAGE HERE
+
+Debatably the most essential tech for this project would be a system to (1) \`power LEDs\`, and (2) \`connect remotely over WIFI\`.
+
+There are Arduino boards with built-in WIFI capability, but many of them are quite expensive. 
+
+This led us to the ESP32, a very cheap Wi-Fi-capable microcontroller that can even be programmed using the Arduino IDE. Each board cost about 2$ ([Amazon link](https://www.amazon.com/gp/product/B0CPSFKNSR/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1))
+
+We also needed to ensure these were strong enough to power the LEDs. Specfically [WS2812B LEDs](https://www.amazon.com/gp/product/B088B9QWHT/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1). These were chosen as they can do many colors and are individually addressable.
+
+Lastly, we had to get a Logic Level Converter. These LEDs take in a 5v signal but the ESP32's operate on 3.3v, unlike most Arduino boards. A Logic Level Converter would allow us to convert our 3.3v signals into 5v. This video [here](https://www.youtube.com/watch?v=Q9mLitVxF3c) does a great job showing why this was needed, but the TLDR is that past 3ft the signal can become unstable since the ESP32's output 3.3v but the LED's take in 5v.
+
+One of our first working tests lighting them up before creating a PCB:
+
+### video1
+
+
+## Putting it together
+
+Since this has to be done 55 times and be put in public school rooms, we couldn't just leave a bunch of tangled wires and breadboards everywhere. 
+
+
+If you've never made a PCB before I heavily recommend it. Theres a kind of joy to turning a mess up electrical wires into a dense and robust PCB. I  used this [tutorial](https://www.youtube.com/watch?v=vaCVh2SAZY4) which has taught me everything I know.
+
+Generally, the process works as so:
+1. Create Schematic from Breadboard Design -> 
+2. Create a PCB Design and Assign Traces -> 
+3. Send PCB Design to Manufacturing Company -> 
+4. Receive PCB and Solder!
+
+Any Manyfatorung company could work here, we used [JLC PCB](https://jlcpcb.com/?from=VGR_JLCPCB1_6L&gad_source=1&gbraid=0AAAAACm70I9FMWzW9IqFYPBotr6RysYB5&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujnGprUFysSBVxpDyRV-5RPKgBwQAHmcABF0YMG90ar34Nx4RkWJR9RoC_OgQAvD_BwE), which was cheap and fast (75 of these PCBs cost us only about 25$)
+
+Here you can see our Scehmeatics and PCB Footprint that we sent to JLC PCB.
+
+![pcbPhoto](https://hackmd.io/_uploads/H1E6no3PR.jpg)
+
+![Screenshot 2024-07-10 at 5.51.58 PM](https://hackmd.io/_uploads/S1y03j3PC.png)
+
+## Preparing and Connecting LEDs
+
+There are a lot of ways to connect LEDs to your electronics. Most of the time they have a pigtail connector on both ends. This is useful if you want to combine multiple LED strips. 
+
+In our case though we would be buying long strips (5 meters), and splitting them into a bunch of tiny pieces.
+
+This was by far the longest job in the process. Each module we made had room for two connectors so we could power two LED strips and create two \`pixels\`. There were \`55\` usable windows in the Scili, meaning we had to create \`110/ strips. 
+
+The process was as follows. 
+
+1. Cut the 5-meter strip into 4 smaller strips
+2. Cut a 3-meter wire to connect to the LEDs
+3. Solder the 3-meter wire to each strip
+4. Wrap the solder joint with electrical tape
+5. Crimp on a [JST 3-pin connector](https://www.amazon.com/gp/product/B0B2R99X99/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1) to the end of the 3 meter wire
+
+In the beginning, this used to take more than 20 minutes for each one, so it would take at minimum 36 hours of straight work to finish them all. We eventually streamlined the process and were able to finish in about 20 hours.
+
+Here you can see a video of the two hardest parts of this process, soldering and crimping. By the end, we were able to do them in a minute and a half each, compared to the 5+ minutes before.
+
+### video2
+
+### video3
+
+.
+.
+.
+.
+.
+.
+
+
+
+## Mistakes and Things to Consider:
+
+There were a lot of things that could have been improved here. In the future, I'd recommend doing this early. When it comes with fabricated components you can't undo changes like code. I had to order them 3 times in total to get to the final version, and there are still things I would have changed.
+
+Here is a quick list:
+
+* PCB traces too thin for the amperage/voltage we are using
+* We didn't need 2 strips because they are individually addressable
+* Do some testing with LED brands to make sure the color range is good
+* Cheap ESP32's can have varying levels of wifi range
+* Make your PCB design extensible in case you need to add new components (for example the PCB makes all of the unused ESP32 pins inaccessible, but if I gave the PCB extra holes like an Arduino shield that could help)
 
 
         
@@ -25,6 +113,8 @@
         html      = converter.makeHtml(text);
 
         document.querySelector('#container').innerHTML = html
+
+        hljs.highlightAll();
 
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
@@ -35,7 +125,7 @@
 <body>
 
     <!-- <div id="backContainer"> -->
-        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../about.html#theproject'" style="display: block;">
+        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../tech.html#componentdeepdive'" style="display: block;">
 
     <!-- </div> -->
 
@@ -46,11 +136,8 @@
             Your browser does not support the video tag.
         </video>
     </div>
-    <div class="content">
 
         <div id="container" class="blogText">
-
-        </div>
 
     </div>
 </body>

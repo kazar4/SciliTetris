@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+
+<link rel="stylesheet" href="../atom-one-dark-reasonable.min.css">
+<script src="../highlight.min.js"></script>
+
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        showdown.setOption('tables', true);
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Admin Dashboard
+
+How can we assign ESPs to coordinates? How can we troubleshoot disconnects, test latency, and simulate the entire system?
+
+This dashboard was the solution to that problem. I'd also say this was my favorite part of the project.
+
+
+// GIF/VIDEO OF USING IT
+
+
+There were 4 parts to this program:
+
+* Settings Control
+* Scili Display
+* ESP Connection List
+* Scili Simulation
+
+## Settings Control
+
+The final version of our settings control was quite extensive. We could clear our SQL database cache to reassign all of our modules, open our simulation, turn the display off, turn ESPs on (strip 1,2, or both), delete ESPs, turn on/off synchronization, and add delay to specific ESPs. The goal was to include as many potential troubleshooting features as possible. This would help a lot when showcasing the project if we had any last-minute fixes to do.
+
+// Image
+
+## Scili Display
+
+This code is also a lot simpler than it seems. We use [Chahkra UI](https://v2.chakra-ui.com) to simplify our UI changes.
+
+Since we figured we wouldn't immediately test on the Scili we made the width and height variable. Letting us test different display sizes instead of the 5x11 that would match the Scili.
+
+\`\`\`js
+// CSS grid with xDimension cols and yDimension rows
+<Grid templateColumns={\`repeat(\${xDimension}, 45px)\`} 
+templateRows={\`repeat(\${yDimension}, 45px)\`} 
+      gap={1} mt={5} mb={4} height={yDimension * 60}>
+
+          // Creates a DroppableBox for every pixel (yDimension * xDimension)
+          {Array.from({ length: yDimension * xDimension }, (_, index) => (
+            <DroppableBox 
+                key={index} 
+                index={index} 
+                xDimension={xDimension} 
+                yDimension={yDimension} 
+                ws={ws} 
+                espClients={espClients}
+                mode={mode} 
+                hexCode={hexCode}
+                strip={strip}
+                syncDelay={syncDelay}
+                />
+          ))}
+</Grid>
+\`\`\`
+
+We made a\`<DroppableBox>\` for every pixel location. I'll be the first to admit that my React code is quite scuffed, There are way better ways to encapsulate all these props, but this code was made in about 2 days.
+
+The \`<DroppableBox>\` allows for the ESP modules to be dragged and dropped onto it to assign their location.
+
+Once an ESP is dropped we send the command \`getClientState\` to our server. Which returns a JSON object containing the colors and properties of all the connected modules. This lets us visualize what colors are currently on the SciLi
+
+\\ IMAGE
+
+## ESP Connection List
+
+At worse we are going to have 55 ESP Modules, all unconnected at once. Our goal is to make an efficient way assign them all.
+
+Our solution here was to use the [react dnd](https://react-dnd.github.io/react-dnd/about) (drag and drop) library. We request the list of unassigned modules from the server, we give them a random icon with their ID to make them more distinct. Then you can drag them onto the Scili Display. 
+
+While you drag we send a \`setColor ESP_ID #FF0000\` to turn it red. This lets you look at the simulation or physical Scili to see what window turns on so you know what block to drag it to in the Scili Display. 
+
+Once dragged we can send \`setCoord ESP_ID X Y\` to the WebSocket server, to finish connecting them. 
+
+Now we can call \`setColor X Y #HEX\` to set the color of that ESP instead of using its ID.
+
+// DRAGGING GIF 
+
+## Scili Simulation
+
+This software was made way before we finished all our ESP modules. But we needed a way to test our games and see if the backend server could skill. We decided making a simulation would be best. Surprisingly the basic idea around the simulation is quite simple, it's just:
+
+\`\`\`js
+for (let row = 0; row < 5; row++) {
+    for (let column = 0; column < 11; column++) {
+        const ws = new WebSocket('wss://kazar4.com:9001');
+        
+        // display something on the website for each pixel
+    }
+}
+\`\`\`
+
+Our ESPs are just web socket clients that change the color of an LED. We can do that on the web too. Just have a WebSocket client change the color of a block on our screen.
+
+That isn't all the code, there's some boilerplate to make the HTML, and some string parsing in \`ws.onmessage\`, but thats pretty much it. 
+
+// Image
+
+
+## Websockets in React 
+
+The first mistake here might have been using raw websockets instead of a React library built for it. But If you still prefer vanilla html/js like me this is very doable.
+
+The initial attempt involved sending our websocket variable \`ws\` as a prop to whatever files needed it. 
+
+In \`App.js\` we used \`useEffect\` to set the websocket methods
+
+\`\`\`js
+useEffect(() => {
+    const websocket = new WebSocket('wss://kazar4.com:9001')
+
+    websocket.onopen = () => {
+      console.log('WebSocket connection established.');
+      setWs(websocket); // Store WebSocket connection in state
+      websocket.send("admin")
+      websocket.send("getClientState")
+    };
+    
+    websocket.onclose = () => {
+      console.log('WebSocket connection closed.');
+      setReconnect(reconnect + 1);
+    };
+    
+    websocket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log(message)
+      setWsRes(message);
+    };
+    
+    return () => {
+      // Close WebSocket connection when the component unmounts
+      if (ws) {
+        console.log("websocket is closing")
+        ws.close();
+      }
+    };
+  }, [reconnect]); // when connection closes, reconnect state will update, forcing websocket server to reconnect
+\`\`\`
+
+We would then have a similar structure in the children's components. The issue here is \`websocket.onmessage\` should not be done multiple times. We ran into weird situations where it didn't know which \`websocket.onmessage\` to pick, the one in \`App.js\` or the one in the child components. Our solution here was to have one top-level \`websocket.onmessage\` in \`App.js\`. Then upon receiving a command we would update our \`wsRes\` state and pass that to the children. We still passed down \`ws\` to the children, but that was only to allow us to run \`ws.send()\` if a component needed to send a message to the websocket server.
+
+
+
+---
+
+We also used \`Javascript\` here instead of \`Typescript\` mainly for simplicity. We didn't have a lot of complex types because web sockets handle everything as strings, and the codebase was not large enough for it to speed up development time. 
+
+WebSockets felt especially powerful here because we didn't have to make a new POST or GET request every time we needed to send a new command. Especially if we were changing several modules at a time this would have led to a large delay.
+
+Some common WebSocket commands we used were:
+* \`setColor ESP_ID #Hex\`
+* \`setColor X Y #Hex\`
+* \`setCoord ESP_ID X Y\`
+* \`getClientState\`
+* \`removeCoord X Y\`
+* \`setStripColor ESP_ID #Hex StripNum\`
+
+The last one (\`setStripColor\`) is a bit special, after the initial development of the program, we eventually decided that each ESP would control 2 LED strips, doubling our 5x11 display to 10x11. This meant we had to handle coloring those pixels differently even though each window only matched up to one ESP.
+
+## Using 2 Colors
+
+Most of the work for this involved changes to the websocket server, but the general idea is when we assign an ESP we change the even X values.
+
+This would normally represent
+(0,0), (1,0), (2,0), etc
+
+// Image 
+
+But now it is 
+
+(0,0), (2,0), (4,0), etc
+
+Where both (0,0) and (1,0) belong to the same ESP, and so forth for the other ESPs
+
+## ChatGPT 
+
+I'd like to talk a bit about ChatGPT here. It was used a lot throughout the project. I used to be a hater about using it, and while I'm not a hater anymore, I'm **glad I was**.
+
+I'm glad to say that I ***could*** have written a lot of this code myself, and the majority was still written by hand. ChatGPT just helped us turn our thoughts into code faster. It made me feel a bit like an architect or a manager. I could lay out the details and focus on the hard algorithmic problems instead of boilerplate code or CSS.
+
+When problems arose, I generally knew enough about the issues to solve them. **This** is where I see ChatGPT being abused. If you don't have enough experience in what you're using ChatGPT for you'll get bugs you truly don't understand. As the code builds on top of each other, it'll become even more dangerous and bug-ridden. 
+
+Some of the hardest bugs I had creating this website were usually ChatGPT-related. I used it to help me make the drag-and-drop code. But I had never worked with the drag and drop library before so I couldn't properly guide ChatGPT to the correct implementation. If I had just spent a bit of time outside coding a basic program with Drag and Drop it would have become so much easier to make it. 
+
+So I guess this is just a warning for myself and others not to rely on it. It should be used more as an extension of your own abilities and experience instead of filling in the gap for skills you don't yet have.
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+
+        hljs.highlightAll();
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }
+})
+
+</script>
+<body>
+
+    <!-- <div id="backContainer"> -->
+        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../tech.html#componentdeepdive'" style="display: block;">
+
+    <!-- </div> -->
+
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+        <div id="container" class="blogText">
+
+    </div>
+</body>
+</html>

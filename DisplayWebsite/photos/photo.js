@@ -1,5 +1,5 @@
 function truncateText() {
-    const maxLength = 30; // Maximum number of characters for the truncated text
+    const maxLength = 20; // Maximum number of characters for the truncated text
     const galleryItems = document.querySelectorAll('.gallery-item p');
 
     galleryItems.forEach(p => {

@@ -23,7 +23,9 @@
     <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../photos.html'" style="display: block;">
 
     <div class="photos">
-        <div id="container" class="blogText"></div>
+        <div id="container" class="blogText">
+            <h1>Assembly & Setup</h1>
+        </div>
 
         <div class="gallery">
 
@@ -98,7 +100,7 @@
 
             <div class="gallery-item" onclick="window.location.href = 'https://youtu.be/f_WuRfuMXQw'" data-src="https://www.youtube.com/embed/f_WuRfuMXQw">
                 <img src="https://img.youtube.com/vi/f_WuRfuMXQw/maxresdefault.jpg" alt="YouTube Video">
-                <p>Cool video I forgot to remove</p>
+                <p>Yikes</p>
             </div>
         </div>
     
@@ -114,14 +116,6 @@
     <script>
         window.addEventListener('load', function() {
 
-            let converter = new showdown.Converter(),
-            text = `
-# Assembly & Setup
-            `,
-            html = converter.makeHtml(text);
-
-            document.querySelector('#container').innerHTML = html;
-
             let image_descriptions = [
                 "9th floor setup, leds across window with curtain down",
                 "Photo of the makeshift curtains we made out of garbage bags. Kazen and David's roommates later asked if they knew what happened to the suites extra trashbags ",
@@ -130,6 +124,14 @@
             ]
 
             loadGallery(4, "setup", image_descriptions);
+
+//             let converter = new showdown.Converter(),
+//             text = `
+// # Assembly & Setup
+//             `,
+//             html = converter.makeHtml(text);
+
+//             document.querySelector('#container').innerHTML = html;
 
             truncateText();
         });

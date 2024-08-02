@@ -9,8 +9,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 <script>
     window.addEventListener('load', function() {
-    let converter = new showdown.Converter(),
 
+    let converter = new showdown.Converter(),
 
     // You could make another file here with all the markdown text and this would convert it
     text      = 
@@ -33,10 +33,10 @@ This diagram showcases the overall design:
 
 The tech can be split up into 5 Main components:
 
-* [Custom PCB & Microcontroller](https://) \`KiCad\` \`ESP32\` \`Lots of Soldering...\`
-* [Microcontroller Firmware](https://) \`Arduino IDE\` \`C++\` \`Websockets\`
-* [Backend Websocket Server](https://) \`Python\` \`Websockets\` \`Sqlite3\` \`SSL\` \`Linux\`
-* [Admin Dashboard](https://) \`React\` \`Websockets\` \`SSL\` \`Lots of CSS...\`
+* [Custom PCB & Microcontroller](./tech/microcontroller.html) \`KiCad\` \`ESP32\` \`Lots of Soldering...\`
+* [Microcontroller Firmware](./tech/firmware.html) \`Arduino IDE\` \`C++\` \`Websockets\`
+* [Backend Websocket Server](./tech/websocket.html) \`Python\` \`Websockets\` \`Sqlite3\` \`SSL\` \`Linux\`
+* [Admin Dashboard](./tech/admin.html) \`React\` \`Websockets\` \`SSL\` \`Lots of CSS...\`
 * [Games (Tetris, Snake, Pong, Canvas)](https://) \`PyGame\` \`Python\` \`Websockets\`
 
 
@@ -65,11 +65,7 @@ All the code can be found [here](https://github.com/kazar4/SciliTetris)!
 
     <input type="image" src="./media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = './index.html'" style="display: block;">
 
-    <div class="content">
-
         <div id="container" class="blogText">
-
-        </div>
 
     </div>
 </body>

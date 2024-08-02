@@ -124,10 +124,19 @@
     aspect-ratio: 1;
     width: 50%;
   }
-  
+
+
+@media screen and (max-width: 500px) {
+  .card__footer span:nth-of-type(1) {
+    font-size: calc(var(--size) * 2.3);
+  }
+}
+
+@media screen and (min-width: 500px) {
   .card__footer span:nth-of-type(1) {
     font-size: calc(var(--size) * 3);
   }
+}
   
   .card__footer span:nth-of-type(2) {
     font-size: calc(var(--size) * 2);
