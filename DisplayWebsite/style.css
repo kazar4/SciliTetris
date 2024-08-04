@@ -309,9 +309,47 @@ bottom: 8%; */
 
 .blogText img {
     /* width: 300px; */
+    /* width: -webkit-fill-available; */
     border: 0px solid black;
     display: block;
     margin: 0 auto;
+}
+
+#goback {
+    position: absolute;
+    width: 40px;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 9000;
+    }
+
+.iframeParent iframe {
+    display: block;
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 700px) {
+    img {
+        width: -webkit-fill-available;
+        object-fit: scale-down;
+    }
+
+    iframe {
+        width: -webkit-fill-available;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    h1 {
+        font-size: 1.6em;
+    }
+
+    #goback {
+        width: 25px;
+        padding-left: 5px;
+    }
 }
 
 code {
@@ -332,16 +370,6 @@ blockquote {
     color: #a1a1aa;
     border-left: 3px solid;
     padding: 0 1em;
-}
-
-#goback {
-position: absolute;
-width: 40px;
-top: 0;
-left: 0;
-padding: 10px;
-cursor: pointer;
-z-index: 9000;
 }
 
 /* pre {

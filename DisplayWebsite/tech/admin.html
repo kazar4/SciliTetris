@@ -28,26 +28,25 @@ How can we assign ESPs to coordinates? How can we troubleshoot disconnects, test
 
 This dashboard was the solution to that problem. I'd also say this was my favorite part of the project.
 
-
-// GIF/VIDEO OF USING IT
+![Scili Admin Control Panel](../media/admin.png =700x*)
 
 
 There were 4 parts to this program:
 
-* Settings Control
-* Scili Display
-* ESP Connection List
-* Scili Simulation
+* Settings Control **(Left Pane)**
+* Scili Display **(Middle Pane)**
+* ESP Connection List **(Right Pane)**
+* Scili Simulation **(Seperate Pane)**
 
 ## Settings Control
 
 The final version of our settings control was quite extensive. We could clear our SQL database cache to reassign all of our modules, open our simulation, turn the display off, turn ESPs on (strip 1,2, or both), delete ESPs, turn on/off synchronization, and add delay to specific ESPs. The goal was to include as many potential troubleshooting features as possible. This would help a lot when showcasing the project if we had any last-minute fixes to do.
 
-// Image
+![Picture of controls pane](../media/controls.png =250x*)
 
 ## Scili Display
 
-This code is also a lot simpler than it seems. We use [Chahkra UI](https://v2.chakra-ui.com) to simplify our UI changes.
+This code is also a lot simpler than it seems. We use [Chakra UI](https://v2.chakra-ui.com) to simplify our UI changes.
 
 Since we figured we wouldn't immediately test on the Scili we made the width and height variable. Letting us test different display sizes instead of the 5x11 that would match the Scili.
 
@@ -81,7 +80,7 @@ The \`<DroppableBox>\` allows for the ESP modules to be dragged and dropped onto
 
 Once an ESP is dropped we send the command \`getClientState\` to our server. Which returns a JSON object containing the colors and properties of all the connected modules. This lets us visualize what colors are currently on the SciLi
 
-\\ IMAGE
+![Example json for get Client State](../media/getclientstate.png =450x*)
 
 ## ESP Connection List
 
@@ -95,7 +94,7 @@ Once dragged we can send \`setCoord ESP_ID X Y\` to the WebSocket server, to fin
 
 Now we can call \`setColor X Y #HEX\` to set the color of that ESP instead of using its ID.
 
-// DRAGGING GIF 
+![Dragging ESP to SciLi Display](../media/espdragfast.gif =400x*)
 
 ## Scili Simulation
 
@@ -115,7 +114,9 @@ Our ESPs are just web socket clients that change the color of an LED. We can do 
 
 That isn't all the code, there's some boilerplate to make the HTML, and some string parsing in \`ws.onmessage\`, but thats pretty much it. 
 
-// Image
+Using this we could test our Tetris code early on, even without any of our ESP modules finished:
+
+![Scili Simulation Software](../media/simulation.png =*x300)
 
 
 ## Websockets in React 
@@ -185,13 +186,15 @@ Most of the work for this involved changes to the websocket server, but the gene
 This would normally represent
 (0,0), (1,0), (2,0), etc
 
-// Image 
+![1 to 1 ESP Coordinate mapping](../media/1to1.png =250x*)
 
 But now it is 
 
 (0,0), (2,0), (4,0), etc
 
-Where both (0,0) and (1,0) belong to the same ESP, and so forth for the other ESPs
+![1 to 2 ESP Coordinate mapping](../media/1to2.png =250x*)
+
+Where both (0,0) and (1,0) belong to the same ESP (ESP 1 in this case), and so forth for the other ESPs
 
 ## ChatGPT 
 
@@ -204,7 +207,12 @@ When problems arose, I generally knew enough about the issues to solve them. **T
 Some of the hardest bugs I had creating this website were usually ChatGPT-related. I used it to help me make the drag-and-drop code. But I had never worked with the drag and drop library before so I couldn't properly guide ChatGPT to the correct implementation. If I had just spent a bit of time outside coding a basic program with Drag and Drop it would have become so much easier to make it. 
 
 So I guess this is just a warning for myself and others not to rely on it. It should be used more as an extension of your own abilities and experience instead of filling in the gap for skills you don't yet have.
-        `
+
+## Video of Software
+
+###video1
+
+`
 
         html      = converter.makeHtml(text);
 
@@ -215,6 +223,35 @@ So I guess this is just a warning for myself and others not to rely on it. It sh
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
         }
+
+        function replaceH1WithIframeById(h1Id, youtubeID) {
+            // Find the h1 tag by its id
+            var h1Tag = document.getElementById(h1Id);
+
+            var iframeDiv = document.createElement('div');
+            iframeDiv.setAttribute("class", "iframeParent")
+
+            // Create a new iframe tag
+            var iframeTag = document.createElement('iframe');
+            iframeTag.setAttribute('width', '560'); // Set width of the iframe
+            iframeTag.setAttribute('height', '315'); // Set height of the iframe
+            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
+            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
+            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
+
+            iframeDiv.appendChild(iframeTag);
+
+            // Replace the h1 tag with the iframe tag
+            if (h1Tag) {
+                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
+            } else {
+                console.error('No h1 tag found with id:', h1Id);
+            }
+        }
+
+        // https://www.youtube.com/J9NhssHb97M
+        replaceH1WithIframeById("video1", "J9NhssHb97M");
 })
 
 </script>

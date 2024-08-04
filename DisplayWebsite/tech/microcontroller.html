@@ -23,7 +23,7 @@
 
 # Custom PCB and Microcontroller
 
-// FULL IMAGE HERE
+![Picture of PCB & Microcontroller](../media/espboard.jpeg =600x*)
 
 Debatably the most essential tech for this project would be a system to (1) \`power LEDs\`, and (2) \`connect remotely over WIFI\`.
 
@@ -55,11 +55,11 @@ Generally, the process works as so:
 
 Any Manyfatorung company could work here, we used [JLC PCB](https://jlcpcb.com/?from=VGR_JLCPCB1_6L&gad_source=1&gbraid=0AAAAACm70I9FMWzW9IqFYPBotr6RysYB5&gclid=CjwKCAjw5Ky1BhAgEiwA5jGujnGprUFysSBVxpDyRV-5RPKgBwQAHmcABF0YMG90ar34Nx4RkWJR9RoC_OgQAvD_BwE), which was cheap and fast (75 of these PCBs cost us only about 25$)
 
-Here you can see our Scehmeatics and PCB Footprint that we sent to JLC PCB.
+Here you can see our Schematic and PCB Footprint that we sent to JLC PCB.
 
-![pcbPhoto](https://hackmd.io/_uploads/H1E6no3PR.jpg)
+![Picture of Electrical Schematic](../media/schematic.png =500x*)
 
-![Screenshot 2024-07-10 at 5.51.58 PM](https://hackmd.io/_uploads/S1y03j3PC.png)
+![Picture of PCB file](../media/pcb.jpg =500x*)
 
 ## Preparing and Connecting LEDs
 
@@ -82,17 +82,8 @@ In the beginning, this used to take more than 20 minutes for each one, so it wou
 Here you can see a video of the two hardest parts of this process, soldering and crimping. By the end, we were able to do them in a minute and a half each, compared to the 5+ minutes before.
 
 ### video2
-
+&nbsp;
 ### video3
-
-.
-.
-.
-.
-.
-.
-
-
 
 ## Mistakes and Things to Consider:
 
@@ -119,6 +110,41 @@ Here is a quick list:
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
         }
+
+        function replaceH1WithIframeById(h1Id, youtubeID) {
+            // Find the h1 tag by its id
+            var h1Tag = document.getElementById(h1Id);
+
+            var iframeDiv = document.createElement('div');
+            iframeDiv.setAttribute("class", "iframeParent")
+
+            // Create a new iframe tag
+            var iframeTag = document.createElement('iframe');
+            iframeTag.setAttribute('width', '560'); // Set width of the iframe
+            iframeTag.setAttribute('height', '315'); // Set height of the iframe
+            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
+            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
+            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
+
+            iframeDiv.appendChild(iframeTag);
+
+            // Replace the h1 tag with the iframe tag
+            if (h1Tag) {
+                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
+            } else {
+                console.error('No h1 tag found with id:', h1Id);
+            }
+        }
+
+        // https://youtu.be/k-PPon4Rd9o
+        replaceH1WithIframeById("video1", "k-PPon4Rd9o");
+
+        // https://youtu.be/pgCGJUIRwbw
+        replaceH1WithIframeById("video2", "pgCGJUIRwbw");
+
+        // https://youtu.be/6y4L2Jru24M
+        replaceH1WithIframeById("video3", "6y4L2Jru24M");
 })
 
 </script>

@@ -27,7 +27,7 @@
 
 This was the first part of the project that was created, I had a lot of fun brainstorming the infrastructure of this with David. We even had our \`write on a napkin\` moment that you see in the beginnings of a lot of cool projects.
 
-//NAPKIN IMAGE
+![napkin image](../media/napkin.png =500x*)
 
 ## Why WebSockets?
 
@@ -83,9 +83,9 @@ Now onto our infrastructure. We planned to have 55 tiny modules or ESPs across t
 Speaking of games let's say in our game the top left pixel turns red \`(0,0)\`. Naturally, we'd want to turn the top left pixel of the Scili red too. But, 
 *How do we know what module is in that Scili window?* 
 
-The issue is we don't, all the server sees is this:
+The issue is we don't, all the server sees is a mess of random ESPs, ESP1 could be on the 4th floor and ESP2 could be on the 10th. They could be anywhere:
 
-// IMAGE of a bunch of ESP connected.
+![mess of ESPs connected](../media/espmess.png =500x*)
 
 Sure we could hardcode them, but we hadn't even made a module yet, and it would also be a pain to reset the the hardcoding if we switched out a module. 
 
@@ -98,11 +98,11 @@ We can have the server send \`setColor 5 #FF0000\` to turn that ESP Module red. 
 
 By caching these values with the ESP's MAC address in a database, once we set all 55 modules we are essentially done. If we need to replace a module all we do is update its position with \`setCoord ESP# X Y\` which will also update the cache.
 
-// Diagram
+![mess of ESPs connected](../media/mapping.png =400x*)
 
 This makes our game logic a lot easier. As long as we make games with the same dimensions of pixels as the # of pixels we have, the games just need to send all of their colors. Similar to how a GPU tells your monitor what pixels to color, we'd be doing that with our server. The Scili would just be a large-scale monitor or LED display.
 
-// One of our first tests with the software can be shown here 
+One of our first tests with the software can be shown here:
 ### video1
 
 The natural progression of this is to make a UI, writing \`setColor\` and \`setCoord\` manually a bunch of times would be a pain, which led to our [admin display](https://)
@@ -204,6 +204,35 @@ We designed this server to be quite powerful and extensive. I definitely worked 
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
         }
+
+        function replaceH1WithIframeById(h1Id, youtubeID) {
+            // Find the h1 tag by its id
+            var h1Tag = document.getElementById(h1Id);
+
+            var iframeDiv = document.createElement('div');
+            iframeDiv.setAttribute("class", "iframeParent")
+
+            // Create a new iframe tag
+            var iframeTag = document.createElement('iframe');
+            iframeTag.setAttribute('width', '560'); // Set width of the iframe
+            iframeTag.setAttribute('height', '315'); // Set height of the iframe
+            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
+            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
+            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
+
+            iframeDiv.appendChild(iframeTag);
+
+            // Replace the h1 tag with the iframe tag
+            if (h1Tag) {
+                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
+            } else {
+                console.error('No h1 tag found with id:', h1Id);
+            }
+        }
+
+        // https://youtu.be/Dj3uwSwbKbg
+        replaceH1WithIframeById("video1", "Dj3uwSwbKbg")
 })
 
 </script>

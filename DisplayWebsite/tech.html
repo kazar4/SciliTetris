@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+
+<style>
+    @media screen and (max-width: 700px) {
+        img {
+
+            width: -webkit-fill-available;
+        }
+    }
+
+    @media screen and (min-width: 700px) {
+        img {
+            width: 575px;
+        }
+    }
+</style>
+
 <script>
     window.addEventListener('load', function() {
 
@@ -27,7 +43,7 @@ Our goal was to create a system where each microcontroller or \`module\` could b
 
 This diagram showcases the overall design:
 
-![diagram](./media/diagram.png =*x300)
+![diagram](./media/diagram.png)
 
 ## Component Deep Dive
 
