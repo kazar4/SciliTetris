@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciLi Tetris & Games</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<script src="../showdown.min.js"></script>
+
+<link rel="stylesheet" href="../atom-one-dark-reasonable.min.css">
+<script src="../highlight.min.js"></script>
+
+
+<script>
+
+
+    window.addEventListener('load', function() {
+
+        showdown.setOption('tables', true);
+        let converter = new showdown.Converter(),
+
+        // You could make another file here with all the markdown text and this would convert it
+        text      =  `
+
+# Games (Tetris, Snake, Pong, Canvas)
+
+Designing the games people actually played should have been a classic Object Oriented Programming problem, but when you add in the challenge of actually displaying what's on the computer onto a 13 floor building, it's a *little* bit harder. Take a look at the relevant code [here](https://github.com/kazar4/SciliTetris/tree/main/GameClient).
+
+## Games
+
+All of our games were made using [PyGame](https://www.pygame.org/news), an open source 2D python game engine. Since we were short on time, we decided against developing our own versions of some of the games and used open source implementations instead. Special shoutouts to the versions of [Tetris](https://) and [Snake](https://) I found on the internet, this project wouldn't have been possible without you!
+
+Since we will be running multiple games, we decided to bundle the games together under the **Game** interface:
+
+\`\`\`python
+class Game(ABC):
+    @abstractmethod
+    def __init__(self, source: pygame.Surface, offset: tuple) -> None:
+        pass
+
+    @abstractmethod
+    def run(self):
+        # The main starting point of the game. This is so that GameMaster
+        # can tell the game to start running at the appropriate time.
+        pass
+
+    @abstractmethod
+    def get_board(self) -> List[List[str]]:
+        # Return the board state of the game in the current frame. Should be a 2D grid of
+        # colors represented as hexadecimals. 
+        pass
+\`\`\`
+
+Under this interface, all games are represented as a 2D array of colors in hexadecimal format. This pretty much acts as a "frame buffer" to store the graphical display of the game state at any point and makes it easy for our code later on to display the games. All games had to implement this interface to be compatible with our software, which makes it very easy to add other games in the future!
+
+Finally, the player interacts with the games through a menu interface, GameGUI.py. It's another PyGame program that allows the player to switch between games and manages the abstraction of switching the graphical display positions and layers of the games using PyGame.
+
+![GAME GUI](../media/prototype.png)
+
+## GameMaster - Game to Server Interface
+
+GameMaster.py serves as the interface between the game and the server. When it runs, it:
+
+- Starts and maintains the websocket connection to the backend server
+- Runs the game menu program to allow the player to play games
+- Continuously polls whichever game is running for display data and sends the data to the server
+
+It does so by running a separate thread for each functionality. While the websocket connection thread is relatively simple, running the games and sending their data to the server required writing to and reading from a concurrent data structure (the 2D grid of pixels described earlier). We had to use some Mutexes to lock the data structure before writing to and reading from it to prevent race conditions where the frame data is updated before the previous frame was fully processed. Luckily, python has a neat package for simple Mutexes as seen here:
+
+\`\`\`python
+class TetrisApp(Game):
+	def __init__(self, source, offset):
+		self.source = source
+		self.offset = offset
+		self.running = True
+		pygame.key.set_repeat(250,25)
+		self.width = config['cell_size']*config['cols']
+		self.height = config['cell_size']*config['rows']
+
+		self.screen = pygame.Surface((self.width, self.height))
+		self.lock = threading.Lock()
+		
+		self.init_game()
+        
+	def get_board(self) -> List[List[str]]:
+		with self.lock: # Grab lock before polling board
+			return [[rgb_to_hex(colors[min(max(y, 0), 7)]) for y in x] for x in self.display_board[:-1]]
+\`\`\`
+
+To send the frame data to the server, each pixel's color and coordinates have to be communicated in its own message to the server. An optimization we tried to make is to only send these messages to the server if we have to. This means if a pixel's color has not changed between frames, we simply choose not to send a message to update the pixel's color to the server. 
+
+\`\`\`python=
+    def poll_game(self):
+        while not self.ws or not self.ws.sock or not self.ws.sock.connected:
+            time.sleep(_polling_rate)
+        while True:
+            if self.menu.game_instance:
+                board = self.menu.game_instance.get_board()
+                for y in range(len(board)):
+                    for x in range(len(board[0])):
+                        if not self.prev_frame or self.prev_frame[y][x] != board[y][x]:
+                            message = "setColor " + str(x) + " " + str(y) + " " + board[y][x]
+                            self.ws.send(message)
+                self.prev_frame = board
+                time.sleep(_polling_rate)
+\`\`\`
+
+Since we are currently polling the game's frame data 10 times per second, this optimization could potentially reduce traffic to the server by thousands of messages per second, reducing latency overall. 
+
+
+## Pictures of Games
+
+### Canvas 
+![GAME GUI](../media/prototype.png)
+
+### Tetris 
+![GAME GUI](../media/prototype.png)
+
+### Snake 
+![GAME GUI](../media/prototype.png)
+
+### Pong 
+![GAME GUI](../media/prototype.png)
+
+
+        `
+
+        html      = converter.makeHtml(text);
+
+        document.querySelector('#container').innerHTML = html
+
+        hljs.highlightAll();
+
+        if (window.location.href.includes("#")) {
+            document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
+        }
+
+        function replaceH1WithIframeById(h1Id, youtubeID) {
+            // Find the h1 tag by its id
+            var h1Tag = document.getElementById(h1Id);
+
+            var iframeDiv = document.createElement('div');
+            iframeDiv.setAttribute("class", "iframeParent")
+
+            // Create a new iframe tag
+            var iframeTag = document.createElement('iframe');
+            iframeTag.setAttribute('width', '560'); // Set width of the iframe
+            iframeTag.setAttribute('height', '315'); // Set height of the iframe
+            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
+            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
+            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
+
+            iframeDiv.appendChild(iframeTag);
+
+            // Replace the h1 tag with the iframe tag
+            if (h1Tag) {
+                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
+            } else {
+                console.error('No h1 tag found with id:', h1Id);
+            }
+        }
+
+        // https://youtu.be/Dj3uwSwbKbg
+        replaceH1WithIframeById("video1", "Dj3uwSwbKbg")
+})
+
+</script>
+<body>
+
+    <!-- <div id="backContainer"> -->
+        <input type="image" src="../media/goback2.png" name="saveForm" id="goback" onclick="window.location.href = '../tech.html#componentdeepdive'" style="display: block;">
+
+    <!-- </div> -->
+
+    <div class="video-background">
+        <div class="black-screen blog"></div>
+        <video autoplay muted loop>
+            <source id="scilimp4" src="../sciliBit.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+        <div id="container" class="blogText">
+
+    </div>
+</body>
+</html>
