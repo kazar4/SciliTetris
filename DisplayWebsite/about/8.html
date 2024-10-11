@@ -50,7 +50,7 @@ We had 4 days until the day we planned to showcase. Every day was filled with ma
 
 On Wednesday we had maybe 70% of the LED \`modules\` connecting to the WIFI, meaning there were a lot of black spots:
 
-Our work with IT honestly deserves its own [blog post](https://), but there were a lot of server and wifi changes that had to be made at the last minute.
+Our work with IT honestly deserves its own blog post, but there were a lot of server and wifi changes that had to be made at the last minute.
 
 The morning of the project we were using garbage bags to make fake curtains for the SciLi floors that did not have them. While they did that I went to every floor on the SciLi and reuploaded code. If this code didn't fix our issues it was over. 
 
@@ -58,7 +58,7 @@ The morning of the project we were using garbage bags to make fake curtains for 
 
 This time things went more smoothly as I updated the \`modules\` they started to connect 1 by 1, and before I knew it they all were connected. 
 
-// VIDEO
+### video1
 
 When I showed that to David the relief on his face was apparent. For the first time this entire project we had confidence that **this was going to work**, just a few hours before showcase time.
 
@@ -105,6 +105,35 @@ And if you missed the project, maybe you'll even see us doing it again next year
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
         }   
+
+        function replaceH1WithIframeById(h1Id, youtubeID) {
+            // Find the h1 tag by its id
+            var h1Tag = document.getElementById(h1Id);
+
+            var iframeDiv = document.createElement('div');
+            iframeDiv.setAttribute("class", "iframeParent")
+
+            // Create a new iframe tag
+            var iframeTag = document.createElement('iframe');
+            iframeTag.setAttribute('width', '560'); // Set width of the iframe
+            iframeTag.setAttribute('height', '315'); // Set height of the iframe
+            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
+            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
+            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
+
+            iframeDiv.appendChild(iframeTag);
+
+            // Replace the h1 tag with the iframe tag
+            if (h1Tag) {
+                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
+            } else {
+                console.error('No h1 tag found with id:', h1Id);
+            }
+        }
+
+        // https://youtu.be/k-PPon4Rd9o
+        replaceH1WithIframeById("video1", "q70kei6B5Pw");
 })
 
 </script>
