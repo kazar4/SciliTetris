@@ -11,6 +11,7 @@ All Information about the project can be found at [scilitetris.kazar4.com](https
 - [Project Description and Story](https://scilitetris.kazar4.com/about.html)
 - [Tech Documentation](https://scilitetris.kazar4.com/tech.html)
 - [Photos & Videos](https://scilitetris.kazar4.com/photos.html)
+- [Display Website Repo](https://github.com/kazar4/SciliTetrisWebsite)
 
 On April 14, 2000 Brown's University's Science Librarie (Scili) was turned into the Worlds Largest Tetris display ever made at the time. Our goal 24 years later was toe recreate this project, but with better technology and more games. 
 
