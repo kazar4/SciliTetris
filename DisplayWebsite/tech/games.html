@@ -149,35 +149,6 @@ Since we are currently polling the game's frame data 10 times per second, this o
         if (window.location.href.includes("#")) {
             document.querySelector("#" + window.location.href.split("#")[1]).scrollIntoView();
         }
-
-        function replaceH1WithIframeById(h1Id, youtubeID) {
-            // Find the h1 tag by its id
-            var h1Tag = document.getElementById(h1Id);
-
-            var iframeDiv = document.createElement('div');
-            iframeDiv.setAttribute("class", "iframeParent")
-
-            // Create a new iframe tag
-            var iframeTag = document.createElement('iframe');
-            iframeTag.setAttribute('width', '560'); // Set width of the iframe
-            iframeTag.setAttribute('height', '315'); // Set height of the iframe
-            iframeTag.setAttribute('src', "https://www.youtube.com/embed/" + youtubeID); // Set the YouTube URL
-            iframeTag.setAttribute('frameborder', '0'); // Set frameborder to 0
-            iframeTag.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-            iframeTag.setAttribute('allowfullscreen', ''); // Allow fullscreen
-
-            iframeDiv.appendChild(iframeTag);
-
-            // Replace the h1 tag with the iframe tag
-            if (h1Tag) {
-                h1Tag.parentNode.replaceChild(iframeDiv, h1Tag);
-            } else {
-                console.error('No h1 tag found with id:', h1Id);
-            }
-        }
-
-        // https://youtu.be/Dj3uwSwbKbg
-        replaceH1WithIframeById("video1", "Dj3uwSwbKbg")
 })
 
 </script>
