@@ -2,9 +2,7 @@
 
 ### Recreating the world's largest active retro games display running games such as Tetris, Snake, and Pong along the windows of a 14 floor building
 
-FINISHING THIS LATER
-
-IMAGE
+![SciLi Image](https://scilitetris.kazar4.com/photos/display/18.jpeg){width=125}
 
 All Information about the project can be found at scilitetris.kazar4.com
 - Project Description and Story
