@@ -4,7 +4,7 @@
 
 <p align="center" width="100%">
     <img width="49%" src="https://scilitetris.kazar4.com/media/scilinobg.png">
-    <img width="33%" src="https://scilitetris.kazar4.com/photos/display/18.jpeg">
+    <img width="33%" src="https://scilitetris.kazar4.com/media/sciligameround.png">
 </p>
 
 All Information about the project can be found at [scilitetris.kazar4.com](https://scilitetris.kazar4.com)
