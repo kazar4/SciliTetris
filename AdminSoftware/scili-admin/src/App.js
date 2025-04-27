@@ -1,27 +1,20 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChakraProvider,
   Box,
   Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
   theme,
   Flex,
   Textarea,
-  Button,
-  Input
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './archive/Logo';
-import LedBuilding from './LedBuilding';
-import LedPopup from './LedPopup';
+// import { Logo } from './archive/Logo';
+// import LedBuilding from './LedBuilding';
 import LedDisplay from './LedDisplay';
 import EspClientList from './ESPClientList';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import CacheToggle from './CacheToggle';
+import { ControlsPane } from './ControlsPane';
 
 function App() {
 
@@ -40,21 +33,6 @@ function App() {
 
   const textBoxRef = React.createRef();
 
-   // Function to handle changes in the input value
-   const handleInputChange = (event) => {
-    // Update the hexCode state with the new value entered by the user
-    setHexCode(event.target.value);
-  };
-
-  const handleStripChange = (event) => {
-    // Update the hexCode state with the new value entered by the user
-    setStrip(event.target.value);
-  };
-
-  const handleSyncChange = (event) => {
-    // Update the hexCode state with the new value entered by the user
-    setSyncDelay(event.target.value);
-  };
 
 
 
@@ -116,185 +94,26 @@ function App() {
           <Box flex="0 0 20%" textAlign="right"></Box>
         </Flex>
         
-        {/* Middle section */}
+        {/* Main Section */}
         <Flex height="60%">
-          <Box flex="0 0 30%">
-            
+
+          {/* Left Section */}
+          {/* *********** CONTROLS ************ */}
+          <Box flex="0 0 30%">  
             <Text mb={6}>Controls</Text>
-
-            <Flex direction='column' gap={4} ml={2}>
-              <CacheToggle ws={ws}></CacheToggle>
-
-              <Button onClick={() => {
-                if (ws) {
-                  ws.send("loadTest") 
-                }
-                }}>Clear Cache</Button>
-
-              <LedPopup></LedPopup>
-              <Button onClick={() => {
-                if (ws) {
-                  ws.send("loadTest") 
-                }
-                }}>Load Test</Button>
-
-                <Button onClick={() => {
-                if (ws) {
-                  ws.send("allOff") 
-                  ws.send("getClientState")
-                }
-                }}>Display Off</Button>
-
-                <Flex direction={"row"} gap={2}>
-                  <Button onClick={() => {
-                    if (mode != "color") {
-                      setMode("color") 
-                    } else {
-                      setMode("") 
-                    }
-                }}
-                  variant={mode === "color" ? "solid" : "outline"}
-                  colorScheme="blue"
-                  boxShadow={mode === "color" ? "outline" : "none"}
-                  >Color</Button>
-                  <Input placeholder="Hex Code #FFFFFF" fontSize={13} onChange={handleInputChange}></Input>
-                  <Input placeholder="S" w={"30%"} onChange={handleStripChange}></Input>
-                </Flex>
-
-
-                <Flex direction={"row"} gap={2}>
-
-                <Button onClick={() => {
-                  if (mode != "delete") {
-                    setMode("delete") 
-                  } else {
-                    setMode("") 
-                  }
-                }}
-                variant={mode === "delete" ? "solid" : "outline"}
-                colorScheme="blue"
-                boxShadow={mode === "delete" ? "outline" : "none"}
-                w={"50%"}
-                >
-                Delete
-                </Button>
-
-                <Button onClick={() => {
-                  if (mode != "reset") {
-                    setMode("reset") 
-                  } else {
-                    setMode("") 
-                  }
-                }}
-                variant={mode === "reset" ? "solid" : "outline"}
-                colorScheme="orange"
-                boxShadow={mode === "reset" ? "0 0 0 3px rgba(246, 173, 85, 0.6)" : "none"}
-                w={"50%"}
-                >
-                Reset
-                </Button>
-
-                </Flex>
-                
-                
-              <Flex direction={"row"} gap={2}>
-
-                <Button onClick={() => {
-                    if (mode != "all") {
-                      setMode("all") 
-                    } else {
-                      setMode("") 
-                    }
-                  }}
-                  variant={mode === "all" ? "solid" : "outline"}
-                  colorScheme="blue"
-                  boxShadow={mode === "all" ? "outline" : "none"}
-                  w={"50%"}
-                  >
-                  All
-                  </Button>
-
-                <Button onClick={() => {
-                  if (mode != "syncOn") {
-                    if (mode == "all") {
-                      ws.send("syncOn all")
-                      setMode("") 
-                    } else {
-                      setMode("syncOn") 
-                    }
-                  } else {
-                    setMode("") 
-                  }
-                }}
-                variant={mode === "syncOn" ? "solid" : "outline"}
-                colorScheme="green"
-                boxShadow={mode === "syncOn" ? "outline" : "none"}
-                w={"50%"}
-                >
-                syncOn
-                </Button>
-
-                <Button onClick={() => {
-                  if (mode != "syncOff") {
-                    if (mode == "all") {
-                      ws.send("syncOff all")
-                      setMode("") 
-                    } else {
-                      setMode("syncOff") 
-                    }
-                  } else {
-                    setMode("") 
-                  }
-                }}
-                variant={mode === "syncOff" ? "solid" : "outline"}
-                colorScheme="red"
-                boxShadow={mode === "syncOff" ? "0 0 0 3px rgba(246, 173, 85, 0.6)" : "none"}
-                w={"50%"}
-                >
-                syncOff
-                </Button>
-
-                </Flex>
-
-
-                <Flex direction={"row"} gap={2}>
-
-                <Input placeholder="Sync Time Delay (ms)" fontSize={11} onChange={handleSyncChange}></Input>
-
-
-                <Button onClick={() => {
-                  if (syncDelay !== "") {
-                    ws.send(`sync all ${syncDelay}`)
-                  }
-                }}
-                variant={mode === "syncall" ? "solid" : "outline"}
-                colorScheme="blue"
-                boxShadow={mode === "syncall" ? "outline" : "none"}
-                w={"50%"}
-                >
-                Send All
-                </Button>
-
-                <Button onClick={() => {
-                    if (mode != "singlesync") {
-                      setMode("singlesync") 
-                    } else {
-                      setMode("") 
-                    }
-                }}
-                variant={mode === "singlesync" ? "solid" : "outline"}
-                colorScheme="blue"
-                boxShadow={mode === "singlesync" ? "outline" : "none"}
-                w={"50%"}
-                >
-                Set Single
-                </Button>
-
-                </Flex>
-
-
-            </Flex>
+            <ControlsPane 
+              ws={ws} 
+              mode={mode} 
+              setMode={setMode}
+              setHexCode={setHexCode}
+              setStrip={setStrip}
+              setSyncDelay={setSyncDelay}
+              syncDelay={syncDelay}
+            />
           </Box>
+
+          {/* Middle Section */}
+          {/* *********** LED DISPLAY ************ */}
           <Box flex="0 0 40%" textAlign="center">
             <LedDisplay 
               ws={ws} 
@@ -307,16 +126,22 @@ function App() {
               setXDimension={setXDimension}
               yDimension={yDimension}
               setYDimension={setYDimension}
-              >
-              </LedDisplay></Box>
+              />
+          </Box>
+
+          {/* Right Section */}
+          {/* *********** ESP CLIENT LIST ************ */}
           <Box flex="0 0 30%" textAlign="center" justifyContent={"center"}>
-            <EspClientList ws={ws} wsRes={wsRes} xDimension={xDimension} yDimension={yDimension}></EspClientList>
-            </Box>
+            <EspClientList 
+              ws={ws} 
+              wsRes={wsRes} 
+              xDimension={xDimension} 
+              yDimension={yDimension}/>
+          </Box>
+          
         </Flex>
-        
-
-
       </Flex>
+
         {/* Bottom section */}
         <Flex height="20%" align="center" pt={5}>
           <Textarea width="100%" placeholder="Enter text here" ref={textBoxRef}

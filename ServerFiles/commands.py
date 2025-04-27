@@ -62,6 +62,7 @@ class Commands:
 
     def sendServerGracefully(self, server, client, message):
             try:
+                print("message sending :" + message[0:10])
                 server.send_message(client, message)
             except BrokenPipeError as e:
                 print(f"client {client} not found, removing it:  {e}")
@@ -174,8 +175,13 @@ class Commands:
         if (int(x), int(y)) in self.coordConnections:
             oldClient = self.coordConnections[(int(x), int(y))]["clientID"]
 
+            print(oldClient)
+
             if oldClient in self.espConnections:
+                # THos line would have to be abstracted to include more than 2 coords
                 self.espConnections[oldClient]["coord"] = [(None, None), (None, None)]
+                print(message)
+                print("HUHHHH")
                 self.setColor(f"setColor {oldClient} #000000", client, server)
 
         # client is not in connections
@@ -185,8 +191,24 @@ class Commands:
             ##self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientText} not connected to server yet"}))
             return
 
+        # IDK why tbut this breaks everything and causes a bunch of resets
         if self.cacheBool: # this is also run when server.py enables cache so beware of redudency
-            self.setCache(self.espConnections[clientText]["MAC"], x, y)
+            # print("Trying to CACHCE: " + clientText + " With MAC ADDRESS: "+ self.espConnections[clientText]["MAC"])
+            # print(self.getCache(self.espConnections[clientText]["MAC"]))
+            # print((x, y))
+            #print(self.espConnections)
+
+            res, boolVal = self.getCache(self.espConnections[clientText]["MAC"])
+
+            if (res != (int(x), int(y))):
+                self.setCache(self.espConnections[clientText]["MAC"], x, y)
+
+        # so if we want to make this work for a variable number per ESP then we need to
+        # If amount changed, remove cache and current list of connected
+        # Or have a for loop to go through and reassign
+        # The # of ESPs will stay the same so thats constant, but the coords will change
+        # Maybe a Tree of ESP and their children coords could help the conversion
+        # but tbh espConnections already does that, so it may just need to get abstracted
 
         # set new coord details
         self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}

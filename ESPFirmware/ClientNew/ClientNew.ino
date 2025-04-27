@@ -19,6 +19,16 @@ CRGBArray<NUM_LEDS> leds2;
 
 void setUPLEDs(){ 
   delay(1000); // 3 second delay for recovery
+
+  // To make this work for more than 2 we have to split them
+  // Ex: 4 -> LED 1 (1, 2) LED 2 (3, 4)
+  // Ex: 6 LED 1 (1, 2, 3) LED 2 (4, 5, 6)
+  // Find # of LED command being sent
+  // Check if even, split in half (/2), then go in order
+  // Do each LED strip seperately, so split 40 LEDs by # for each
+  // Ex: 40 // 3 (round it down), last one can take excess
+
+
   
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_STRIP1,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);

@@ -1,29 +1,30 @@
 window.onload = function() {
   const ledBuilding = document.getElementById('ledBuilding');
-  const textBox = document.getElementById('textBox');
+  // const textBox = document.getElementById('textBox');
 
   // Create WebSocket connection for the text box
-  const textBoxWS = new WebSocket('ws://localhost:9001');
+  // const textBoxWS = new WebSocket('ws://localhost:9001');
 
-  textBoxWS.onopen = function() {
-    console.log(`WebSocket connection for text box established.`);
-  };
+  // textBoxWS.onopen = function() {
+  //   console.log(`WebSocket connection for text box established.`);
+  // };
 
-  textBoxWS.onmessage = function(event) {
-    const data = event.data;
-    console.log(data);
+  // textBoxWS.onmessage = function(event) {
+  //   const data = event.data;
+  //   console.log(data);
 
-    // Display received message in the text box
-    textBox.value = data;
-  };
+  //   // Display received message in the text box
+  //   textBox.value = data;
+  // };
 
-  textBoxWS.onclose = function() {
-    console.log(`WebSocket connection for text box closed.`);
-  };
+  // textBoxWS.onclose = function() {
+  //   console.log(`WebSocket connection for text box closed.`);
+  // };
 
   // Create LED blocks
-  for (let row = 0; row < 5; row++) {
-    for (let column = 0; column < 11; column++) {
+  //5 by 11
+  for (let row = 0; row < 1; row++) {
+    for (let column = 0; column < 2; column++) {
       const ledBlock = document.createElement('div');
       ledBlock.classList.add('ledBlock');
 

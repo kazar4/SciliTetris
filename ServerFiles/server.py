@@ -2,6 +2,7 @@ from websocket_server import WebsocketServer
 import sqlite3
 import json
 import commands as commands
+import time
 
 admin = {"admin": None}
 player = {"client": None, "clientID": None}
@@ -39,6 +40,13 @@ commands = commands.Commands(admin, player, game, espConnections, coordConnectio
 # but then I have to learn tkiner kinda well
 # whereas website I just ooga booga a 
 
+import traceback 
+
+template = ( 
+    '{frame.filename}:{frame.lineno}:{frame.name}:\n'
+    '    {frame.line}'
+) 
+
 # Called for every client connecting (after handshake)
 def new_client(client, server):
     print("New client connected and was given id %d" % client['id'])
@@ -50,6 +58,7 @@ def new_client(client, server):
 def client_left(client, server):
 
     print("Client(%d) disconnected" % client['id'])
+
 
     if client["id"] == admin["admin"]:
         admin["admin"] = (None, None)
@@ -106,10 +115,12 @@ def message_received(client, server, message):
         MAC = message[2:]
         print("Setting client " + str(client["id"]) + " Mac Address of: " + MAC)
         espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": [(None, None), (None, None)], "color": ["#000000", "#000000"]}
-        
+
         if commands.cacheBool:
             coord, foundCache = commands.getCache(MAC)
             if foundCache:
+                print("foundCache")
+                print("sleep1")
                 commands.setCoords(f"setCoords {client['id']} {coord[0]} {coord[1]}", client, server)
 
         return
@@ -146,7 +157,7 @@ PORT=9001
 #server = WebsocketServer(host='0.0.0.0', port=PORT, key="/etc/letsencrypt/archive/proteinarium/privkey2.pem", cert="/etc/letsencrypt/archive/proteinarium/cert2.pem")
 server = WebsocketServer(host='localhost', port=PORT)
 
-commands.start_ping_thread(server)
+#commands.start_ping_thread(server)
 
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)
