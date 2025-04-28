@@ -40,13 +40,6 @@ commands = commands.Commands(admin, player, game, espConnections, coordConnectio
 # but then I have to learn tkiner kinda well
 # whereas website I just ooga booga a 
 
-import traceback 
-
-template = ( 
-    '{frame.filename}:{frame.lineno}:{frame.name}:\n'
-    '    {frame.line}'
-) 
-
 # Called for every client connecting (after handshake)
 def new_client(client, server):
     print("New client connected and was given id %d" % client['id'])
@@ -157,7 +150,7 @@ PORT=9001
 #server = WebsocketServer(host='0.0.0.0', port=PORT, key="/etc/letsencrypt/archive/proteinarium/privkey2.pem", cert="/etc/letsencrypt/archive/proteinarium/cert2.pem")
 server = WebsocketServer(host='localhost', port=PORT)
 
-#commands.start_ping_thread(server)
+commands.start_ping_thread(server)
 
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)

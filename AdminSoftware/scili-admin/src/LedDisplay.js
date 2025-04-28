@@ -31,6 +31,17 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
             ws.send("getClientState")
           }
 
+          if (wsRes.type === 'info') {
+            alert(`
+              EPS INFO:
+
+              ESP: ${wsRes.esp}
+              firmware: ${wsRes.firmware}
+              ping: ${espClients.ping}
+              
+              `)
+          }
+    
     }
     
     return () => {
@@ -104,6 +115,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
                 xDimension={xDimension} 
                 yDimension={yDimension} 
                 ws={ws} 
+                wsRes={wsRes}
                 espClients={espClients}
                 mode={mode} 
                 hexCode={hexCode}
@@ -117,7 +129,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
   );
 };
 
-const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hexCode, strip, syncDelay}) => {
+const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mode, hexCode, strip, syncDelay}) => {
 
     const [assignedESP, setAssignedESP] = useState([]); // List of ESP clients
     const [textDiv, setTextDiv] = useState("");
@@ -271,6 +283,10 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, espClients, mode, hex
 
     if (mode === "singlesync") {
       ws.send(`sync ${textDiv} ${syncDelay}`)
+    }
+
+    if (mode === "info") {
+      ws.send(`info get ${textDiv}`)
     }
 
   };
