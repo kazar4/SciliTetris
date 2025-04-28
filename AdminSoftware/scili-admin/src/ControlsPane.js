@@ -275,20 +275,19 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
               </Flex>
 
                 {/* VIEW INFO */}
-                {/* DELETE & RESET */}
                 <Flex direction={"row"} gap={2}>
 
                 {/* Reset */}
                 <Button onClick={() => {
-                  if (mode !== "reset") {
-                    setMode("viewInfo") 
+                  if (mode !== "info") {
+                    setMode("info") 
                   } else {
                     setMode("") 
                   }
                 }}
-                variant={mode === "viewInfo" ? "solid" : "outline"}
+                variant={mode === "info" ? "solid" : "outline"}
                 colorScheme="purple"
-                boxShadow={mode === "viewInfo" ? "0 0 0 3px rgba(120, 0, 180, 0.6)" : "none"}
+                boxShadow={mode === "info" ? "0 0 0 3px rgba(120, 0, 180, 0.6)" : "none"}
                 w={"50%"}
                 >
                 View Info
