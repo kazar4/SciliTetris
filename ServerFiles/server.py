@@ -140,7 +140,8 @@ def message_received(client, server, message):
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
         "removeCoord": {"func": commands.removeCoord, "args": [message]},
         "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)},
-        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)}
+        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)},
+        "info": {"func": commands.getInfo, "args": (message, client, server)},
     }
     
     commands.executeCommands(possibleCommands, message, client, server)
@@ -153,11 +154,12 @@ def message_received(client, server, message):
 
 PORT=9001
 # PORT = 4567
-# server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
 #server = WebsocketServer(host='0.0.0.0', port=PORT, key="/etc/letsencrypt/archive/proteinarium/privkey2.pem", cert="/etc/letsencrypt/archive/proteinarium/cert2.pem")
-server = WebsocketServer(host='localhost', port=PORT)
+# server = WebsocketServer(host='localhost', port=PORT)
 
 #commands.start_ping_thread(server)
+
 
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)

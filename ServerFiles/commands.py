@@ -324,6 +324,31 @@ class Commands:
         #print(clientText)
         #server.send_message(client, clientText)
         self.sendServerGracefully(server, client, clientText)
+
+    
+    def getInfo(self, message, client, server):
+        messageSplit = message.split()
+
+        # Message will either be of format
+        # info get ESP#
+        # info {json of info}
+
+        # if you are trying to turn on a LED that doesnt have a set coord
+        if len(messageSplit) == 3:
+            cmd, action, espID = messageSplit
+
+            # in this case the admin is asking us to get info from a specfic ESP
+            self.sendServerGracefully(server, self.espConnections[espID]["clientVal"], "info:" + espID)
+
+        else:
+            cmd, firemwareJSON = messageSplit
+            
+            # this means we got info that we need to send to the admin
+
+            self.sendServerGracefully(server, self.admin["admin"][0], firemwareJSON)
+
+        
+
     
     def getLEDState(self, client, server):
         ledState = {f"({coord[0]},{coord[1]})": self.getLEDColor(coord) for coord in self.coordConnections.keys()}

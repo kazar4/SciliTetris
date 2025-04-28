@@ -39,8 +39,8 @@ window.onload = function() {
       ledBlock.dataset.color2 = "#FF0000";
 
       // Create WebSocket connection for each LED block
-      const ws = new WebSocket('ws://localhost:9001');
-      // const ws = new WebSocket('wss://proteinarium.brown.edu:4567')
+      //const ws = new WebSocket('ws://localhost:9001');
+      const ws = new WebSocket('wss://kazar4.com:9001')
 
       ws.onopen = function() {
         console.log(`WebSocket connection for LED block (${row}, ${column}) established.`);
@@ -55,6 +55,10 @@ window.onload = function() {
         //Example: Change color of LED block based on received data
         if (data === 'ping') {
           ws.send('pong');
+        }
+
+        if (data.includes('info')) {
+          ws.send("info " + JSON.stringify({"type": "info", "esp": data.split(":")[1],"firmware": "nonESPSimulation"}));
         }
 
         if (data !== undefined && data !== null && data[0] === '$' && data.length === 9) {
