@@ -23,8 +23,8 @@ window.onload = function() {
 
   // Create LED blocks
   //5 by 11
-  for (let row = 0; row < 1; row++) {
-    for (let column = 0; column < 2; column++) {
+  for (let row = 0; row < 5; row++) {
+    for (let column = 0; column < 11; column++) {
       const ledBlock = document.createElement('div');
       ledBlock.classList.add('ledBlock');
 
