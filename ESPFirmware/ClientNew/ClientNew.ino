@@ -100,6 +100,25 @@ void loop() {
         ESP.reset();
       }
 
+      if (data == "update") {
+        startOTAUpdate();
+      }
+
+      if (data.startsWith("info:")) {
+        JsonDocument doc;
+
+        doc["type"] = "info";
+        doc["firmware"] = "beta1.5";
+        doc["esp"] = data.substring(5);
+
+        String jsonStr;
+        String command = "info ";
+        serializeJson(doc, jsonStr);
+        //doc["data"][1] = 2.302038;
+
+        webSocketClient.sendData(command + jsonStr);
+      }
+
       if (data.charAt('L')) {
 
         // Serial.println(String("L200").substring(1).toInt());

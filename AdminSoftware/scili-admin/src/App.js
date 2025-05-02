@@ -31,6 +31,8 @@ function App() {
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
   const [yDimension, setYDimension] = useState(11); // Initial y dimension
 
+  const [ledPerESP, setLedPerESP] = useState(2); // Initial y dimension
+
   const textBoxRef = React.createRef();
 
 
@@ -109,6 +111,8 @@ function App() {
               setStrip={setStrip}
               setSyncDelay={setSyncDelay}
               syncDelay={syncDelay}
+              setLedPerESP={setLedPerESP}
+              ledPerESP={ledPerESP}
             />
           </Box>
 
@@ -126,6 +130,8 @@ function App() {
               setXDimension={setXDimension}
               yDimension={yDimension}
               setYDimension={setYDimension}
+              setLedPerESP={setLedPerESP}
+              ledPerESP={ledPerESP}
               />
           </Box>
 
@@ -136,7 +142,9 @@ function App() {
               ws={ws} 
               wsRes={wsRes} 
               xDimension={xDimension} 
-              yDimension={yDimension}/>
+              yDimension={yDimension}
+              ledPerESP={ledPerESP}
+              />
           </Box>
           
         </Flex>
