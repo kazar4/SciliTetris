@@ -21,6 +21,7 @@ window.onload = function() {
   //   console.log(`WebSocket connection for text box closed.`);
   // };
 
+
   // Create LED blocks
   //5 by 11
   for (let row = 0; row < 5; row++) {
@@ -35,8 +36,8 @@ window.onload = function() {
       ledBlock.dataset.column = column;
       ledBuilding.appendChild(ledBlock);
 
-      ledBlock.dataset.color1 = "#000000";
-      ledBlock.dataset.color2 = "#FF0000";
+      // ledBlock.dataset.color1 = "#000000";
+      // ledBlock.dataset.color2 = "#FF0000";
 
       // Create WebSocket connection for each LED block
       //const ws = new WebSocket('ws://localhost:9001');
@@ -61,27 +62,53 @@ window.onload = function() {
           ws.send("info " + JSON.stringify({"type": "info", "esp": data.split(":")[1],"firmware": "nonESPSimulation"}));
         }
 
-        if (data !== undefined && data !== null && data[0] === '$' && data.length === 9) {
-          console.log('Setting color to: ' + data);
-          
-          if (data[1] == 1) {
-            ledBlock.dataset.color1 = data.substring(2);
-          } else if (data[1] == 2) {
-            ledBlock.dataset.color2 = data.substring(2);
-          } else {
-            ledBlock.dataset.color1 = data.substring(2);
-            ledBlock.dataset.color2 = data.substring(2);
-          }
+        // $2-1#FF00FF
 
-          console.log("TRYING TO SET THESE")
-          console.log(ledBlock.dataset.color1)
-          console.log(ledBlock.dataset.color2)
-          console.log(`linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`)
-          ledBlock.style.background = `linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`
-          ledBlock.setAttribute("style", `background:linear-gradient(90deg, ${ledBlock.dataset.color1} 50%, ${ledBlock.dataset.color2} 50%);`);
-          //data.substring(2);
-          //background: linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%);
-          // Logic to set color of corresponding LED block
+        if (data[0] === '$' && data.length >= 10) {
+          console.log('Setting color to:', data);
+        
+          const numOfLeds = parseInt(data[1]);
+          const ledChosen = parseInt(data[3]);
+          const colorVal = data.substring(4); // e.g. #FF00FF
+        
+          // Clamp LED index
+          if (ledChosen > numOfLeds) {
+            ledBlock.dataset.colors = JSON.stringify(Array(numOfLeds).fill(colorVal));
+            ledBlock.setAttribute("style", `background: ${colorVal};`);
+            return;
+          }
+        
+          // Get or initialize colors array
+          let colors = ledBlock.dataset.colors
+            ? JSON.parse(ledBlock.dataset.colors)
+            : Array(numOfLeds).fill("#000000");
+        
+          // Ensure it's exactly the right length
+          if (colors.length !== numOfLeds) {
+            const newColors = Array(numOfLeds).fill("#000000");
+            for (let i = 0; i < Math.min(colors.length, numOfLeds); i++) {
+              newColors[i] = colors[i] || "#000000";
+            }
+            colors = newColors;
+          }
+        
+          // Update color
+          colors[ledChosen - 1] = colorVal;
+          ledBlock.dataset.colors = JSON.stringify(colors);
+        
+          // Build gradient from numOfLeds entries only
+          const step = 100 / numOfLeds;
+          const gradientParts = colors.map((color, i) => {
+            const start = i * step;
+            const end = start + step;
+            return `${color} ${start}%, ${color} ${end}%`;
+          });
+        
+          const gradient = `linear-gradient(90deg, ${gradientParts.join(', ')})`;
+          console.log("Setting gradient:", gradient);
+        
+          ledBlock.style.background = gradient;
+          ledBlock.setAttribute("style", `background: ${gradient};`);
         }
       };
 

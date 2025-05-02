@@ -9,7 +9,7 @@ player = {"client": None, "clientID": None}
 game = {"game": None, "clientID": None}
 espConnections = {}
 coordConnections = {}
-LEDPerEsp = 2
+LEDPerEsp = {"value": 2}
 
 commands = commands.Commands(admin, player, game, espConnections, coordConnections, LEDPerEsp)
 
@@ -108,7 +108,7 @@ def message_received(client, server, message):
     if message[0:2] == "M-":
         MAC = message[2:]
         print("Setting client " + str(client["id"]) + " Mac Address of: " + MAC)
-        espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": [(None, None), (None, None)], "color": ["#000000", "#000000"]}
+        espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": [(None, None)] * LEDPerEsp["value"], "color": ["#000000"] * LEDPerEsp["value"]}
 
         if commands.cacheBool:
             coord, foundCache = commands.getCache(MAC)
