@@ -8,9 +8,8 @@ void connectWifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  Serial.println(sizeof(password));
 
-  WiFi.begin(ssid);
+  WiFi.begin(ssid, password);
 
   long connectTime = millis();
   while (WiFi.status() != WL_CONNECTED) {
@@ -39,7 +38,8 @@ void connectWifi() {
 
 void connectWebSocket() {
   // SSL fingerprint for bottom level cert kazar4.com
-  const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
+  //const char *sslFingerprint = "F6 5E 7E 73 46 05 E9 62 6C 0C ED B4 51 EE 3F 5C 4D B5 07 44";
+  // const char *sslFingerprint = "DB 50 1E 9C 09 6D E5 E3 FF 91 D6 B2 CD B9 BE 9F FA F5 EA 29";
   //const char *sslFingerprint = "BF ED 16 67 BD BD AB D9 A0 9B 5D BF 38 E0 2A EA B7 61 D2 ED";
 
   client.setFingerprint(sslFingerprint);
@@ -76,6 +76,25 @@ void connectWebSocket() {
       // Hang on failure
       ESP.reset();
     }  
+  }
+}
+
+void startOTAUpdate() {
+  Serial.println("Starting OTA update...");
+  t_httpUpdate_return ret = ESPhttpUpdate.update(client, server_url);
+
+  switch (ret) {
+    case HTTP_UPDATE_FAILED:
+      Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+      break;
+
+    case HTTP_UPDATE_NO_UPDATES:
+      Serial.println("HTTP_UPDATE_NO_UPDATES");
+      break;
+
+    case HTTP_UPDATE_OK:
+      Serial.println("HTTP_UPDATE_OK — Update successful. Rebooting...");
+      break;
   }
 }
 

@@ -5,7 +5,7 @@ import { DndProvider, useDrag } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as ReactIcons from 'react-icons/io';
 
-const EspClientList = ({ ws, wsRes, xDimension, yDimension }) => {
+const EspClientList = ({ ws, wsRes, xDimension, yDimension, ledPerESP}) => {
   const [espClients, setEspClients] = useState([]); // List of ESP clients
   const [selectedClient, setSelectedClient] = useState(null); // Selected ESP client
 
@@ -56,23 +56,23 @@ const EspClientList = ({ ws, wsRes, xDimension, yDimension }) => {
     let updatedClients = clientData.map(client => ({
       key: client.clientName,
       id: client.clientName,
-      x: client.x1,
-      y: client.y1,
-      color: client.color
+      x: client.coords[0][0],
+      y: client.coords[0][1],
+      color: client.colors[0]
     }));
 
     updatedClients = updatedClients.filter(client => {
         //console.log(client.y)
-        return (client.x === null && client.y === null) || client.x >= xDimension * 2 || client.y >= yDimension
+        return (client.x === null && client.y === null) || client.x >= xDimension * ledPerESP || client.y >= yDimension
     })
 
     // [(), (), (), (), ()]
-    for (let val in updatedClients) {
-      console.log(val)
-      if (clientData[val].color !== "F000000") {
-        console.log(`(${val["x1"]} ${val["y1"]}), (${val["x2"]}, ${val["y2"]})`)
-      }
-    }
+    // for (let val in updatedClients) {
+    //   console.log(val)
+    //   if (clientData[val].color !== "F000000") {
+    //     console.log(`(${val["x1"]} ${val["y1"]}), (${val["x2"]}, ${val["y2"]})`)
+    //   }
+    // }
 
     setEspClients(updatedClients);
   };

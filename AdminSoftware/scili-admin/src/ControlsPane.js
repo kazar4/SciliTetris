@@ -11,7 +11,7 @@ import CacheToggle from './CacheToggle';
 import LedPopup from './LedPopup';
 import { FiUploadCloud } from 'react-icons/fi';
 
-export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncDelay, syncDelay}) => {
+export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncDelay, syncDelay, ledPerESP, setLedPerESP}) => {
   const [file, setFile] = useState(null);
   const toast = useToast();
 
@@ -292,6 +292,33 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
                 >
                 View Info
                 </Button>
+                </Flex>
+
+
+                {/* Set LED's Per ESP */}
+                <Flex direction={"row"} gap={2}>
+
+                <Button
+                variant={mode === "info" ? "solid" : "outline"}
+                colorScheme="purple"
+                boxShadow={mode === "info" ? "0 0 0 3px rgba(120, 0, 180, 0.6)" : "none"}
+                w={"25%"}>
+                  {ledPerESP}
+                </Button>
+
+                <Input placeholder="LEDs per ESP" fontSize={11} onChange={(event) => {
+                  function isNumber(value) {
+                    return typeof value === 'number' && isFinite(value);
+                  }
+                  console.log("Trying to change LEDs per ESP to " + event.target.value)
+                  if (isNumber(parseInt(event.target.value)) && (parseInt(event.target.value) % 2 == 0)) {
+                    ws.send("LEDPerEsp " + event.target.value)
+                    console.log("ESP LED NUM: " + event.target.value)
+                    setLedPerESP(event.target.value)
+                  }
+                }}></Input>
+
+
                 </Flex>
 
 

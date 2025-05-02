@@ -3,6 +3,9 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
+#include <WiFiClientSecure.h>
+#include <ESP8266httpUpdate.h>  // <-- Important
+
 /* HTTP helper function definitions */
 void parseRGB();
 
@@ -35,8 +38,14 @@ int BRIGHTNESS = 96;
 char buffer[10];
 
 //Brown-Guest
-const char* ssid     = "Brown-Guest";
-const char* password = "";
+// const char* ssid     = "Brown-Guest";
+// const char* password = "";
+
+// const char* ssid     = "Verizon_6Y7F3K";
+// const char* password = "demur9-jug-code";
+
+const char* ssid     = "257 Thayer Resident";
+const char* password = "f.JutTog";
 
 const char* ssid2     = "RLAB";
 const char* password2 = "metropolis";
@@ -44,8 +53,9 @@ const char* password2 = "metropolis";
 char path[] = "/";
 char host[] = "kazar4.com";
 
+const char* server_url = "https://kazar4.com/SciliTetris/ESPFirmware/NewFirmwareUpload/firmware.bin"; 
 
-
+const char *sslFingerprint = "F6 5E 7E 73 46 05 E9 62 6C 0C ED B4 51 EE 3F 5C 4D B5 07 44";
 
 // timeParsingVals
 bool syncOn = true;

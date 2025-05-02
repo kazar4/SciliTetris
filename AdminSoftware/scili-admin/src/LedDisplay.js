@@ -2,10 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Box, Grid, Input, Flex, Text } from '@chakra-ui/react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { 
+  Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
+  Button, Stack, Badge, Icon, Center, useDisclosure
+} from '@chakra-ui/react';
+import { CpuIcon } from 'lucide-react'; // add this import for a nice CPU icon
+import EspInfoModal from './ESPInfoModal';
 
-const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDimension, setXDimension, setYDimension}) => {
+
+const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDimension, setXDimension, setYDimension, setLedPerESP, ledPerESP}) => {
     
-  const [espClients, setEspClients] = useState({}); // List of ESP clients
+  const [espClients, setEspClients] = useState({}); // List of ESP clients from x,y
+  //const [espDict, setEspDict] = useState(());
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modalInfo, setModalInfo] = useState({});
+
+  const [colorToggle, setColorToggle] = useState(false)
 
   const handleChangeXDimension = (event) => {
     setXDimension(Number(event.target.value));
@@ -22,6 +35,8 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
         if (wsRes.type === 'getClientState') {
             // Update the LED list based on the received JSON data
             console.log("got client state in LedDisplay")
+
+            setLedPerESP(wsRes["LEDPerEsp"])
             updateEspClients(wsRes.data);
           }
 
@@ -32,14 +47,28 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
           }
 
           if (wsRes.type === 'info') {
-            alert(`
-              EPS INFO:
 
-              ESP: ${wsRes.esp}
-              firmware: ${wsRes.firmware}
-              ping: ${espClients.ping}
+            let matchingESP = {}
+            for (let coord in espClients) {
+              if (espClients[coord].id === wsRes.esp){
+                matchingESP = espClients[coord]
+              }
+            }
+
+            // alert(`
+            //   EPS INFO:
+
+            //   ESP: ${wsRes.esp}
+            //   firmware: ${wsRes.firmware}
+            //   ping: ${matchingESP.ping}
               
-              `)
+            //   `)
+            setModalInfo({
+              esp: wsRes.esp,
+              firmware: wsRes.firmware,
+              ping: matchingESP.ping
+            });
+            onOpen();
           }
     
     }
@@ -51,36 +80,33 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
 
 
   const updateEspClients = (clientData) => {
-    // Process the JSON data received from the server and update the LED list
-    let updatedClients = clientData.map(client => ({
-      id: client.clientName,
-      x1: client.x1,
-      y1: client.y1,
-      x2: client.x2,
-      y2: client.y2,
-      color1: client.color1,
-      color2: client.color2,
-      ping: client.ping
-    }));
+    // Normalize clients with their list of coords
+    let espStorage = {}
+  
+    clientData.forEach(client => {
+      const clientId = client.clientName;
+      const ping = client.ping;
 
+      console.log(client)
+  
+      // Each client has a variable list of coords, each with x, y, color
+      // TODO: this entire for loop part is redudant, I can just pass coords and color
 
-    const espStorage = {}
-    for (let val in clientData) {
-        let client = updatedClients[val]
-        let id = client.clientName
-        let x1 = client.x1
-        let y1 = client.y1
-
-        let x2 = client.x2
-        let y2 = client.y2
-
-        if (x1 !== null && y1 !== null) {
-            espStorage[`${x1},${y1}`] = client
-        }
-    }
-
-    console.log(espStorage)
-
+      let x = client.coords[0][0]
+      let y = client.coords[0][1]
+  
+      if (Array.isArray(client.coords) && x !== null && y !== null) {
+        espStorage[`${x},${y}`] = {
+          id: clientId,
+          coords: client.coords,
+          colors: client.colors,
+          ping
+        };
+      }
+    });
+  
+    console.log("espStorage")
+    console.log(espStorage);
     setEspClients(espStorage);
   };
 
@@ -102,12 +128,12 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
         </Flex>
 
         <Flex flexDir={'row'} gap={3}>
-        <Grid templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 60}>
+        <Grid templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 50}>
           {Array.from({ length: yDimension }, (_, index) => (
             <p>{yDimension - index + 2}</p>
           ))}
         </Grid>
-        <Grid templateColumns={`repeat(${xDimension}, 45px)`} templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 60}>
+        <Grid templateColumns={`repeat(${xDimension}, 45px)`} templateRows={`repeat(${yDimension}, 45px)`} gap={1} mt={5} mb={4} height={yDimension * 45}>
           {Array.from({ length: yDimension * xDimension }, (_, index) => (
             <DroppableBox 
                 key={index} 
@@ -121,19 +147,35 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
                 hexCode={hexCode}
                 strip={strip}
                 syncDelay={syncDelay}
+                ledPerESP={ledPerESP}
+                colorToggle={colorToggle}
                 />
           ))}
         </Grid>
         </Flex>
+
+        <Button onClick={() => {
+          console.log("Toggling Color to: " + !colorToggle)
+          setColorToggle(!colorToggle)
+          }}>Toggle Colors</Button>
+
+        {/* ESP INFORMATION MODAL */}
+        <EspInfoModal
+          isOpen={isOpen}
+          onClose={onClose}
+          modalInfo={modalInfo}
+        />
+          
       </Flex>
   );
 };
 
-const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mode, hexCode, strip, syncDelay}) => {
+const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mode, hexCode, strip, syncDelay, ledPerESP, colorToggle}) => {
 
     const [assignedESP, setAssignedESP] = useState([]); // List of ESP clients
     const [textDiv, setTextDiv] = useState("");
     const [colorDefault, setColorDefault] = useState("transparant");
+    const [boxBG, setBoxBG] = useState("transparant");
     const [subText, setSubText] = useState("");
 
     const handleDrop = (index) => {
@@ -143,9 +185,14 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
           let x = index % xDimension
           let y = Math.floor((index) / xDimension)
 
-          console.log(`setCoords ${item.espID} ${x * 2} ${y}`)
+          // So ledPerESP is important here now
+          // Before this was 2
+
+          console.log(`setCoords ${item.espID} ${x * ledPerESP} ${y}`)
           console.log(`Dropped item ${item.type} onto LED box ${index} with id ${item.espID}`);
-          ws.send(`setCoords ${item.espID} ${x * 2} ${y}`)
+
+
+          ws.send(`setCoords ${item.espID} ${x * ledPerESP} ${y}`)
           ws.send('getClientState')
           // Optionally, you can return a drop result here if needed
         };
@@ -183,19 +230,46 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
       // But I coded it so only (0,0) -> (0,0) and (2,0)  are actually being saved on our end
       // then (4,0) then (6,0)
 
+      function toggleColors(colors, colorSetter) {
+
+        if (colorToggle) {
+          // Build gradient from numOfLeds entries only
+          const step = 100 / ledPerESP;
+          const gradientParts = colors.map((color, i) => {
+            const start = i * step;
+            const end = start + step;
+            return `${color} ${start}%, ${color} ${end}%`;
+          });
+
+          const gradient = `linear-gradient(90deg, ${gradientParts.join(', ')})`;
+          console.log("Setting gradient:", gradient);
+
+          //ledBlock.style.background = gradient;
+          //ledBlock.setAttribute("style", `background: ${gradient};`);
+          colorSetter(gradient)
+        } else {
+          colorSetter("transparent")
+        }
+      }
+
       useEffect(() => {
 
         let x = index % xDimension
         let y = Math.floor((index) / xDimension)
 
-        if (`${x*2},${y}` in espClients) {
+        if (`${x*ledPerESP},${y}` in espClients) {
             console.log("found a match")
-            let espVal = espClients[`${x*2},${y}`]
+            let espVal = espClients[`${x*ledPerESP},${y}`]
             console.log(espVal)
             setTextDiv(espVal["id"])
+            console.log(espVal)
+            console.log(espVal["colors"])
             //setAssignedESP(espVal["id"])
-            let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
-            setColorDefault(newColor)
+            //let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
+            //setColorDefault("#FF00FF")
+
+            toggleColors(espVal["colors"], setBoxBG)
+
             if (espVal["ping"] != null) {
                 setSubText(espVal["ping"] + "ms")
             }
@@ -208,26 +282,27 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
         return () => {
         
         };
-      }, [espClients]);
+      }, [espClients, colorToggle]);
     
-      useEffect(() => {
+      // useEffect(() => {
 
-        let x = index % xDimension
-        let y = Math.floor((index) / xDimension)
+      //   let x = index % xDimension
+      //   let y = Math.floor((index) / xDimension)
 
-        if (`${x},${y}` in espClients) {
-            console.log("found a match")
-            let espVal = espClients[`${x},${y}`]
-            console.log(espVal)
-            setTextDiv(espVal["id"])
-            let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
-            setColorDefault(newColor)
-        }
+      //   if (`${x * ledPerESP},${y}` in espClients) {
+      //       console.log("found a match")
+      //       let espVal = espClients[`${x * ledPerESP},${y}`]
+      //       console.log(espVal)
+      //       setTextDiv(espVal["id"])
+      //       console.log(espVal["colors"])
+      //       //let newColor = blendColors(espVal["color1"], espVal["color2"], 0.5)
+      //       //setColorDefault(newColor)
+      //   }
         
-        return () => {
+      //   return () => {
             
-        };
-      }, []);
+      //   };
+      // }, []);
 
   const [{ isOver }, drop] = useDrop({
     accept: 'ledDisplay',
@@ -251,9 +326,11 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
     console.log(mode === "color" && hexCode.length == 7)
 
     if (mode === "color" && hexCode.length == 7) {
-        if (["1", "2"].includes(strip)) {
-          ws.send(`setColor ${x * 2 + (parseInt(strip) - 1)} ${y} ${hexCode}`)
-        } else {
+        let possibleStripVals = Array.from(Array(ledPerESP), (e,i)=>String((i + 1)))
+        //  alert(possibleStripVals)
+        if (possibleStripVals.includes(strip)) {
+          ws.send(`setColor ${x * ledPerESP + (parseInt(strip)) - 1} ${y} ${hexCode}`)
+        } else { // actualCoordX = GridX * LedPerESP + Strip - 1           Strip = (ActualCoordX + 1) - (GridX * LEDPerESP)
           // 3 Case
           if (textDiv !== "") {
             ws.send(`setColor ${textDiv} ${hexCode}`)
@@ -268,6 +345,7 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
     }
 
     if (mode === "delete") {
+      console.log("trying to delete")
         ws.send(`removeCoord ${textDiv}`)
         ws.send("getClientState")
     }
@@ -305,7 +383,8 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
       width="45px"
       height="45px"
       border="3px solid white"
-      backgroundColor={isOver ? 'yellow' : colorDefault}
+      // background={boxBG}
+      background={isOver ? 'yellow' : boxBG}
       onClick={handleClick}
       cursor={"pointer"}
     >
