@@ -9,8 +9,9 @@ player = {"client": None, "clientID": None}
 game = {"game": None, "clientID": None}
 espConnections = {}
 coordConnections = {}
+LEDPerEsp = 2
 
-commands = commands.Commands(admin, player, game, espConnections, coordConnections)
+commands = commands.Commands(admin, player, game, espConnections, coordConnections, LEDPerEsp)
 
 # CONCLUSION -> Goes to do the SQL caching later when I have a 
 # better idea of the structure of everything
@@ -133,12 +134,16 @@ def message_received(client, server, message):
         "cacheOff": {"func": commands.cacheOff, "args": [server]},
         "removeCoord": {"func": commands.removeCoord, "args": [message]},
         "setStripColor": {"func": commands.setStripColor, "args": (message, client, server)},
-        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)}
+        "playerInput": {"func": commands.receivePlayerInput, "args": (message, client, server)},
+        "info": {"func": commands.getInfo, "args": (message, client, server)},
+        "update": {"func": commands.updateESP, "args": (message, client, server)},
+        "LEDPerEsp": {"func": commands.setLEDPerEsp, "args": (message, client, server)}
+
     }
     
     commands.executeCommands(possibleCommands, message, client, server)
 
-        ## WHOA -> for tetris/snake we will have another websocket that we connect to that is kinda like a
+        ## WHOA -> for  tetris/snake we will have another websocket that we connect to that is kinda like a
         # ____ (im forgetting the word), so it goes website -> websocket1 > this websocket
         # basically an abstraction as websocket1 will handle all the game coloring so all the website has to do is send
         # colors
@@ -146,11 +151,12 @@ def message_received(client, server, message):
 
 PORT=9001
 # PORT = 4567
-# server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
+server = WebsocketServer(host='0.0.0.0', port=PORT, key="/ssl/server.key", cert="/ssl/server.crt")
 #server = WebsocketServer(host='0.0.0.0', port=PORT, key="/etc/letsencrypt/archive/proteinarium/privkey2.pem", cert="/etc/letsencrypt/archive/proteinarium/cert2.pem")
-server = WebsocketServer(host='localhost', port=PORT)
+# server = WebsocketServer(host='localhost', port=PORT)
 
 commands.start_ping_thread(server)
+
 
 #server = WebsocketServer(port = PORT)
 server.set_fn_new_client(new_client)

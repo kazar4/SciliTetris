@@ -11,12 +11,14 @@ class Commands:
 
     cacheBool = True
 
-    def __init__(self, admin, player, game, espConnections, coordConnections):
+    def __init__(self, admin, player, game, espConnections, coordConnections, LEDPerEsp):
         self.admin = admin
         self.player = player
         self.game = game
         self.espConnections = espConnections
         self.coordConnections = coordConnections
+
+        self.LEDPerEsp = LEDPerEsp
         
         self.conn = sqlite3.connect('cache.db')  # Connect to SQLite database
         self.cursor = self.conn.cursor()
@@ -67,6 +69,7 @@ class Commands:
             except BrokenPipeError as e:
                 print(f"client {client} not found, removing it:  {e}")
 
+                # TODO: FIX the coord reliance here
                 if client["id"] in self.espConnections and self.espConnections[str(client["id"])]["coord"][0] != (None, None):
                     coordVal1 = self.espConnections[str(client["id"])]["coord"][0]
                     self.coordConnections.pop(coordVal1, None)
@@ -104,6 +107,7 @@ class Commands:
                         pingedToRemove.append(pinged)
 
                         # REMOVING
+                        # TODO: same coord reliance
                         if pinged in list(self.espConnections) and self.espConnections[pinged]["coord"][0] != (None, None):
                             coordVal1 = self.espConnections[pinged]["coord"][0]
                             self.coordConnections.pop(coordVal1, None)
@@ -179,7 +183,7 @@ class Commands:
 
             if oldClient in self.espConnections:
                 # THos line would have to be abstracted to include more than 2 coords
-                self.espConnections[oldClient]["coord"] = [(None, None), (None, None)]
+                self.espConnections[oldClient]["coord"] = [(None), None] * self.LEDPerEsp
                 print(message)
                 print("HUHHHH")
                 self.setColor(f"setColor {oldClient} #000000", client, server)
@@ -210,11 +214,19 @@ class Commands:
         # Maybe a Tree of ESP and their children coords could help the conversion
         # but tbh espConnections already does that, so it may just need to get abstracted
 
-        # set new coord details
-        self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
-        self.coordConnections[(int(x) + 1, int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
-        self.espConnections[clientText]["coord"][0] = (int(x), int(y)) # might have to remove this
-        self.espConnections[clientText]["coord"][1] = (int(x) + 1, int(y)) # might have to remove this
+        # self.LEDsPerESP 
+
+        # So we have set an ESP to a slot, meaning 
+
+        for i in range(self.LEDPerEsp):
+            self.coordConnections[(int(x) + i, int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
+            self.espConnections[clientText]["coord"][i] = (int(x) + 1, int(y)) # might have to remove this
+
+        # # set new coord details
+        # self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
+        # self.coordConnections[(int(x) + 1, int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
+        # self.espConnections[clientText]["coord"][0] = (int(x), int(y)) # might have to remove this
+        # self.espConnections[clientText]["coord"][1] = (int(x) + 1, int(y)) # might have to remove this
 
     #### GETTERS AND SETTERS TO HELP WITH COORD SPACE
     def getLEDColor(self, coord):
@@ -295,24 +307,12 @@ class Commands:
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
         clientData = []
         for i in self.espConnections.keys():
-            if self.espConnections[i]["coord"] != [(None, None), (None, None)]:
-                xVal1, yVal1 = self.espConnections[i]["coord"][0][0], self.espConnections[i]["coord"][0][1]
-                xVal2, yVal2 = self.espConnections[i]["coord"][1][0], self.espConnections[i]["coord"][1][1]
-                color1, color2 = self.espConnections[i]["color"][0], self.espConnections[i]["color"][1]
-
-                ping = None
-                if i in self.savedPingTimes:
-                    ping = self.savedPingTimes[i]
-
-                clientData.append({"clientName": i, "x1": xVal1, "y1": yVal1, "color1": color1, "x2": xVal2, "y2": yVal2, "color2": color2, "ping": ping})
-            else:
-                color1, color2 = self.espConnections[i]["color"][0], self.espConnections[i]["color"][1]
-
-                ping = None
-                if i in self.savedPingTimes:
-                    ping = self.savedPingTimes[i]
+            ping = None
+            if i in self.savedPingTimes:
+                ping = self.savedPingTimes[i]
                 
-                clientData.append({"clientName": i, "x1": None, "y1": None, "color1": color1, "x2": None, "y2": None, "color2": color2, "ping": ping})
+
+            clientData.append({"clientName": i, "ping": ping, "colors": self.espConnections[i]["color"], "coords": self.espConnections[i]["coord"]})
 
 
         #print(self.espConnections)
@@ -324,6 +324,103 @@ class Commands:
         #print(clientText)
         #server.send_message(client, clientText)
         self.sendServerGracefully(server, client, clientText)
+
+    
+    def getInfo(self, message, client, server):
+        messageSplit = message.split()
+
+        # Message will either be of format
+        # info get ESP#
+        # info {json of info}
+
+        # if you are trying to turn on a LED that doesnt have a set coord
+        if len(messageSplit) == 3:
+            cmd, action, espID = messageSplit
+
+            # in this case the admin is asking us to get info from a specfic ESP
+            self.sendServerGracefully(server, self.espConnections[espID]["clientVal"], "info:" + espID)
+
+        else:
+            cmd, firemwareJSON = messageSplit
+            
+            # this means we got info that we need to send to the admin
+
+            self.sendServerGracefully(server, self.admin["admin"][0], firemwareJSON)
+
+    def updateESP(self, message, client, server):
+        messageSplit = message.split()
+
+        if len(messageSplit) == 2:
+            cmd, espID = messageSplit
+
+            if (espID == "all"):
+                for e in self.espConnections:
+                    self.sendServerGracefully(server, self.espConnections[e]["clientVal"], "update")
+            else:
+                self.sendServerGracefully(server, self.espConnections[espID]["clientVal"], "update")
+        
+        else:
+
+            print("INVALID ESP ID TO UPDATE")
+        
+    
+    def setLEDPerEsp(self, message, client, server):
+        messageSplit = message.split()
+
+        if len(messageSplit) == 2:
+            cmd, num = messageSplit
+            print("Setting LED PER ESP: " + num)
+
+            if int(num) % 2 == 0:
+
+                # we have to reconfigure a lot of stuff here
+                oldLedsPerStrip = self.LEDPerEsp
+                self.LEDPerEsp = int(num)
+
+                # 4 
+
+                for esp in self.espConnections:
+                    oldCoords = self.espConnections[esp]["coord"]
+
+                    self.coordConnections = {}
+
+                    # 4 - 2 = 2
+                    # ([0,0] [0,1]) => ([0,0] [0,1], [0,2] [0,3])
+
+                    # 6 - 2 = 4
+                    # ([0,0] [0,1]) => ([0,0] [0,1], [0,2] [0,3], [0,4], [0,5])
+                    # [(1,0), (1,1), (1,2)]
+
+                    # self.coordConnections[(int(x), int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
+                    
+                    # if oldCoords havent been assigned 
+                    if (oldCoords[0][0] == None):
+                        self.espConnections[esp]["coord"] = [(None, None) for i in range(0, self.LEDsPerESP)]
+                        self.espConnections[esp]["color"] = ["#000000"] * self.LEDsPerESP
+                    else:
+                        self.espConnections[esp]["coord"] = [(oldCoords[0][0] + i, oldCoords[0][1])  for i in range(0, self.LEDsPerESP)]
+                        self.espConnections[esp]["color"] = ["#000000"] * self.LEDsPerESP
+
+                        for i, val in enumerate(self.espConnections[esp]["coord"]):
+                            self.coordConnections[val] = {"client" : self.espConnections[esp]["clientVal"], "clientID": esp}
+
+                # espConnections = {}
+                # coordConnections = {}
+                # espConnections[str(client["id"])] = {"clientVal": client, "MAC": MAC, "coord": [(None, None), (None, None)], "color": ["#000000", "#000000"]}
+
+                # go through each of these and reassign based on the new coord 
+
+
+                pass
+
+            
+            else:
+                print("INVALID STRIP NUM - MUST BE EVEN")
+
+        else:
+
+            print("INVALID STRIP NUM - MUST BE A INT")
+
     
     def getLEDState(self, client, server):
         ledState = {f"({coord[0]},{coord[1]})": self.getLEDColor(coord) for coord in self.coordConnections.keys()}
@@ -385,7 +482,7 @@ class Commands:
             oldCoord2 = self.espConnections[clientText]["coord"][1]
             oldMac = self.espConnections[clientText]["MAC"]
 
-            self.espConnections[clientText]["coord"] = [(None, None), (None, None)]
+            self.espConnections[clientText]["coord"] = []
             # Change color here too?
 
             if oldCoord1 in self.coordConnections:
