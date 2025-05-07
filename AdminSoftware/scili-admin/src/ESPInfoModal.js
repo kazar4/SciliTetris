@@ -54,6 +54,15 @@ const EspInfoModal = ({ isOpen, onClose, modalInfo }) => {
             </Text>
             )}
 
+            {modalInfo?.udpPing && (
+            <Text>
+              <strong>UDP Ping:</strong> 
+              <Badge colorScheme="pink" fontSize="1em" ml={2} textTransform="none">
+                {modalInfo?.udpPing}ms
+              </Badge>
+            </Text>
+            )}
+
           </Stack>
         </ModalBody>
 

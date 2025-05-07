@@ -10,7 +10,7 @@ import { CpuIcon } from 'lucide-react'; // add this import for a nice CPU icon
 import EspInfoModal from './ESPInfoModal';
 
 
-const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDimension, setXDimension, setYDimension, setLedPerESP, ledPerESP}) => {
+const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDimension, setXDimension, setYDimension, setLedPerESP, ledPerESP, setBatchDelay, setUdpState}) => {
     
   const [espClients, setEspClients] = useState({}); // List of ESP clients from x,y
   //const [espDict, setEspDict] = useState(());
@@ -19,6 +19,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
   const [modalInfo, setModalInfo] = useState({});
 
   const [colorToggle, setColorToggle] = useState(false)
+  const [pingToggle, setPingToggle] = useState(true)
 
   const handleChangeXDimension = (event) => {
     setXDimension(Number(event.target.value));
@@ -37,6 +38,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
             console.log("got client state in LedDisplay")
 
             setLedPerESP(wsRes["LEDPerEsp"])
+            setBatchDelay(wsRes["batchDelay"])
             updateEspClients(wsRes.data);
           }
 
@@ -44,6 +46,11 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
             // Update the LED list based on the received JSON data
             console.log("got update request")
             ws.send("getClientState")
+          }
+
+          if (wsRes.type === 'udp') {
+            //TODO update UDP toggle
+            setUdpState(Boolean(wsRes["value"]))
           }
 
           if (wsRes.type === 'info') {
@@ -66,7 +73,8 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
             setModalInfo({
               esp: wsRes.esp,
               firmware: wsRes.firmware,
-              ping: matchingESP.ping
+              ping: matchingESP.ping,
+              udpPing: matchingESP.udpPing
             });
             onOpen();
           }
@@ -86,6 +94,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
     clientData.forEach(client => {
       const clientId = client.clientName;
       const ping = client.ping;
+      const udpPing = client.udpPing;
 
       console.log(client)
   
@@ -100,7 +109,8 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
           id: clientId,
           coords: client.coords,
           colors: client.colors,
-          ping
+          ping,
+          udpPing
         };
       }
     });
@@ -149,6 +159,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
                 syncDelay={syncDelay}
                 ledPerESP={ledPerESP}
                 colorToggle={colorToggle}
+                pingToggle={pingToggle}
                 />
           ))}
         </Grid>
@@ -158,6 +169,11 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
           console.log("Toggling Color to: " + !colorToggle)
           setColorToggle(!colorToggle)
           }}>Toggle Colors</Button>
+
+        <Button mt="10px" onClick={() => {
+          console.log("Toggling Ping to: " + !pingToggle)
+          setPingToggle(!pingToggle)
+          }}>Toggle Ping</Button>
 
         {/* ESP INFORMATION MODAL */}
         <EspInfoModal
@@ -170,7 +186,7 @@ const LedDisplay = ({ws, wsRes, mode, hexCode, strip, syncDelay, xDimension, yDi
   );
 };
 
-const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mode, hexCode, strip, syncDelay, ledPerESP, colorToggle}) => {
+const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mode, hexCode, strip, syncDelay, ledPerESP, colorToggle, pingToggle}) => {
 
     const [assignedESP, setAssignedESP] = useState([]); // List of ESP clients
     const [textDiv, setTextDiv] = useState("");
@@ -271,7 +287,11 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
             toggleColors(espVal["colors"], setBoxBG)
 
             if (espVal["ping"] != null) {
+              if (pingToggle) {
                 setSubText(espVal["ping"] + "ms")
+              } else {
+                setSubText(espVal["udpPing"] + "ms")
+              }
             }
         } else {
             setTextDiv("")
@@ -282,7 +302,7 @@ const DroppableBox = ({ index, xDimension, yDimension, ws, wsRes, espClients, mo
         return () => {
         
         };
-      }, [espClients, colorToggle]);
+      }, [espClients, colorToggle, pingToggle]);
     
       // useEffect(() => {
 

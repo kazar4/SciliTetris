@@ -41,14 +41,68 @@ void setUPLEDs(){
 }
 
 void LEDLoop() {
-  for(int i = 0; i < NUM_LEDS; i++) {   
-    // let's set an led value
-    leds[i] = CRGB(r1, g1, b1);
-    leds2[i] = CRGB(r2, g2, b2);
+  int totalLEDs = NUM_LEDS * 2; // Two strips
+  int numPixels = numStripCount; // total logical pixels
+  int ledsPerPixel = totalLEDs / numPixels;
+
+  for (int p = 0; p < numPixels; p++) {
+    int startIndex = p * ledsPerPixel;
+    int endIndex = startIndex + ledsPerPixel;
+
+    // Extract color for this pixel
+    uint8_t r = rgbArr[p][0];
+    uint8_t g = rgbArr[p][1];
+    uint8_t b = rgbArr[p][2];
+
+    for (int i = startIndex; i < endIndex; i++) {
+      if (i < NUM_LEDS) {
+        leds[NUM_LEDS - i] = CRGB(r, g, b);      // first strip
+      } else if (i < totalLEDs) {
+        leds2[i - NUM_LEDS] = CRGB(r, g, b);  // second strip
+      }
+    }
   }
+
   FastLED.show();
-  FastLED.delay(1000 / 100);
+  FastLED.delay(1000 / 100); // 10 ms delay (~100 FPS)
 }
+
+// void LEDLoop() {
+//   int ledsPerPixel = NUM_LEDS / numStripCount;
+//   int remainder = NUM_LEDS % numPixels;
+
+//   for (int p = 0; p < numPixels; p++) {
+    
+//     int currentPixelSize = ledsPerPixel;
+//     if (p == numPixels - 1) {
+//       currentPixelSize += remainder;  // last pixel gets extra if not divisible evenly
+//     }
+
+//     // First half of pixel to strip 1 (leds)
+//     for (int i = 0; i < currentPixelSize / 2; i++) {
+//       if (index < NUM_LEDS) {
+//         leds[index] = CRGB(rgbArr[index][0], rgbArr[index][1], rgbArr[index][2]);
+//         index++;
+//       }
+//     }
+
+//     // Second half of pixel to strip 2 (leds2)
+//     for (int i = 0; i < currentPixelSize - (currentPixelSize / 2); i++) {
+//       if (index < NUM_LEDS) {
+//         leds2[index] = CRGB(rgbArr[index][0], rgbArr[index][1], rgbArr[index][2]);
+//         index++;
+//       }
+//     }
+//   }
+
+//   // for(int i = 0; i < NUM_LEDS; i++) {   
+//   //   // let's set an led value
+//   //   leds[i] = CRGB(r1, g1, b1);
+//   //   leds2[i] = CRGB(r2, g2, b2);
+//   // }
+//   // FastLED.show();
+//   // FastLED.delay(1000 / 100);
+// }
 
 void setup() {
   ESP.wdtEnable(WDTO_2S);
@@ -63,6 +117,8 @@ void setup() {
   
   connectWebSocket();
 
+  connectUDP();
+
   lastPing = millis();
 }
 
@@ -76,17 +132,45 @@ void loop() {
 
   if (client.connected()) {
 
+    int packetSize = Udp.parsePacket();
+    String dataUDP = "";
+
+    if (packetSize > 0) {
+      Udp.read(incomingPacket, 255);
+      incomingPacket[packetSize] = 0;  // Null-terminate
+      dataUDP = String(incomingPacket);
+    }
+
     String data;
     
     webSocketClient.getData(data);
 
     int dataLen = data.length();
-    if (dataLen > 0) {
+
+    if (data.length() == 0 && dataUDP.length() > 0) {
+      Serial.println("UDP Message!");
+      dataLen = dataUDP.length();
+      data = dataUDP;
+      message_type = 1;
+    } else {
+      message_type = 0;
+    }
+
+    if (data.length() > 0) {
 
       if (data == "ping") {
         lastPing = millis();
-        webSocketClient.sendData("pong");
-      }
+
+        if (message_type == 1) {
+          Serial.println("Sending Ping over UDP");
+          Udp.beginPacket(udpAddress, udpPort);
+          Udp.write("pong");
+          Udp.endPacket();
+          delay(10);
+        } else {
+          webSocketClient.sendData("pong");
+        }
+      } 
 
       if (data == "syncOn") {
         syncOn = true;
@@ -108,7 +192,7 @@ void loop() {
         JsonDocument doc;
 
         doc["type"] = "info";
-        doc["firmware"] = "beta1.5";
+        doc["firmware"] = "beta1.8b";
         doc["esp"] = data.substring(5);
 
         String jsonStr;
@@ -178,11 +262,20 @@ void loop() {
         }
       }
 
-      if (data.charAt(0) == '$' && dataLen == 9) {
+      if (data.charAt(0) == '$' && dataLen >= 11) {
+        if (message_type == 1) {
+          Serial.println("UDP Color Message!");
+        }
         data.toCharArray(buffer, sizeof(buffer));
         parseRGB();
       }
 
+      
+      if (message_type == 1) {
+          Serial.print("UDP: ");
+        } else {
+          Serial.print("WS: ");
+      }
       Serial.print("<");
       Serial.print(data);
       Serial.println(">");

@@ -9,7 +9,8 @@ void connectWifi() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
-  WiFi.begin(ssid, password);
+  // WiFi.begin(ssid, password);
+  WiFi.begin(ssid);
 
   long connectTime = millis();
   while (WiFi.status() != WL_CONNECTED) {
@@ -79,6 +80,21 @@ void connectWebSocket() {
   }
 }
 
+void connectUDP() {
+  Udp.begin(localUdpPort);
+  Serial.printf("Now listening at IP %s, UDP port %d\n", WiFi.localIP().toString().c_str(), localUdpPort);
+
+  String macAddress = WiFi.macAddress();
+  macAddress = "M-" + macAddress;
+
+  // Send a message to the server
+  Udp.beginPacket(udpAddress, udpPort);
+  Udp.write(macAddress.c_str());
+  Udp.endPacket();
+
+  Serial.println("Finished Connecting UDP");
+}
+
 void startOTAUpdate() {
   Serial.println("Starting OTA update...");
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, server_url);
@@ -100,36 +116,139 @@ void startOTAUpdate() {
 
 void parseRGB() {
   // Ex: $3#FF00FF
-  char ledStrip;
+  // New Version: $4-3#FF00FF
+  // 4 is the number of Leds (so 2 per strip)
+  
+  int newStripCount;
 
-  sscanf(buffer, "$%1c#%02hhx%02hhx%02hhx", &ledStrip, &tempR, &tempG, &tempB);
-  Serial.print("Coloring Strip [");
-  Serial.print(ledStrip);
-  Serial.println("]");
-  Serial.print("Parsed Colors R=");
-  Serial.print(tempR);
-  Serial.print(", G=");
-  Serial.print(tempG);
-  Serial.print(", B=");
-  Serial.println(tempB);
+  Serial.println(buffer);
 
-  if (ledStrip == '1') {
-    r1 = tempR;
-    g1 = tempG;
-    b1 = tempB;
-  } else if (ledStrip == '2') {
-    r2 = tempR;
-    g2 = tempG;
-    b2 = tempB;
-  } else {
-    r1 = tempR;
-    g1 = tempG;
-    b1 = tempB;
+  sscanf(buffer, "$%d-", &newStripCount);
 
-    r2 = tempR;
-    g2 = tempG;
-    b2 = tempB;
+  Serial.printf("NewStripCount %d", newStripCount);
+  Serial.println("");
+
+  // If new strip count is chosen empty array
+  if (newStripCount != numStripCount) {
+    // New Array Size, but we need to empty the old array or atleast turn them to off
+    for (int i = 0; i < MAX_ROWS; i++) {
+      for (int j = 0; j < MAX_COLS; j++) {
+          rgbArr[i][j] = 0;  // or any value you consider "empty"
+      }
+    }
+
+    numStripCount = newStripCount;
   }
+
+  // Now move the pointer past the header
+  char* ptr = strchr(buffer, '-');
+  if (ptr == nullptr) return; // error
+  ptr++; // Move past the first #
+
+ while (*ptr) {
+  int logicalIndex;
+  char hexColor[7] = {0};
+
+  // Parse like: 3#FF00FF
+  int charsParsed = 0;
+  if (sscanf(ptr, "%d#%6s%n", &logicalIndex, hexColor, &charsParsed) == 2) {
+    // Convert hex to RGB
+    uint8_t r, g, b;
+    sscanf(hexColor, "%02hhx%02hhx%02hhx", &r, &g, &b);
+    Serial.printf("LED %d -> R=%d G=%d B=%d\n", logicalIndex, r, g, b);
+
+    // If higher than count, fill all
+    if (logicalIndex > numStripCount) {
+      for (int i = 0; i < MAX_ROWS; i++) {
+        rgbArr[i][0] = r;
+        rgbArr[i][1] = g;
+        rgbArr[i][2] = b;
+      }
+      break;
+    } else {
+      rgbArr[logicalIndex - 1][0] = r;
+      rgbArr[logicalIndex - 1][1] = g;
+      rgbArr[logicalIndex - 1][2] = b;
+    }
+
+    // Move pointer forward by the number of characters we just parsed
+    ptr += charsParsed;
+  } else {
+    break; // failed to parse
+  }
+}
+  buffer[0] = '\0';
+
+  // sscanf(buffer, "$%d-%d#%02hhx%02hhx%02hhx", &newStripCount, &ledStrip, &tempR, &tempG, &tempB);
+  // char colorHex[7] = {0}; 
+  // sscanf(buffer, "$%1d-%1d#%6s", &newStripCount, &ledStrip, colorHex);
+
+  // // Now manually split into R/G/B
+  // char rStr[3] = {colorHex[0], colorHex[1], 0};
+  // char gStr[3] = {colorHex[2], colorHex[3], 0};
+  // char bStr[3] = {colorHex[4], colorHex[5], 0};
+
+  // uint8_t tempR = strtol(rStr, NULL, 16);
+  // uint8_t tempG = strtol(gStr, NULL, 16);
+  // uint8_t tempB = strtol(bStr, NULL, 16);
+
+  // Serial.print("Number of Pixels: ");
+  // Serial.println(newStripCount);
+  // Serial.print("Coloring Strip [");
+  // Serial.print(ledStrip);
+  // Serial.println("]");
+  // Serial.print("Parsed Colors R=");
+  // Serial.print(tempR);
+  // Serial.print(", G=");
+  // Serial.print(tempG);
+  // Serial.print(", B=");
+  // Serial.println(tempB);
+
+  // // Empty buffer
+  // buffer[0] = '\0';
+
+  // if (newStripCount != numStripCount) {
+  //   // New Array Size, but we need to empty the old array or atleast turn them to off
+  //   for (int i = 0; i < MAX_ROWS; i++) {
+  //     for (int j = 0; j < MAX_COLS; j++) {
+  //         rgbArr[i][j] = 0;  // or any value you consider "empty"
+  //     }
+  //   }
+
+  //   numStripCount = newStripCount;
+  // }
+
+  // int chosenStrip = ledStrip;
+
+  // if (chosenStrip > numStripCount) {
+  //   for (int i = 0; i < MAX_ROWS; i++) {
+  //     rgbArr[i][0] = tempR;
+  //     rgbArr[i][1] = tempG;
+  //     rgbArr[i][2] = tempB;
+  //   }
+  // } else {
+  //   rgbArr[chosenStrip - 1][0] = tempR;
+  //   rgbArr[chosenStrip - 1][1] = tempG;
+  //   rgbArr[chosenStrip - 1][2] = tempB;
+  // }
+
+  // if (ledStrip == '1') {
+  //   r1 = tempR;
+  //   g1 = tempG;
+  //   b1 = tempB;
+  // } else if (ledStrip == '2') {
+  //   r2 = tempR;
+  //   g2 = tempG;
+  //   b2 = tempB;
+  // } else {
+  //   r1 = tempR;
+  //   g1 = tempG;
+  //   b1 = tempB;
+
+  //   r2 = tempR;
+  //   g2 = tempG;
+  //   b2 = tempB;
+  // }
 }
 
 

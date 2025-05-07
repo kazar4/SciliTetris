@@ -6,6 +6,8 @@
 #include <WiFiClientSecure.h>
 #include <ESP8266httpUpdate.h>  // <-- Important
 
+#include <WiFiUdp.h>
+
 /* HTTP helper function definitions */
 void parseRGB();
 
@@ -19,6 +21,16 @@ long getNextInterval(long epochTime, long intervalDuration);
 WebSocketClient webSocketClient;
 WiFiClientSecure client;
 
+WiFiUDP Udp;
+
+unsigned int localUdpPort = 4210;  // local port to listen on
+char incomingPacket[255];  // buffer for incoming packets
+
+const char* udpAddress = "kazar4.com"; // your server
+const int udpPort = 4210;
+
+int message_type;
+
 // Strip Colors
 int r1 = 0;
 int g1 = 0;
@@ -28,6 +40,14 @@ int r2 = 0;
 int g2 = 0;
 int b2 = 0;
 
+int numStripCount = 2;
+
+const int MAX_ROWS = 32;
+const int MAX_COLS = 3;
+
+// Default is 2, 3 (rgb)
+int rgbArr[MAX_ROWS][MAX_COLS];
+
 int tempR;
 int tempG;
 int tempB;
@@ -35,17 +55,18 @@ int tempB;
 int BRIGHTNESS = 96;
 
 // RGB Color Buffer
-char buffer[10];
+// TODO: FIX LATER
+char buffer[50];
 
 //Brown-Guest
-// const char* ssid     = "Brown-Guest";
-// const char* password = "";
+const char* ssid     = "Brown-Guest";
+const char* password = "";
 
 // const char* ssid     = "Verizon_6Y7F3K";
 // const char* password = "demur9-jug-code";
 
-const char* ssid     = "257 Thayer Resident";
-const char* password = "f.JutTog";
+// const char* ssid     = "257 Thayer Resident";
+// const char* password = "f.JutTog";
 
 const char* ssid2     = "RLAB";
 const char* password2 = "metropolis";

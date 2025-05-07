@@ -10,8 +10,9 @@ import {
 import CacheToggle from './CacheToggle';
 import LedPopup from './LedPopup';
 import { FiUploadCloud } from 'react-icons/fi';
+import UdpToggle from './UdpToggle';
 
-export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncDelay, syncDelay, ledPerESP, setLedPerESP}) => {
+export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncDelay, syncDelay, ledPerESP, setLedPerESP, batchDelay, setBatchDelay, udpState, setUdpState}) => {
   const [file, setFile] = useState(null);
   const toast = useToast();
 
@@ -277,7 +278,6 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
                 {/* VIEW INFO */}
                 <Flex direction={"row"} gap={2}>
 
-                {/* Reset */}
                 <Button onClick={() => {
                   if (mode !== "info") {
                     setMode("info") 
@@ -288,10 +288,13 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
                 variant={mode === "info" ? "solid" : "outline"}
                 colorScheme="purple"
                 boxShadow={mode === "info" ? "0 0 0 3px rgba(120, 0, 180, 0.6)" : "none"}
-                w={"50%"}
+                w={"40%"}
                 >
                 View Info
                 </Button>
+
+                <UdpToggle ws={ws} udpState={udpState} setUdpState={setUdpState}/>
+
                 </Flex>
 
 
@@ -299,9 +302,9 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
                 <Flex direction={"row"} gap={2}>
 
                 <Button
-                variant={mode === "info" ? "solid" : "outline"}
-                colorScheme="purple"
-                boxShadow={mode === "info" ? "0 0 0 3px rgba(120, 0, 180, 0.6)" : "none"}
+                variant={mode === "ledPerESP" ? "solid" : "outline"}
+                colorScheme="yellow"
+                boxShadow={mode === "ledPerESP" ? "0 0 0 3px rgba(255, 242, 0, 0.6)" : "none"}
                 w={"25%"}>
                   {ledPerESP}
                 </Button>
@@ -320,6 +323,35 @@ export const ControlsPane = ({ ws, mode, setMode, setHexCode, setStrip, setSyncD
 
 
                 </Flex>
+
+
+                {/* Set Batch Delay */}
+                <Flex direction={"row"} gap={2}>
+
+                <Button
+                variant={mode === "batchDelay" ? "solid" : "outline"}
+                colorScheme="cyan"
+                boxShadow={mode === "batchDelay" ? "0 0 0 3px rgba(0, 229, 255, 0.6)" : "none"}
+                w={"60%"}
+                fontSize={11}>
+                 {"BatchDelay: "} {batchDelay} {" ms"}
+                </Button>
+
+                <Input placeholder="Set Value" w={"40%"} fontSize={11} onChange={(event) => {
+                  function isNumber(value) {
+                    return typeof value === 'number' && isFinite(value);
+                  }
+                  console.log("Trying to Change Batch Delay " + event.target.value)
+                  if (isNumber(parseInt(event.target.value))) {
+                    ws.send("setBatchDelay " + event.target.value)
+                    console.log("setBatchDelay: " + event.target.value)
+                    setBatchDelay(event.target.value)
+                  }
+                }}></Input>
+
+
+                </Flex>
+
 
 
             </Flex>

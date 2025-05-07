@@ -31,7 +31,9 @@ function App() {
   const [xDimension, setXDimension] = useState(5); // Initial x dimension
   const [yDimension, setYDimension] = useState(11); // Initial y dimension
 
-  const [ledPerESP, setLedPerESP] = useState(2); // Initial y dimension
+  const [ledPerESP, setLedPerESP] = useState(2);
+  const [batchDelay, setBatchDelay] = useState(100);
+  const [udpState, setUdpState] = useState(true);
 
   const textBoxRef = React.createRef();
 
@@ -113,6 +115,10 @@ function App() {
               syncDelay={syncDelay}
               setLedPerESP={setLedPerESP}
               ledPerESP={ledPerESP}
+              setBatchDelay={setBatchDelay}
+              batchDelay={batchDelay}
+              udpState={udpState}
+              setUdpState={setUdpState}
             />
           </Box>
 
@@ -132,6 +138,8 @@ function App() {
               setYDimension={setYDimension}
               setLedPerESP={setLedPerESP}
               ledPerESP={ledPerESP}
+              setBatchDelay={setBatchDelay}
+              setUdpState={setUdpState}
               />
           </Box>
 
