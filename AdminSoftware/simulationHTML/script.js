@@ -24,8 +24,8 @@ window.onload = function() {
 
   // Create LED blocks
   //5 by 11
-  for (let row = 0; row < 5; row++) {
-    for (let column = 0; column < 11; column++) {
+  for (let row = 0; row < 1; row++) {
+    for (let column = 0; column < 2; column++) {
       const ledBlock = document.createElement('div');
       ledBlock.classList.add('ledBlock');
 
@@ -64,39 +64,55 @@ window.onload = function() {
 
         // $2-1#FF00FF
 
-        if (data[0] === '$' && data.length >= 10) {
+        // const match = data.match(/^\$(\d+)-(\d+)#([0-9A-Fa-f]{6})$/);
+        // if (match) {
+        //   const numOfLeds = parseInt(match[1], 10);   // e.g. 12
+        //   const ledChosen = parseInt(match[2], 10);   // e.g. 3
+        //   const colorVal = `#${match[3]}`;            // e.g. "#FF00FF"
+
+        //   // ✅ Now your logic continues as before
+        //   ...
+        // }
+        //data[0] === '$' && data.length >= 10
+
+        //const match = data.match(/^\$(\d+)-(\d+)#([0-9A-Fa-f]{6})$/);
+        if (data.startsWith('$')) {
           console.log('Setting color to:', data);
-        
-          const numOfLeds = parseInt(data[1]);
-          const ledChosen = parseInt(data[3]);
-          const colorVal = data.substring(4); // e.g. #FF00FF
-        
-          // Clamp LED index
-          if (ledChosen > numOfLeds) {
-            ledBlock.dataset.colors = JSON.stringify(Array(numOfLeds).fill(colorVal));
-            ledBlock.setAttribute("style", `background: ${colorVal};`);
-            return;
-          }
-        
+
+          const headerSplit = data.slice(1).split('-');
+          const numOfLeds = parseInt(headerSplit[0], 10); // e.g. 12
+          const rest = headerSplit[1]; // "1#FF00003#00FF00..."
+
+          const commandRegex = /(\d+)#([0-9A-Fa-f]{6})/g;
+          let match;
+          
           // Get or initialize colors array
           let colors = ledBlock.dataset.colors
             ? JSON.parse(ledBlock.dataset.colors)
             : Array(numOfLeds).fill("#000000");
-        
-          // Ensure it's exactly the right length
+
+          // Reset colors if size changed
           if (colors.length !== numOfLeds) {
-            const newColors = Array(numOfLeds).fill("#000000");
-            for (let i = 0; i < Math.min(colors.length, numOfLeds); i++) {
-              newColors[i] = colors[i] || "#000000";
-            }
-            colors = newColors;
+            colors = Array(numOfLeds).fill("#000000");
           }
-        
-          // Update color
-          colors[ledChosen - 1] = colorVal;
+
+          while ((match = commandRegex.exec(rest)) !== null) {
+            const logicalIndex = parseInt(match[1], 10); // 1-based index
+            const hexColor = `#${match[2]}`;
+            if (logicalIndex >= 1 && logicalIndex <= numOfLeds) {
+              colors[logicalIndex - 1] = hexColor;
+            }
+
+            // Clamp LED index
+            if (logicalIndex > numOfLeds) {
+              ledBlock.dataset.colors = JSON.stringify(Array(numOfLeds).fill(colorVal));
+              ledBlock.setAttribute("style", `background: ${colorVal};`);
+              return;
+            }
+          }        
+
           ledBlock.dataset.colors = JSON.stringify(colors);
-        
-          // Build gradient from numOfLeds entries only
+
           const step = 100 / numOfLeds;
           const gradientParts = colors.map((color, i) => {
             const start = i * step;

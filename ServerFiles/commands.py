@@ -2,6 +2,8 @@ import json
 import time
 import sqlite3
 import threading
+import traceback
+from rich import print
 
 
 class Commands:
@@ -9,16 +11,27 @@ class Commands:
     pingTimes = {}
     savedPingTimes = {}
 
-    cacheBool = True
+    batchedColors = {}
 
-    def __init__(self, admin, player, game, espConnections, coordConnections, LEDPerEsp):
+    cacheBool = True
+    udpOn = True
+
+    def __init__(self, admin, player, game, espConnections, coordConnections, macConnections, sock, udpPings, LEDPerEsp, batchSendDelay):
         self.admin = admin
         self.player = player
         self.game = game
         self.espConnections = espConnections
         self.coordConnections = coordConnections
+        self.macConnections = macConnections
+
+        self.sock = sock
+
+        self.udpPings = udpPings
 
         self.LEDPerEsp = LEDPerEsp
+        self.batchSendDelay = batchSendDelay
+
+
         
         self.conn = sqlite3.connect('cache.db')  # Connect to SQLite database
         self.cursor = self.conn.cursor()
@@ -64,10 +77,10 @@ class Commands:
 
     def sendServerGracefully(self, server, client, message):
             try:
-                print("message sending :" + message[0:10])
+                # print("message sending :" + message[0:10])
                 server.send_message(client, message)
             except BrokenPipeError as e:
-                print(f"client {client} not found, removing it:  {e}")
+                print(f"client {client.get('id')} not found, removing it: {e}")
 
                 if client["id"] in self.espConnections:
                     for c in self.espConnections[str(client["id"])]["coord"]:
@@ -76,7 +89,6 @@ class Commands:
                 
                 self.espConnections.pop(str(client["id"]), None)
 
-                print(self.admin)
                 if self.admin["admin"] != None:
                     self.getClientState(self.admin["admin"][0], server)
     
@@ -88,8 +100,7 @@ class Commands:
                 for client_id in list(self.espConnections):
                     if client_id not in self.pingTimes:
                         self.ping(f"ping {client_id}", server)
-                
-                print("Checking for clients to remove")
+ 
                 #print(self.pingTimes)
                 curTime = time.time()
 
@@ -99,7 +110,7 @@ class Commands:
                     #print(curTime - self.pingTimes[pinged])
                     if curTime - self.pingTimes[pinged] > 5:
                         # ping not found, removing
-                        print(f"ping not found removing {pinged}")
+                        # print(f"ping not found removing {pinged}")
 
                         pingedToRemove.append(pinged)
 
@@ -112,6 +123,9 @@ class Commands:
                             self.espConnections[pinged]["clientVal"]["handler"].connection.close()
                             self.espConnections.pop(pinged, None)
 
+                if (len(pingedToRemove) > 0):
+                    print("Ping not found, removing the following ESPs: ", pingedToRemove)
+
                 for p in list(pingedToRemove):
                     self.pingTimes.pop(p, None)
                 
@@ -120,6 +134,7 @@ class Commands:
 
             except Exception as e:
                 print(f"An error occurred in ping_clients: {e}")
+                print(traceback.format_exc())
 
     def start_ping_thread(self, server):
         ping_thread = threading.Thread(target=self.ping_clients, args=(server,))
@@ -136,6 +151,13 @@ class Commands:
             return
 
         self.pingTimes[clientID] = time.time()
+
+        if self.getIDtoAddr(clientID) != None:
+            self.udpPings[self.getIDtoAddr(clientID)]["start"] = self.pingTimes[clientID]
+
+            self.sock.sendto("ping".encode(), self.getIDtoAddr(clientID))
+            self.sock.sendto("ping".encode(), self.getIDtoAddr(clientID))
+
         # server.send_message(self.espConnections[clientID]["clientVal"], "ping")
         self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], "ping")
     
@@ -172,13 +194,9 @@ class Commands:
         if (int(x), int(y)) in self.coordConnections:
             oldClient = self.coordConnections[(int(x), int(y))]["clientID"]
 
-            print(oldClient)
-
             if oldClient in self.espConnections:
                 # THos line would have to be abstracted to include more than 2 coords
                 self.espConnections[oldClient]["coord"] = [(None, None)] * self.LEDPerEsp["value"]
-                print(message)
-                print("HUHHHH")
                 self.setColor(f"setColor {oldClient} #000000", client, server)
 
         # client is not in connections
@@ -213,7 +231,7 @@ class Commands:
         
     
         for i in range(self.LEDPerEsp["value"]):
-            print((int(x) + i, int(y)))
+            # print((int(x) + i, int(y)))
             self.coordConnections[(int(x) + i, int(y))] = {"client" : self.espConnections[clientText]["clientVal"], "clientID": clientText}
             self.espConnections[clientText]["coord"][i] = (int(x) + i, int(y)) # might have to remove this
 
@@ -258,8 +276,10 @@ class Commands:
             self.espConnections[clientID]["color"][int(strip) - 1] = color
         #server.send_message(self.espConnections[clientID]["clientVal"], color)
         newColorCommand = "$" + str(self.LEDPerEsp["value"]) + f"-{strip}{color}"
-        self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], newColorCommand)
-        print(f"Set color strip {strip} of {clientID} to {color}")
+
+        if (clientID in self.espConnections):
+            self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], newColorCommand)
+            print(f"Set color strip {strip} of {clientID} to {color}")
 
 
     def setColor(self, message, client, server):
@@ -277,45 +297,65 @@ class Commands:
                 self.sendServerGracefully(server, client, json.dumps({"ERROR": f"{clientID} not connected to server yet"}))
                 return
 
-            #print(f"Trying to color of {clientID} to {color}")
-
             self.espConnections[clientID]["color"] = [color] * self.LEDPerEsp["value"]
-            print(f"Trying to color of {clientID} to {color}")
-            #server.send_message(self.espConnections[clientID]["clientVal"], color)
             newColorCommand = "$" + str(self.LEDPerEsp["value"]) + "-" + str(self.LEDPerEsp["value"] + 1) + color
+            #server.send_message(self.espConnections[clientID]["clientVal"], color)
+
             self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], newColorCommand)
-            print(f"Set color of {clientID} to {color}")
+
+            if (clientID in self.espConnections):
+                if self.getIDtoAddr(clientID) != None and self.udpOn:
+                    self.sock.sendto(newColorCommand.encode(), self.getIDtoAddr(clientID))
+                    print(f"[bold][purple on white]🎁 UDP: [/] No Coord Assigned - Set color of {clientID} to [blue on {color}]{color}[/][/bold]")
+                else:
+                    self.sendServerGracefully(server, self.espConnections[clientID]["clientVal"], newColorCommand)
+                    print(f"[bold][green on white]🎁 WS: [/] No Coord Assigned - Set color of {client.get('id')} to [blue on {color}]{color}[/][/bold]")
+
 
         # if you are turning on an LED with a set coord
         else:
             cmd, x, y, color = messageSplit
             # coord -> esp - > color,       esp -> color
             if (int(x), int(y)) not in self.coordConnections:
-                print("COORD CONNECTIONS")
-                print(self.coordConnections)
                 print(f"ERROR: ({x}, {y}) does not have an ESP set yet!")
                 self.sendServerGracefully(server, client, json.dumps({"ERROR": f"({x}, {y}) does not have an ESP set yet!"}))
                 return
         
             self.setLEDColor((int(x), int(y)), color)
             stripNum = ((int(x)) % self.LEDPerEsp["value"]) + 1 # TODO if its not big mode we have to color both here
-            newColorCommand = "$" + str(self.LEDPerEsp["value"]) + f"-{stripNum}{color}"
-            self.sendServerGracefully(server, self.getClientObj((int(x), int(y))), newColorCommand)
-    
+
+            if self.batchSendDelay["value"] == 0:
+                client = self.getClientObj((int(x), int(y)))
+                newColorCommand = "$" + str(self.LEDPerEsp["value"]) + f"-{stripNum}{color}"
+                
+                # Send over UDP
+                if self.getIDtoAddr(client["id"]) != None and self.udpOn:
+                    print(f"[bold][purple on white]🎁 UDP: [/] Set color of {client.get('id')} to [blue on {color}]{color}[/][/bold]")
+                    self.sock.sendto(newColorCommand.encode(), self.getIDtoAddr(client["id"]))
+                else:
+                    print(f"[bold][green on white]🎁 WS: [/] Set color of {client.get('id')} to [blue on {color}]{color}[/][/bold]")
+                    self.sendServerGracefully(server, client, newColorCommand)
+            else:
+                client = self.getClientObj((int(x), int(y)))
+                self.batchedColors.setdefault(client["id"], {"client": client, "batched": []})["batched"].append({"stripNum": stripNum, "color": color})
+        
     def getClientState(self, client, server):
         # Creates data with from [{id1, x, y, color}, {id2, x, y, color}, ...]
         clientData = []
         for i in self.espConnections.keys():
 
             ping = None
+            udpPing = None
             if i in self.savedPingTimes:
                 ping = self.savedPingTimes[i]
+                udpPing = self.udpPings[self.getIDtoAddr(i)]["ping"]
                 
-            clientData.append({"clientName": i, "ping": ping, "colors": self.espConnections[i]["color"], "coords": self.espConnections[i]["coord"]})
+            clientData.append({"clientName": i, "ping": ping, "udpPing": udpPing, "colors": self.espConnections[i]["color"], "coords": self.espConnections[i]["coord"]})
 
 
-        print(self.espConnections)
-        clientData = {"type": "getClientState", "LEDPerEsp": self.LEDPerEsp["value"], "data": clientData}
+        # print(self.espConnections)
+        # print(self.macConnections)
+        clientData = {"type": "getClientState", "LEDPerEsp": self.LEDPerEsp["value"], "batchDelay": self.batchSendDelay["value"] * 1000, "data": clientData}
 
         # print(clientData)
 
@@ -404,12 +444,12 @@ class Commands:
                         self.espConnections[esp]["coord"] = [(None, None)] * self.LEDPerEsp["value"]
                         self.espConnections[esp]["color"] = ["#000000"] * self.LEDPerEsp["value"]
                     else:   
-                        print("BRRUUUH") 
-                        print(oldCoords)
-                        print(oldLedsPerStrip)
+                        # print("BRRUUUH") 
+                        # print(oldCoords)
+                        # print(oprint(ldLedsPerStrip)
                         coordX = oldCoords[0][0] / oldLedsPerStrip
                         newCoords = [(coordX * self.LEDPerEsp["value"] + i, oldCoords[0][1]) for i in range(0, self.LEDPerEsp["value"])]
-                        print(newCoords)
+                        # print(newCoords)
                         # if (oldCoords[0][0] == 0):
                         #     coordX = 0
                                 
@@ -436,6 +476,63 @@ class Commands:
 
             print("INVALID STRIP NUM - MUST BE A INT")
 
+    
+    def start_batch_color(self, server):
+        batch_thread = threading.Thread(target=self.batchColor, args=(server,))
+        batch_thread.daemon = True
+        batch_thread.start()
+
+    def batchColor(self, server):
+
+        while(True):
+            if self.batchSendDelay["value"] > 0:
+                time.sleep(self.batchSendDelay["value"])
+
+                clientsToPop = []
+
+                # print("TRYING TO BATCH")
+                # print(self.batchedColors)
+
+                for ESPid in self.batchedColors:
+                    
+                    newColorCommand = "$" + str(self.LEDPerEsp["value"]) + "-" + \
+                        "".join([f"{d['stripNum']}{d['color']}" for d in self.batchedColors[ESPid]["batched"]])
+
+                    print("Sending New Batch Command: " + newColorCommand)
+
+                    # Send over UDP
+                    if self.getIDtoAddr(ESPid) != None and self.udpOn:
+                        self.sock.sendto(newColorCommand.encode(), self.getIDtoAddr(ESPid))
+                    else:
+                        self.sendServerGracefully(server, self.batchedColors[ESPid]["client"], newColorCommand)
+                    
+                    #self.sendServerGracefully(server, self.batchedColors[ESPid]["client"], newColorCommand)
+
+                    clientsToPop.append(ESPid)
+
+                for ESPid in clientsToPop:
+                    self.batchedColors.pop(ESPid)
+    
+    def setBatchDelay(self, message, client, server):
+        messageSplit = message.split()
+
+        if len(messageSplit) == 2:
+            cmd, batchDelayMS = messageSplit
+
+            print(f"Setting Batch Delay to {int(batchDelayMS)}")
+
+            # time.sleep uses seconds so convert from MS to SECONDS
+            self.batchSendDelay["value"] = int(batchDelayMS) / 1000
+        
+        else:
+
+            print("INVALID BATCH DELAY COMMAND")
+
+    def getIDtoAddr(self, clientID):
+        if (str(clientID) in self.espConnections):
+            return self.macConnections.get(self.espConnections[str(clientID)]["MAC"])["udp"]
+
+        return None
     
     def getLEDState(self, client, server):
         ledState = {f"({coord[0]},{coord[1]})": self.getLEDColor(coord) for coord in self.coordConnections.keys()}
@@ -483,9 +580,13 @@ class Commands:
             if foundCache:
                 self.setCoords(f"setCoords {esp} {coord[0]} {coord[1]}", client, server)
 
-
     def cacheOff(self, server):
         self.cacheBool = False
+
+    def udpToggle(self, server):
+        self.udpOn = not self.udpOn
+        if self.admin["admin"] != None:
+            self.sendServerGracefully(server, self.admin["admin"][0], json.dumps({"type": "udp", "value": self.udpOn}))
 
     def removeCoord(self, message):
         cmd, clientText = message.split()
@@ -532,7 +633,7 @@ class Commands:
                 server.send_message(client, "#FFFF00")
                 server.send_message(client, "#FF00FF")
             except BrokenPipeError as e:
-                print(f"client {client} not found, removing it:  {e}")
+                print(f"client {client.get('id')} not found, removing it: {e}")
 
                 if client["id"] in self.espConnections and self.espConnections[str(client["id"])]["coord"] != (None, None):
                     coordVal = self.espConnections[str(client["id"])]["coord"]
