@@ -15,6 +15,8 @@
 CRGBArray<NUM_LEDS> leds;
 CRGBArray<NUM_LEDS> leds2;
 
+unsigned long lastPing;
+
 #define FRAMES_PER_SECOND  120
 
 void setUPLEDs(){ 
@@ -122,10 +124,23 @@ void setup() {
   lastPing = millis();
 }
 
+// unsigned long lastPrint = 0;
 
 void loop() {
 
-  if (millis() - lastPing > 200000) {
+  // unsigned long now = millis();
+  // if (now - lastPrint >= 3000) {  // 10 seconds
+  //   Serial.println(now);
+  //   Serial.println(lastPing);
+  //   Serial.println("---");
+  //   Serial.println((millis() - lastPing));
+  //   lastPrint = now;
+
+  //   // Serial.print("Free Heap: ");
+  //   // Serial.println(ESP.getFreeHeap());
+  // }
+
+  if ((millis() - lastPing) > 200000) {
     Serial.println("Has not pinged 200+ secounds, restarting");
     ESP.reset();
   }
@@ -158,8 +173,15 @@ void loop() {
 
     if (data.length() > 0) {
 
+      // Serial.print("Raw received data: <");
+      // Serial.print(data);
+      // Serial.println(">");
+
       if (data == "ping") {
+        // Serial.println("GOT HERE SETTING LAST PING ");
         lastPing = millis();
+        // Serial.print("ITS BEEN SET TO THIS <");
+        // Serial.println(lastPing);
 
         if (message_type == 1) {
           Serial.println("Sending Ping over UDP");
@@ -192,7 +214,7 @@ void loop() {
         JsonDocument doc;
 
         doc["type"] = "info";
-        doc["firmware"] = "beta1.8b";
+        doc["firmware"] = "beta2.1b";
         doc["esp"] = data.substring(5);
 
         String jsonStr;

@@ -116,7 +116,7 @@ void startOTAUpdate() {
 
 void parseRGB() {
   // Ex: $3#FF00FF
-  // New Version: $4-3#FF00FF
+  // New Version: $4-3#FF00FF1#FF00FF
   // 4 is the number of Leds (so 2 per strip)
   
   int newStripCount;

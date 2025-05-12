@@ -26,14 +26,14 @@ class CanvasGame(Game):
         self.source = source
         self.screen = pygame.Surface((800,700))
         self.screen.fill((255,255,255))
-        self.grid_width = 10
+        self.grid_width = 20
         self.grid_height = 11
         self.cell_height = 50
         self.cell_width = 25
         self.x_offset = 275
         self.color_wheel = ColorPicker(100, 550, 600, 100)
         self.grid = [[pygame.Color('black') for _ in range(self.grid_width)] for _ in range(self.grid_height)]
-        self.light_show_button = Button("Light Show", (550, 300), (200, 100), (200, 200, 200), (100, 100, 100), pygame.font.Font(None, 30), self.light_show_toggle)
+        self.light_show_button = Button("Light Show", (550, 600), (200, 100), (200, 200, 200), (100, 100, 100), pygame.font.Font(None, 30), self.light_show_toggle)
         self.preset_display = False
         self.prev_time = None
         self.running = True

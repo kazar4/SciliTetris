@@ -42,7 +42,7 @@ int b2 = 0;
 
 int numStripCount = 2;
 
-const int MAX_ROWS = 32;
+const int MAX_ROWS = 16;
 const int MAX_COLS = 3;
 
 // Default is 2, 3 (rgb)
@@ -56,7 +56,7 @@ int BRIGHTNESS = 96;
 
 // RGB Color Buffer
 // TODO: FIX LATER
-char buffer[50];
+char buffer[300];
 
 //Brown-Guest
 const char* ssid     = "Brown-Guest";
@@ -79,7 +79,7 @@ const char* server_url = "https://kazar4.com/SciliTetris/ESPFirmware/NewFirmware
 const char *sslFingerprint = "F6 5E 7E 73 46 05 E9 62 6C 0C ED B4 51 EE 3F 5C 4D B5 07 44";
 
 // timeParsingVals
-bool syncOn = true;
+bool syncOn = false;
 
 long timeVal = 0L;
 double timeDif = 0.0;
@@ -88,5 +88,3 @@ long lastParse = millis();
 long timeOfParse = 0;
 
 long firstInterval = 200;
-
-long lastPing = millis();

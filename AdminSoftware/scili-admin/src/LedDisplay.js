@@ -6,7 +6,6 @@ import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   Button, Stack, Badge, Icon, Center, useDisclosure
 } from '@chakra-ui/react';
-import { CpuIcon } from 'lucide-react'; // add this import for a nice CPU icon
 import EspInfoModal from './ESPInfoModal';
 
 
