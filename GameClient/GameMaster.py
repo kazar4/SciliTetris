@@ -18,6 +18,8 @@ class GameMaster():
         self.menu = Menu()
         self.prev_frame = None
 
+        self.lpe = 2
+
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
         self.client_thread.start() # Thread to run the game client connection
@@ -30,7 +32,9 @@ class GameMaster():
 
     def on_message(self, ws, message):
         #print(message)
-        pass
+        if ("lpe" in message):
+            self.lpe = message.split(" ")[1]
+            print("GOT NEW LPE: " + str(self.lpe))
 
     def on_error(self, ws, error):
         print(error)
@@ -42,6 +46,8 @@ class GameMaster():
     def on_open(self, ws):
         ws.send("game")
         print("Opened connection")
+
+        ws.send("getLEDPerEsp")
 
     def connect_to_server(self):
         websocket.enableTrace(True)
