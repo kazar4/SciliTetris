@@ -8,6 +8,8 @@ from games.pong import Pong
 
 class Menu:
     def __init__(self, screen_width=800, screen_height=700):
+
+        self.lpe = None
         # Initialize Pygame
         pygame.init()
 
@@ -73,7 +75,7 @@ class Menu:
 
     def start_canvas_game(self):
         # self.running = False
-        self.game_instance = CanvasGame(self.main_screen, (0,0))
+        self.game_instance = CanvasGame(self.main_screen, (0,0), self.lpe*5)
 
     def start_snake(self):
         self.game_instance = Snake(self.main_screen, (300, 150))

@@ -9,7 +9,7 @@ from GameGUI import Menu
 
 
 _polling_rate = 0.2
-#_uri = "ws://localhost:9001"
+# _uri = "ws://localhost:9001"
 _uri = "wss://kazar4.com:9001"
 
 class GameMaster():
@@ -19,6 +19,7 @@ class GameMaster():
         self.prev_frame = None
 
         self.lpe = 2
+        self.menu.lpe = self.lpe
 
         self.client_thread = threading.Thread(target=self.connect_to_server)
         self.client_thread.daemon = True
@@ -33,8 +34,9 @@ class GameMaster():
     def on_message(self, ws, message):
         #print(message)
         if ("lpe" in message):
-            self.lpe = message.split(" ")[1]
+            self.lpe = int(message.split(" ")[1])
             print("GOT NEW LPE: " + str(self.lpe))
+            self.menu.lpe = self.lpe
 
     def on_error(self, ws, error):
         print(error)
