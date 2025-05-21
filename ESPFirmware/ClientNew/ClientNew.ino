@@ -58,9 +58,9 @@ void LEDLoop() {
 
     for (int i = startIndex; i < endIndex; i++) {
       if (i < NUM_LEDS) {
-        leds[NUM_LEDS - i] = CRGB(r, g, b);      // first strip
+        leds[i - NUM_LEDS] = CRGB(r, g, b);      // first strip
       } else if (i < totalLEDs) {
-        leds2[i - NUM_LEDS] = CRGB(r, g, b);  // second strip
+        leds2[NUM_LEDS - i] = CRGB(r, g, b);  // second strip
       }
     }
   }
@@ -214,7 +214,7 @@ void loop() {
         JsonDocument doc;
 
         doc["type"] = "info";
-        doc["firmware"] = "beta2.1b";
+        doc["firmware"] = "beta2.1br";
         doc["esp"] = data.substring(5);
 
         String jsonStr;

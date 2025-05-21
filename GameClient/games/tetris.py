@@ -7,6 +7,7 @@
 # Down - Drop stone faster
 # Left/Right - Move stone
 # Up - Rotate Stone clockwise
+# Left Shift - Hard drop (instant drop to bottom)
 # Escape - Quit game
 # P - Pause game
 #
@@ -232,6 +233,35 @@ class TetrisApp(Game):
 							break
 					else:
 						break
+
+	def hard_drop(self):
+		"""Instantly drop the stone to the lowest possible position"""
+		if not self.gameover and not self.paused:
+			# Keep dropping until we would hit something
+			while True:
+				# Check if moving down one more position would cause collision
+				if check_collision(self.board,
+				                  self.stone,
+				                  (self.stone_x, self.stone_y)):
+					break
+				self.stone_y += 1
+			
+			# Now place the stone and handle line clearing (same as regular drop)
+			self.board = join_matrixes(
+			  self.board,
+			  self.stone,
+			  (self.stone_x, self.stone_y))
+			self.new_stone()
+			
+			# Clear completed lines
+			while True:
+				for i, row in enumerate(self.board[:-1]):
+					if 0 not in row:
+						self.board = remove_row(
+						  self.board, i)
+						break
+				else:
+					break
 	
 	def rotate_stone(self):
 		if not self.gameover and not self.paused:
@@ -271,6 +301,7 @@ class TetrisApp(Game):
 			'RIGHT':	lambda:self.move(+1),
 			'DOWN':		self.drop,
 			'UP':		self.rotate_stone,
+			'LSHIFT':	self.hard_drop,
 			'p':		self.toggle_pause,
 			'SPACE':	self.start_game
 		}
