@@ -214,7 +214,7 @@ void loop() {
         JsonDocument doc;
 
         doc["type"] = "info";
-        doc["firmware"] = "beta2.1br";
+        doc["firmware"] = "beta2.3or";
         doc["esp"] = data.substring(5);
 
         String jsonStr;
